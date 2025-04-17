@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fitrus Device Measure"
+        android:textAlignment="center"
+        android:textColor="#03A9F4"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/birthText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="birth" />
+
+        <EditText
+            android:id="@+id/txtBirth"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="1976/11/07" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/genderText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="gender" />
+
+        <EditText
+            android:id="@+id/txtGender"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="male" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/heightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="height" />
+
+        <EditText
+            android:id="@+id/txtHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="168.6" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/weightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="weight" />
+
+        <EditText
+            android:id="@+id/txtWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="67" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/correctText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="correct" />
+
+        <EditText
+            android:id="@+id/txtCorrect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/bodyTypeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="body type" />
+
+        <EditText
+            android:id="@+id/bodyTypeEditView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="text"
+            android:text="A(apple) | B(banana) | P(pear)" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/sbpText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="base systolic" />
+
+        <EditText
+            android:id="@+id/txtBaseSystolic"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="120" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dbpText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="base diastolic" />
+
+        <EditText
+            android:id="@+id/txtBaseDiastolic"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="text"
+            android:text="80" />
+    </LinearLayout>
+
+    <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+        android:id="@+id/menuSegment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="4dp"
+        android:background="@color/white"
+        android:elevation="2dp"
+        app:borderWidth="1dp"
+        app:dividerPadding="10dp"
+        app:dividerWidth="1dp"
+        app:position="0"
+        app:radius="10dp"
+        app:ripple="false">
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:selectedBackground="@color/white"
+            app:text="Measurement"
+            app:textColor="@color/black" />
+
+        <!--
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="Device Setting"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" />-->
+    </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
+
+    <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+        android:id="@+id/segmentedButtonGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="4dp"
+        android:background="@color/white"
+        android:elevation="2dp"
+        app:borderWidth="1dp"
+        app:dividerPadding="10dp"
+        app:dividerWidth="1dp"
+        app:position="0"
+        app:radius="10dp"
+        app:ripple="false">
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="fat"
+            app:textColor="@color/black" />
+
+        <!--
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:linesCount="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="heart"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" />
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:linesCount="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="stress"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" />
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:linesCount="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="temp"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" />
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:linesCount="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="bodytemp"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" />
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            app:linesCount="1"
+            android:ellipsize="end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:text="bp"
+            app:selectedBackground="@color/white"
+            android:background="#cccccc"
+            app:borderColor="#cccccc"
+            app:textColor="@color/black" /> -->
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="device"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="battery"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="heart"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="bp"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="stress"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="tbody"
+            app:textColor="@color/black" />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#cccccc"
+            android:ellipsize="end"
+            android:padding="10dp"
+            app:borderColor="#cccccc"
+            app:drawableGravity="top"
+            app:linesCount="1"
+            app:selectedBackground="@color/white"
+            app:text="tobj"
+            app:textColor="@color/black" />
+
+    </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/lblConnected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="not connected" />
+
+        <Button
+            android:id="@+id/btnStartScan"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="device scan" />
+
+        <Button
+            android:id="@+id/btnDisconnectDevice"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="disconnect" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtResult"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnStartMeasure"
+            android:visibility="invisible"
+            android:enabled="false"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start" />
+    </LinearLayout>
+</LinearLayout>
