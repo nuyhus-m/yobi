@@ -1,4 +1,4 @@
-package dev.onesoftdigm.fitrus.fitrusestdevicesdkdemo
+package com.example.myapplication
 
 import org.junit.Test
 

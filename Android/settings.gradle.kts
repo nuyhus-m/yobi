@@ -21,6 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FitrusEstDeviceSDKDemo"
+rootProject.name = "My Application"
 include(":app")
- 
