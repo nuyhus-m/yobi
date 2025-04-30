@@ -1,6 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    // safeArgs
+    alias(libs.plugins.navigation.safe.args)
+
+    // hilt
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -10,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.example.myapplication"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -27,11 +34,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
+    }
+    viewBinding {
+        enable = true
     }
 }
 
@@ -46,4 +56,29 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // retrofit
+    // https://github.com/square/retrofit
+    implementation(libs.retrofit)
+    // https://github.com/square/okhttp
+    implementation(libs.okhttp)
+    // https://github.com/square/retrofit/tree/master/retrofit-converters/gson
+    implementation(libs.converter.gson)
+    // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
+    implementation(libs.logging.interceptor)
+
+    // Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+
+    //framework ktx dependency
+    implementation(libs.androidx.fragment.ktx)
+
+    // Jetpack Navigation Kotlin
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
+
+    // hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
 }

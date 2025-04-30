@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dest_schedule"
+        android:enabled="true"
+        android:icon="@drawable/ic_calendar"
+        android:title="@string/schedule" />
+
+    <item
+        android:id="@+id/dest_care_list"
+        android:enabled="true"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/care_list" />
+
+    <item
+        android:id="@+id/dest_measurement_target"
+        android:enabled="true"
+        android:icon="@drawable/ic_check"
+        android:title="@string/measurement" />
+
+    <item
+        android:id="@+id/dest_visit_log_list"
+        android:enabled="true"
+        android:icon="@drawable/ic_book"
+        android:title="@string/visit_log" />
+
+    <item
+        android:id="@+id/dest_my_page"
+        android:enabled="true"
+        android:icon="@drawable/ic_my"
+        android:title="@string/my" />
+</menu>

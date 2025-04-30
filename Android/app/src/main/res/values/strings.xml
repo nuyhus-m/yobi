@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">요비</string>
+    <!-- 바텀바 -->
+    <string name="schedule">일정표</string>
+    <string name="care_list">돌봄 목록</string>
+    <string name="measurement">측정</string>
+    <string name="visit_log">일지</string>
+    <string name="my">마이</string>
 </resources>
