@@ -5,7 +5,9 @@
 ### 가상환경 구성 및 활성화
 
 python -m venv venv
+
 source venv/Scripts/activate
+
 pip install -r requirements.txt
 
 ### fastAPI 실행
