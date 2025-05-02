@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- WidgetStyle -->
+    <!-- Base WidgetStyle -->
     <style name="Widget.TextView" parent="@android:style/Widget.DeviceDefault.TextView">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textSize">16sp</item>
@@ -69,6 +69,11 @@
         <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- ButtonStyle -->
+    <style name="Widget.Button.Secondary">
+        <item name="android:background">@drawable/bg_purple_radius_12</item>
     </style>
 
 </resources>
