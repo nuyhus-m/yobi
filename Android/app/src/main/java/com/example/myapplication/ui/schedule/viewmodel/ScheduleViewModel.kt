@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.schedule
+package com.example.myapplication.ui.schedule.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
