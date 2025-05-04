@@ -2,6 +2,7 @@ package com.S209.yobi.measures.controller;
 
 import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
 import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
+import com.S209.yobi.DTO.requestDTO.StressDTO;
 import com.S209.yobi.exception.ApiResponseDTO;
 import com.S209.yobi.measures.service.MeasureService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +35,7 @@ public class MeasureController {
 
     }
 
-    @Operation(summary = "피트러스 심박 측정", description = "피트러스 심박 측정 저장합니다")
+    @Operation(summary = "피트러스 심박 측정 저장", description = "피트러스 심박 데이터를 저장합니다")
     @PutMapping(value = "/heart-rate/{userId}")
     public ResponseEntity<ApiResponseDTO<?>> saveHeartRate(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
@@ -43,8 +44,17 @@ public class MeasureController {
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveHeartRate(userId, requestDTO);
         return ResponseEntity.ok(response);
+    }
 
-
+    @Operation(summary = "피트러스 스트레스 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
+    @PutMapping(value = "/stress/{userId}")
+    public ResponseEntity<ApiResponseDTO<?>> saveStress(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int userId,
+            @RequestBody StressDTO requestDTO
+    ) throws IOException{
+        ApiResponseDTO<?> response = measureService.saveStress(userId, requestDTO);
+        return ResponseEntity.ok(response);
     }
 
 

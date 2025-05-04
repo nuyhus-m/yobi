@@ -1,5 +1,6 @@
 package com.S209.yobi.measures.entity;
 
+import com.S209.yobi.DTO.requestDTO.StressDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -39,5 +40,15 @@ public class Stress {
         Instant now = Instant.now();
         this.createdAt = now;
     }
+
+    public static Stress fromDTO(StressDTO dto){
+        return Stress.builder()
+                .stressValue(dto.getStressValue())
+                .stressLevel(dto.getStressLevel())
+                .oxygen(dto.getOxygen())
+                .bpm(dto.getBpm())
+                .build();
+    }
+
 
 }
