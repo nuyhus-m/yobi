@@ -48,4 +48,35 @@ public class Client {
     @Column(name = "address", nullable = false, length = 100)
     private String address;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public @Size(max = 10) @NotNull String getName() {
+        return name;
+    }
+
+    public @NotNull LocalDate getBirth() {
+        return birth;
+    }
+
+    public @NotNull Integer getGender() {
+        return gender;
+    }
+
+    public @NotNull Double getHeight() {
+        return height;
+    }
+
+    public @NotNull Double getWeight() {
+        return weight;
+    }
+
+    public @Size(max = 255) String getImage() {
+        return image;
+    }
+
+    public @Size(max = 100) @NotNull String getAddress() {
+        return address;
+    }
 }
