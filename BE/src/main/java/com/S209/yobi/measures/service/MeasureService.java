@@ -15,11 +15,9 @@ import com.S209.yobi.users.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -172,6 +170,34 @@ public class MeasureService {
         // Temperature 엔티티 생성 및 저장
         BodyComposition bodyComposition = BodyComposition.fromReDTO(requestDTO);
         measure.setBody(bodyComposition);
+
+        return ApiResponseDTO.success(null);
+
+    }
+
+    /**
+     * 피트러스 혈압 데이터 저장(재측정)
+     */
+    @Transactional
+    public ApiResponseDTO<Void> saveBloodPressure(int userId, ReBloodPressureDTO requestDTO){
+        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+        Client client = clientRepository.findById(requestDTO.getClientId())
+                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+
+        // 당일 필수 측정 데이터 확인
+        LocalDate today = LocalDate.now();
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        if (optionalMeasure.isEmpty()) {
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
+        }
+        Measure measure = optionalMeasure.get();
+
+        // Temperature 엔티티 생성 및 저장
+        BloodPressure bloodPressure = BloodPressure.fromReDTO(requestDTO);
+        measure.setBlood(bloodPressure);
 
         return ApiResponseDTO.success(null);
 
