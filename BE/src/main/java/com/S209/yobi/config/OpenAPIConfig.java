@@ -19,12 +19,12 @@ public class OpenAPIConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("GIVU API")
-                        .description("GIVU 서비스의 API 명세서입니다.")
+                        .title("Yobi API")
+                        .description("Yobi 서비스의 API 명세서입니다.")
                         .version("v1.0.0"))
                 .servers(List.of(
-                        new Server().url("https://j12d107.p.ssafy.io/api").description("EC2 Server"),
-                        new Server().url("http://192.168.100.203:8080/api").description("Local Server")
+//                        new Server().url("https://j12d107.p.ssafy.io/api").description("EC2 Server"),
+//                        new Server().url("http://192.168.100.203:8080/api").description("Local Server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new io.swagger.v3.oas.models.Components()
