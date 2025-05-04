@@ -89,10 +89,10 @@ public class Measure {
     public void setStress(Stress stress) {
         this.stress = stress;
     }
-//
-//    public void setTemperature(Temperature temperature) {
-//        this.temperature = temperature;
-//    }
+
+    public void setTemperature(Temperature temperature) {
+        this.temperature = temperature;
+    }
 
 
 
