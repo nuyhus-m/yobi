@@ -3,6 +3,7 @@ package com.S209.yobi.measures.controller;
 import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
 import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
 import com.S209.yobi.DTO.requestDTO.StressDTO;
+import com.S209.yobi.DTO.requestDTO.TemperatureDTO;
 import com.S209.yobi.exception.ApiResponseDTO;
 import com.S209.yobi.measures.service.MeasureService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,6 +55,17 @@ public class MeasureController {
             @RequestBody StressDTO requestDTO
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveStress(userId, requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "피트러스 체온 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
+    @PutMapping(value = "/temperature/{userId}")
+    public ResponseEntity<ApiResponseDTO<?>> saveStress(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int userId,
+            @RequestBody TemperatureDTO requestDTO
+    ) throws IOException{
+        ApiResponseDTO<?> response = measureService.saveTemperature(userId, requestDTO);
         return ResponseEntity.ok(response);
     }
 
