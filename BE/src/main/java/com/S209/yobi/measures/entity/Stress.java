@@ -1,9 +1,6 @@
 package com.S209.yobi.measures.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +13,7 @@ import java.time.Instant;
 @Table(name = "stress")
 public class Stress {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stress_id", nullable = false)
     private Long id;
 

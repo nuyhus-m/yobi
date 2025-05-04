@@ -1,4 +1,4 @@
 package com.S209.yobi.measures.repository;
 
-public class StressRepository {
+public interface StressRepository {
 }
