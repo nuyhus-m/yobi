@@ -1,6 +1,7 @@
 package com.S209.yobi.measures.entity;
 
 import com.S209.yobi.DTO.requestDTO.BodyCompositionDTO;
+import com.S209.yobi.DTO.requestDTO.ReBodyCompositionDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,6 +58,20 @@ public class BodyComposition {
                 .bfp(dto.getBfp())
                 .bfm(dto.getBfm())
                 .smm(dto.getSmm())
+                .bmr(dto.getBmr())
+                .icw(dto.getIcw())
+                .protein(dto.getProtein())
+                .mineral(dto.getMineral())
+                .bodyage(dto.getBodyage())
+                .build();
+    }
+
+    public static BodyComposition fromReDTO(ReBodyCompositionDTO dto){
+        return BodyComposition.builder()
+                .bfp(dto.getBfp())
+                .bfm(dto.getBfm())
+                .smm(dto.getSmm())
+                .bmr(dto.getBmr())
                 .icw(dto.getIcw())
                 .protein(dto.getProtein())
                 .mineral(dto.getMineral())

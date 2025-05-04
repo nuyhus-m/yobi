@@ -1,14 +1,14 @@
 package com.S209.yobi.measures.controller;
 
-import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
-import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
-import com.S209.yobi.DTO.requestDTO.StressDTO;
-import com.S209.yobi.DTO.requestDTO.TemperatureDTO;
+import com.S209.yobi.DTO.requestDTO.*;
+import com.S209.yobi.exception.ApiResponseCode;
 import com.S209.yobi.exception.ApiResponseDTO;
+import com.S209.yobi.exception.ResponseMapper;
 import com.S209.yobi.measures.service.MeasureService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,8 @@ public class MeasureController {
     ) throws IOException{
 
         ApiResponseDTO<?> response = measureService.saveBaseElement(userId, requestDTO);
-        return ResponseEntity.ok(response);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
 
     }
 
@@ -44,7 +45,8 @@ public class MeasureController {
             @RequestBody HeartRateDTO requestDTO
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveHeartRate(userId, requestDTO);
-        return ResponseEntity.ok(response);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
     }
 
     @Operation(summary = "피트러스 스트레스 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
@@ -55,7 +57,8 @@ public class MeasureController {
             @RequestBody StressDTO requestDTO
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveStress(userId, requestDTO);
-        return ResponseEntity.ok(response);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
     }
 
     @Operation(summary = "피트러스 체온 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
@@ -66,7 +69,20 @@ public class MeasureController {
             @RequestBody TemperatureDTO requestDTO
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveTemperature(userId, requestDTO);
-        return ResponseEntity.ok(response);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @Operation(summary = "피트러스 체성분 데이터 저장(재측정)", description = "재측정된 피트러스 체성분 데이터를 저장합니다")
+    @PutMapping(value = "/body/{userId}")
+    public ResponseEntity<ApiResponseDTO<?>> saveStress(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int userId,
+            @RequestBody ReBodyCompositionDTO requestDTO
+    ) throws IOException{
+        ApiResponseDTO<?> response = measureService.saveBodyComposition(userId, requestDTO);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
     }
 
 
