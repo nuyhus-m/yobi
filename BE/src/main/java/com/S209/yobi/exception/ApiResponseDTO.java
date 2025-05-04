@@ -25,5 +25,10 @@ public class ApiResponseDTO<T> {
         return new ApiResponseDTO<>(code, message, null);
     }
 
+    // 실패 응답 (Enum version)
+    public static <T> ApiResponseDTO<T> fail(ApiResponseCode code) {
+        return new ApiResponseDTO<>(code.getCode(), code.getMessage(), null);
+    }
+
 
 }

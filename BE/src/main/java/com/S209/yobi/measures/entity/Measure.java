@@ -94,6 +94,14 @@ public class Measure {
         this.temperature = temperature;
     }
 
+    public void setBody(BodyComposition body) {
+        this.body = body;
+    }
+
+    public void setBlood(BloodPressure blood) {
+        this.blood = blood;
+    }
+
 
 
 }
