@@ -79,7 +79,7 @@ public class MeasureService {
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
-            return ApiResponseDTO.fail("400", "먼저 체성분과 혈압을 측정해야 합니다.", HttpStatus.BAD_REQUEST);
+            return ApiResponseDTO.fail("400", "먼저 체성분과 혈압을 측정해야 합니다.");
         }
         Measure measure = optionalMeasure.get();
 

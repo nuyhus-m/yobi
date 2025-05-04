@@ -30,7 +30,7 @@ public class MeasureController {
     ) throws IOException{
 
         ApiResponseDTO<?> response = measureService.saveBaseElement(userId, requestDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatus()));
+        return ResponseEntity.ok(response);
 
     }
 
@@ -42,7 +42,7 @@ public class MeasureController {
             @RequestBody HeartRateDTO requestDTO
     ) throws IOException{
         ApiResponseDTO<?> response = measureService.saveHeartRate(userId, requestDTO);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatus()));
+        return ResponseEntity.ok(response);
 
 
     }

@@ -29,8 +29,7 @@ public class GlobalExceptionHandler {
                 .status(httpStatus)
                 .body(ApiResponseDTO.fail(
                         ex.getErrorCode().toString(),
-                        ex.getMessage(),
-                        httpStatus
+                        ex.getMessage()
                 ));
     }
 
@@ -49,7 +48,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseDTO.fail("400", "요청이 올바르지 않습니다. 입력 값을 다시 확인해주세요.", HttpStatus.BAD_REQUEST));
+                .body(ApiResponseDTO.fail("400", "요청이 올바르지 않습니다. 입력 값을 다시 확인해주세요."));
     }
 
 
@@ -61,7 +60,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponseDTO.fail("403", "요청하신 작업에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN));
+                .body(ApiResponseDTO.fail("403", "요청하신 작업에 대한 권한이 없습니다."));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -71,7 +70,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponseDTO.fail("404", "요청한 리소스를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+                .body(ApiResponseDTO.fail("404", "요청한 리소스를 찾을 수 없습니다."));
     }
 
 
@@ -81,7 +80,7 @@ public class GlobalExceptionHandler {
                 request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponseDTO.fail("500", "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", HttpStatus.INTERNAL_SERVER_ERROR));
+                .body(ApiResponseDTO.fail("500", "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
     }
 
 

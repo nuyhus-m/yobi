@@ -16,14 +16,13 @@ public class ApiResponseDTO<T> {
     private String code;
     private String message;
     private T data;
-    private int httpStatus;
 
     public static <T> ApiResponseDTO<T> success(T data) {
-        return new ApiResponseDTO<>("200", "success", data, HttpStatus.OK.value());
+        return new ApiResponseDTO<>("200", "success", null);
     }
 
-    public static <T> ApiResponseDTO<T> fail(String code, String message, HttpStatus status) {
-        return new ApiResponseDTO<>(code, message, null, status.value());
+    public static <T> ApiResponseDTO<T> fail(String code, String message) {
+        return new ApiResponseDTO<>(code, message, null);
     }
 
 
