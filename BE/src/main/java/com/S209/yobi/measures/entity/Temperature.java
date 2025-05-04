@@ -1,13 +1,14 @@
 package com.S209.yobi.measures.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "temperature")
 public class Temperature {
@@ -21,5 +22,11 @@ public class Temperature {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate(){
+        Instant now = Instant.now();
+        this.createdAt = now;
+    }
 
 }

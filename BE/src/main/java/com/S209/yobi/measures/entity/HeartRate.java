@@ -1,14 +1,17 @@
 package com.S209.yobi.measures.entity;
 
+import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
+import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Table(name = "heart_rate")
 public class HeartRate {
     @Id
@@ -24,5 +27,18 @@ public class HeartRate {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate(){
+        Instant now = Instant.now();
+        this.createdAt = now;
+    }
+
+    public static HeartRate fromDTO(HeartRateDTO dto) {
+        return HeartRate.builder()
+                .bpm(dto.getBpm())
+                .oxygen(dto.getOxygen())
+                .build();
+    }
 
 }

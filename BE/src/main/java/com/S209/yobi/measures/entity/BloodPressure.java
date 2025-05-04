@@ -2,14 +2,15 @@ package com.S209.yobi.measures.entity;
 
 import com.S209.yobi.DTO.requestDTO.BloodPressureDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Table(name = "blood_pressure")
 public class BloodPressure {
     @Id
@@ -32,11 +33,11 @@ public class BloodPressure {
         this.createdAt = now;
     }
 
-    public static BloodPressure fromDTO(BloodPressureDTO dto){
-        BloodPressure blood = new BloodPressure();
-        blood.setSbp(dto.getSbp());
-        blood.setDbp(dto.getDbp());
-        return blood;
+    public static BloodPressure fromDTO(BloodPressureDTO dto) {
+        return BloodPressure.builder()
+                .sbp(dto.getSbp())
+                .dbp(dto.getDbp())
+                .build();
     }
 
 

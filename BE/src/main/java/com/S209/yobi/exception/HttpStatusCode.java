@@ -2,6 +2,7 @@ package com.S209.yobi.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -13,4 +14,8 @@ public enum HttpStatusCode {
     INTERNAL_SERVER_ERROR(500);
 
     private final int status;
+
+    public HttpStatus toHttpStatus() {
+        return HttpStatus.valueOf(this.status);
+    }
 }

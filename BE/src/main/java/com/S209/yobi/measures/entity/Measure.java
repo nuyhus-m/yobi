@@ -10,14 +10,16 @@ import com.S209.yobi.measures.service.MeasureService;
 import com.S209.yobi.users.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
+
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "measure")
 public class Measure {
@@ -40,24 +42,24 @@ public class Measure {
     private Client client;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "composition_id", nullable = false)
     private BodyComposition body;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "blood_id", nullable = false)
     private BloodPressure blood;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "heart_id")
     private HeartRate heart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "stress_id")
     private Stress stress;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "temperature_id")
     private Temperature temperature;
 
@@ -69,18 +71,29 @@ public class Measure {
 
 
     public static Measure fromBase(User user, Client client, BodyCompositionDTO bodyDTO, BloodPressureDTO bloodDTO){
-        Measure measure = new Measure();
-
-        BodyComposition body = BodyComposition.fromDTO(bodyDTO);
-        BloodPressure blood =  BloodPressure.fromDTO(bloodDTO);
-
-        measure.setUser(user);
-        measure.setClient(client);
-        measure.setBody(body);
-        measure.setBlood(blood);
-
-        return measure;
+        return Measure.builder()
+                .user(user)
+                .client(client)
+                .body(BodyComposition.fromDTO(bodyDTO))
+                .blood(BloodPressure.fromDTO(bloodDTO))
+                .date(LocalDate.now())
+                .build();
 
     }
+
+    // 추가 측정값 세터
+    public void setHeartRate(HeartRate heart){
+        this.heart = heart;
+    }
+
+//    public void setStress(Stress stress) {
+//        this.stress = stress;
+//    }
+//
+//    public void setTemperature(Temperature temperature) {
+//        this.temperature = temperature;
+//    }
+
+
 
 }

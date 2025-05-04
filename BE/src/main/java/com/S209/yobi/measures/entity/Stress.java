@@ -2,13 +2,14 @@ package com.S209.yobi.measures.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "stress")
 public class Stress {
@@ -32,5 +33,11 @@ public class Stress {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate(){
+        Instant now = Instant.now();
+        this.createdAt = now;
+    }
 
 }
