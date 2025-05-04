@@ -3,12 +3,14 @@ package com.S209.yobi.measures.service;
 import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
 import com.S209.yobi.DTO.requestDTO.BodyCompositionDTO;
 import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
+import com.S209.yobi.DTO.requestDTO.StressDTO;
 import com.S209.yobi.clients.entity.Client;
 import com.S209.yobi.clients.repository.ClientRepository;
 import com.S209.yobi.exception.ApiResponseDTO;
 import com.S209.yobi.measures.entity.BodyComposition;
 import com.S209.yobi.measures.entity.HeartRate;
 import com.S209.yobi.measures.entity.Measure;
+import com.S209.yobi.measures.entity.Stress;
 import com.S209.yobi.measures.repository.BloodPressureRepository;
 import com.S209.yobi.measures.repository.BodyCompositionRepository;
 import com.S209.yobi.measures.repository.HeartRateRepository;
@@ -88,6 +90,34 @@ public class MeasureService {
         measure.setHeartRate(heart);
 
         return ApiResponseDTO.success(null);
+    }
+
+    /**
+     * 피트러스 스트레스 측정
+     */
+    @Transactional
+    public ApiResponseDTO<Void> saveStress(int userId, StressDTO requestDTO){
+        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+        Client client = clientRepository.findById(requestDTO.getClientId())
+                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+
+        // 당일 필수 측정 데이터 확인
+        LocalDate today = LocalDate.now();
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        if (optionalMeasure.isEmpty()) {
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            return ApiResponseDTO.fail("400", "먼저 체성분과 혈압을 측정해야 합니다.");
+        }
+        Measure measure = optionalMeasure.get();
+
+        // Stress 엔티티 생성 및 저장
+        Stress stress = Stress.fromDTO(requestDTO);
+        measure.setStress(stress);
+
+        return ApiResponseDTO.success(null);
+
     }
 
 

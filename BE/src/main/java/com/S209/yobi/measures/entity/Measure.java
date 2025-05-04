@@ -86,9 +86,9 @@ public class Measure {
         this.heart = heart;
     }
 
-//    public void setStress(Stress stress) {
-//        this.stress = stress;
-//    }
+    public void setStress(Stress stress) {
+        this.stress = stress;
+    }
 //
 //    public void setTemperature(Temperature temperature) {
 //        this.temperature = temperature;
