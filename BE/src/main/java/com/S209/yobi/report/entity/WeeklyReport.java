@@ -3,13 +3,14 @@ package com.S209.yobi.report.entity;
 import com.S209.yobi.clients.entity.Client;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "weekly_report")
 public class WeeklyReport {

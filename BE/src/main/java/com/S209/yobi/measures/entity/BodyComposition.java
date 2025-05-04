@@ -2,14 +2,15 @@ package com.S209.yobi.measures.entity;
 
 import com.S209.yobi.DTO.requestDTO.BodyCompositionDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Getter
-@Setter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Table(name = "body_composition")
 public class BodyComposition {
     @Id
@@ -52,16 +53,15 @@ public class BodyComposition {
 
 
     public static BodyComposition fromDTO(BodyCompositionDTO dto){
-        BodyComposition body = new BodyComposition();
-        body.setBfp(dto.getBfp());
-        body.setBfm(dto.getBfm());
-        body.setSmm(dto.getSmm());
-        body.setBmr(dto.getBmr());
-        body.setIcw(dto.getIcw());
-        body.setProtein(dto.getProtein());
-        body.setMineral(dto.getMineral());
-        body.setBodyage(dto.getBodyage());
-        return body;
+        return BodyComposition.builder()
+                .bfp(dto.getBfp())
+                .bfm(dto.getBfm())
+                .smm(dto.getSmm())
+                .icw(dto.getIcw())
+                .protein(dto.getProtein())
+                .mineral(dto.getMineral())
+                .bodyage(dto.getBodyage())
+                .build();
     }
 
 
