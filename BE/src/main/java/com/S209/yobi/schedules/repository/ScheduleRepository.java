@@ -1,4 +1,10 @@
 package com.S209.yobi.schedules.repository;
 
-public interface ScheduleRepository {
+import com.S209.yobi.schedules.entity.Schedule;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
+
 }

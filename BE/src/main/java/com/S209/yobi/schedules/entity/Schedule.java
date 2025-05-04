@@ -55,4 +55,39 @@ public class Schedule {
     @Column(name = "log_updated_at")
     private Instant logUpdatedAt;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public @NotNull User getUser() {
+        return user;
+    }
+
+    public @NotNull Client getClient() {
+        return client;
+    }
+
+    public @NotNull LocalDate getVisitedDate() {
+        return visitedDate;
+    }
+
+    public @NotNull LocalTime getStartAt() {
+        return startAt;
+    }
+
+    public @NotNull LocalTime getEndAt() {
+        return endAt;
+    }
+
+    public @Size(max = 150) String getLogContent() {
+        return logContent;
+    }
+
+    public Instant getLogCreatedAt() {
+        return logCreatedAt;
+    }
+
+    public Instant getLogUpdatedAt() {
+        return logUpdatedAt;
+    }
 }
