@@ -86,5 +86,18 @@ public class MeasureController {
     }
 
 
+    @Operation(summary = "피트러스 혈압 데이터 저장(재측정)", description = "재측정된 피트러스 혈압 데이터를 저장합니다")
+    @PutMapping(value = "/blood-pressure/{userId}")
+    public ResponseEntity<ApiResponseDTO<?>> saveStress(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int userId,
+            @RequestBody ReBloodPressureDTO requestDTO
+    ) throws IOException{
+        ApiResponseDTO<?> response = measureService.saveBloodPressure(userId, requestDTO);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
+    }
+
+
 
 }
