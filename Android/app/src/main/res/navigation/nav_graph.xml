@@ -35,4 +35,28 @@
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" />
 
+    <dialog
+        android:id="@+id/dest_schedule_register_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleRegisterDialog"
+        android:label="ScheduleRegisterDialog"
+        tools:layout="@layout/dialog_schedule_register" />
+
+    <dialog
+        android:id="@+id/dest_schedule_delete_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleDeleteDialog"
+        android:label="ScheduleDeleteDialog"
+        tools:layout="@layout/dialog_schedule_delete" />
+
+    <dialog
+        android:id="@+id/dest_logout_dialog"
+        android:name="com.example.myapplication.ui.mypage.LogoutDialog"
+        android:label="LogoutDialog"
+        tools:layout="@layout/dialog_logout" />
+
+    <dialog
+        android:id="@+id/dest_withdrawal_dialog"
+        android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
+        android:label="WithdrawalDialog"
+        tools:layout="@layout/dialog_withdrawal" />
+
 </navigation>

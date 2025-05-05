@@ -33,6 +33,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
                 R.id.dest_measurement_target -> View.VISIBLE
                 R.id.dest_visit_log_list -> View.VISIBLE
                 R.id.dest_my_page -> View.VISIBLE
+                R.id.dest_schedule_register_dialog -> View.VISIBLE
+                R.id.dest_schedule_delete_dialog -> View.VISIBLE
+                R.id.dest_logout_dialog -> View.VISIBLE
+                R.id.dest_withdrawal_dialog -> View.VISIBLE
                 else -> View.GONE
             }
         }
