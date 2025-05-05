@@ -75,12 +75,13 @@ public class ScheduleService {
             throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
         }
 
-        Schedule schedule = new Schedule();
-        schedule.setUser(user);
-        schedule.setClient(client);
-        schedule.setVisitedDate(requestDto.getVisitedDate());
-        schedule.setStartAt(requestDto.getStartAt());
-        schedule.setEndAt(requestDto.getEndAt());
+        Schedule schedule = Schedule.builder()
+                .user(user)
+                .client(client)
+                .visitedDate(requestDto.getVisitedDate())
+                .startAt(requestDto.getStartAt())
+                .endAt(requestDto.getEndAt())
+                .build();
 
         scheduleRepository.save(schedule);
     }
