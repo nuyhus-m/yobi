@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 @Slf4j
@@ -66,4 +67,29 @@ public class SchedulesController {
         }
     }
 
+    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다. <br/>" +
+            "clientId: 112,<br/>" +
+            "visitedDate: \"2025-05-03\",<br/>" +
+            "startAt: \"14:00:00\",<br/>" +
+            "endAt: \"15:00:00\"<br/>" +
+            "의 형태로 request 요청하면 됩니다.")
+    @PatchMapping("/{scheduleId}")
+    public ResponseEntity<ApiResponseDTO<Void>> updateSchedule(
+            @PathVariable Integer scheduleId,
+            @Valid @RequestBody ScheduleRequestDto requestDto) {
+
+        try {
+            scheduleService.updateSchedule(scheduleId, requestDto);
+            log.info("일정 수정 성공");
+
+            return ResponseEntity.ok(ApiResponseDTO.success(null));
+
+        } catch (AccessDeniedException e) {
+            log.error("권한 없음 에러: ", e);
+            throw new RuntimeException("권한이 없습니다", e);
+        } catch (Exception e) {
+            log.error("Controller에서 에러 발생: ", e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 }
