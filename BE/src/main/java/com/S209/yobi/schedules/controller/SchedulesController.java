@@ -26,27 +26,14 @@ public class SchedulesController {
     public ResponseEntity<ApiResponseDTO<Map<String, Object>>> getSchedule(
             @PathVariable Integer scheduleId
     ) {
-//        Map<String, Object> schedule = scheduleService.getSchedule(scheduleId);
-//        return ResponseEntity.ok(ApiResponseDTO.success(schedule));
-//    }
-//}
-
-        log.info("===== Controller: getSchedule 요청 받음, scheduleId: {} =====", scheduleId);
-
         try {
             Map<String, Object> schedule = scheduleService.getSchedule(scheduleId);
-            log.info("Service에서 응답 받음: {}", schedule);
 
             ApiResponseDTO<Map<String, Object>> response = ApiResponseDTO.success(schedule);
-            log.info("최종 응답 생성 완료: {}", response);
-
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Controller에서 에러 발생: ", e);
             throw e;
-        } finally {
-            log.info("===== Controller: getSchedule 종료 =====");
         }
     }
 
@@ -84,12 +71,20 @@ public class SchedulesController {
 
             return ResponseEntity.ok(ApiResponseDTO.success(null));
 
-        } catch (AccessDeniedException e) {
-            log.error("권한 없음 에러: ", e);
-            throw new RuntimeException("권한이 없습니다", e);
         } catch (Exception e) {
             log.error("Controller에서 에러 발생: ", e);
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Operation(summary = "단건 일정 삭제", description = "scheduleId에 해당하는 일정을 삭제합니다.")
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<ApiResponseDTO<Void>> deleteSchedule(@PathVariable Integer scheduleId) {
+        try {
+            scheduleService.deleteSchedule(scheduleId);
+            return ResponseEntity.ok(ApiResponseDTO.success(null));
+        } catch (Exception e) {
+            throw e;
         }
     }
 }
