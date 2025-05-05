@@ -90,4 +90,20 @@ public class Schedule {
     public Instant getLogUpdatedAt() {
         return logUpdatedAt;
     }
+
+    public void setClient(@NotNull Client client) {
+        this.client = client;
+    }
+
+    public void setVisitedDate(@NotNull LocalDate visitedDate) {
+        this.visitedDate = visitedDate;
+    }
+
+    public void setStartAt(@NotNull LocalTime startAt) {
+        this.startAt = startAt;
+    }
+
+    public void setEndAt(@NotNull LocalTime endAt) {
+        this.endAt = endAt;
+    }
 }

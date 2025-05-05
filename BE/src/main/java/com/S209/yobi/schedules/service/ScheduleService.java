@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -84,5 +85,38 @@ public class ScheduleService {
                 .build();
 
         scheduleRepository.save(schedule);
+    }
+
+    // 단건 일정 수정
+    @Transactional
+    public void updateSchedule(Integer scheduleId, ScheduleRequestDto requestDto) throws AccessDeniedException {
+        // 현재 인증된 사용자인지 확인
+        // 임시 하드코딩! 추후 JWT에서 추출해야 합니다.
+        Integer currentUserId = 1;
+
+        // 기존 일정 존재 여부 확인
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+
+        // 수정 권한 확인
+        if (!schedule.getUser().getId().equals(currentUserId)) {
+            throw new AccessDeniedException("해당 일정을 수정할 권한이 없음.");
+        }
+
+        // client 존재 여부 확인
+        Client client = clientRepository.findById(requestDto.getClientId())
+                .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+
+        // 시간 유효성 검사
+        if (requestDto.getEndAt().isBefore(requestDto.getStartAt())) {
+            throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
+        }
+
+        schedule.setClient(client);
+        schedule.setVisitedDate(requestDto.getVisitedDate());
+        schedule.setStartAt(requestDto.getStartAt());
+        schedule.setEndAt(requestDto.getEndAt());
+
+//        scheduleRepository.save(schedule); // 트랜잭션 내에서 변경 감지로 업데이트됨 -> 명시적 저장 불필요
     }
 }
