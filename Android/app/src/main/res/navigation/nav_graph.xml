@@ -47,4 +47,10 @@
         android:label="LogoutDialog"
         tools:layout="@layout/dialog_logout" />
 
+    <dialog
+        android:id="@+id/dest_withdrawal_dialog"
+        android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
+        android:label="WithdrawalDialog"
+        tools:layout="@layout/dialog_withdrawal" />
+
 </navigation>
