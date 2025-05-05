@@ -42,6 +42,12 @@
         tools:layout="@layout/dialog_schedule_register" />
 
     <dialog
+        android:id="@+id/dest_schedule_delete_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleDeleteDialog"
+        android:label="ScheduleDeleteDialog"
+        tools:layout="@layout/dialog_schedule_delete" />
+
+    <dialog
         android:id="@+id/dest_logout_dialog"
         android:name="com.example.myapplication.ui.mypage.LogoutDialog"
         android:label="LogoutDialog"
