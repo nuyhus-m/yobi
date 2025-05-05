@@ -49,7 +49,11 @@ public class SchedulesController {
         }
     }
 
-    @Operation(summary = "단건 일정 등록", description = "단건 일정을 등록합니다. (OCR 아님)")
+    @Operation(summary = "단건 일정 등록", description = "(OCR X) 단건 일정을 등록합니다.  \n" +
+            "visitedDate: \"2022-05-01\",  \n" +
+            "startAt: \"09:00:00\",  \n" +
+            "endAt: \"10:00:00\"  \n" +
+            "의 형태로 request 넘기면 됩니다.")
     @PostMapping
     public ResponseEntity<ApiResponseDTO<Void>> createSchedule(
             @Valid @RequestBody ScheduleRequestDto requestDto
