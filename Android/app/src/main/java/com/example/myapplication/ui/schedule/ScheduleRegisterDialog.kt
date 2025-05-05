@@ -28,6 +28,10 @@ class ScheduleRegisterDialog : DialogFragment() {
 
         setDialogSize()
 
+        binding.ivClose.setOnClickListener {
+            dismiss()
+        }
+
         binding.btnPhoto.setOnClickListener {
             // TODO 사진으로 등록 버튼 기능
         }
