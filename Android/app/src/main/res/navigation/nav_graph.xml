@@ -35,4 +35,10 @@
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" />
 
+    <dialog
+        android:id="@+id/dest_schedule_register_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleRegisterDialog"
+        android:label="ScheduleRegisterDialog"
+        tools:layout="@layout/dialog_schedule_register" />
+
 </navigation>
