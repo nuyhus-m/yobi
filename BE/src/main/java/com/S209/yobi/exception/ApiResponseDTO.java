@@ -18,7 +18,7 @@ public class ApiResponseDTO<T> {
     private T data;
 
     public static <T> ApiResponseDTO<T> success(T data) {
-        return new ApiResponseDTO<>("200", "success", null);
+        return new ApiResponseDTO<>("200", "success", data);
     }
 
     public static <T> ApiResponseDTO<T> fail(String code, String message) {

@@ -9,11 +9,10 @@ import com.S209.yobi.users.entity.User;
 import com.S209.yobi.users.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -118,5 +117,22 @@ public class ScheduleService {
         schedule.setEndAt(requestDto.getEndAt());
 
 //        scheduleRepository.save(schedule); // 트랜잭션 내에서 변경 감지로 업데이트됨 -> 명시적 저장 불필요
+    }
+
+    // 단건 일정 삭제
+    @Transactional
+    public void deleteSchedule(Integer scheduleId) {
+        //Schedule 존재 여부 확인
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
+
+        // 권한 검증
+        // 임시로 하드코딩. JWT 추출 필요
+        Integer currentUserId = 1;
+        if (!schedule.getUser().getId().equals(currentUserId)) {
+            throw new org.springframework.security.access.AccessDeniedException("삭제 권한이 없음.");
+        }
+
+        scheduleRepository.delete(schedule);
     }
 }
