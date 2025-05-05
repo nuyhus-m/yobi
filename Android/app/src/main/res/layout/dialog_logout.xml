@@ -6,7 +6,7 @@
     android:padding="@dimen/space_20dp">
 
     <ImageView
-        android:id="@+id/iv_logout"
+        android:id="@+id/iv_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@null"
@@ -31,7 +31,7 @@
         android:layout_marginTop="@dimen/space_24dp"
         android:text="@string/logout_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_logout" />
+        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
 
     <TextView
         android:id="@+id/tv_subtitle"
@@ -55,12 +55,12 @@
         android:text="@string/no"
         android:textColor="@color/purple"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/appCompatButton"
+        app:layout_constraintEnd_toStartOf="@+id/btn_yes"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_subtitle" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/appCompatButton"
+        android:id="@+id/btn_yes"
         style="@style/ButtonTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
