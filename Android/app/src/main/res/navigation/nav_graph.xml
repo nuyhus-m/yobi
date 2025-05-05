@@ -41,4 +41,10 @@
         android:label="ScheduleRegisterDialog"
         tools:layout="@layout/dialog_schedule_register" />
 
+    <dialog
+        android:id="@+id/dest_logout_dialog"
+        android:name="com.example.myapplication.ui.mypage.LogoutDialog"
+        android:label="LogoutDialog"
+        tools:layout="@layout/dialog_logout" />
+
 </navigation>
