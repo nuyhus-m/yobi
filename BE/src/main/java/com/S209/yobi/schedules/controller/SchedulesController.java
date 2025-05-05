@@ -1,15 +1,14 @@
 package com.S209.yobi.schedules.controller;
 
+import com.S209.yobi.DTO.requestDTO.ScheduleRequestDto;
 import com.S209.yobi.exception.ApiResponseDTO;
 import com.S209.yobi.schedules.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -47,6 +46,19 @@ public class SchedulesController {
             throw e;
         } finally {
             log.info("===== Controller: getSchedule 종료 =====");
+        }
+    }
+
+    @Operation(summary = "단건 일정 등록", description = "단건 일정을 등록합니다. (OCR 아님)")
+    @PostMapping
+    public ResponseEntity<ApiResponseDTO<Void>> createSchedule(
+            @Valid @RequestBody ScheduleRequestDto requestDto
+            ) {
+        try {
+            scheduleService.createSchedule(requestDto);
+            return ResponseEntity.ok(ApiResponseDTO.success(null));
+        } catch (Exception e) {
+            throw e;
         }
     }
 
