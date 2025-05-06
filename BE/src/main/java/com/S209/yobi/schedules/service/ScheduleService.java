@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -134,5 +136,23 @@ public class ScheduleService {
         }
 
         scheduleRepository.delete(schedule);
+    }
+
+    // 특정 요양보호사의 일정 리스트
+    @Transactional
+    public List<Map<String, Object>> getSchedulesByUser(Integer userId) {
+        List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateAscStartAtAsc(userId);
+
+        return schedules.stream()
+                .map(schedule -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("scheduleId", schedule.getId());
+                    map.put("clientId", schedule.getClient().getId());
+                    map.put("visitedDate", schedule.getVisitedDate());
+                    map.put("startAt", schedule.getStartAt());
+                    map.put("endAt", schedule.getEndAt());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

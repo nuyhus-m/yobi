@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -83,6 +84,21 @@ public class SchedulesController {
         try {
             scheduleService.deleteSchedule(scheduleId);
             return ResponseEntity.ok(ApiResponseDTO.success(null));
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Operation(summary = "요양보호사별 일정 목록 조회", description = "현재 로그인한 요양보호사의 모든 일정을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<ApiResponseDTO<List<Map<String, Object>>>> getSchedulesByUser() {
+        try {
+            // 임시 하드코딩. JWT에서 추출해야 합니다!
+            Integer userId = 1;
+
+            List<Map<String, Object>> schedules = scheduleService.getSchedulesByUser(userId);
+            log.info("스케줄수: {}", schedules.size());
+            return ResponseEntity.ok(ApiResponseDTO.success(schedules));
         } catch (Exception e) {
             throw e;
         }
