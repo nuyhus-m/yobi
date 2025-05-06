@@ -25,9 +25,31 @@
 
     <fragment
         android:id="@+id/dest_visit_log_list"
-        android:name="com.example.myapplication.ui.visitlog.VisitLogListFragment"
+        android:name="com.example.myapplication.ui.visitlog.visitloglist.VisitLogListFragment"
         android:label="fragment_visit_log_list"
-        tools:layout="@layout/fragment_visit_log_list" />
+        tools:layout="@layout/fragment_visit_log_list">
+        <action
+            android:id="@+id/action_visitLogListFragment_to_visitWriteFragment"
+            app:destination="@id/dest_visit_write_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_visit_write_fragment"
+        android:name="com.example.myapplication.ui.visitlog.visitwrite.VisitWriteFragment"
+        android:label="VisitWriteFragment"
+        tools:layout="@layout/fragment_visit_write">
+
+        <argument
+            android:name="name"
+            app:argType="string"
+            android:defaultValue="" />
+
+        <argument
+            android:name="date"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
 
     <fragment
         android:id="@+id/dest_my_page"
