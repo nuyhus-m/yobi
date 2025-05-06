@@ -13,6 +13,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -142,6 +144,31 @@ public class ScheduleService {
     @Transactional
     public List<Map<String, Object>> getSchedulesByUser(Integer userId) {
         List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateAscStartAtAsc(userId);
+
+        return schedules.stream()
+                .map(schedule -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("scheduleId", schedule.getId());
+                    map.put("clientId", schedule.getClient().getId());
+                    map.put("visitedDate", schedule.getVisitedDate());
+                    map.put("startAt", schedule.getStartAt());
+                    map.put("endAt", schedule.getEndAt());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 특정 월의 일정 리스트
+    @Transactional
+    public List<Map<String, Object>> getSchedulesByMonth(Integer userId, int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+        List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
+                userId, startDate, endDate
+        );
+
+        log.info("시작: {}, 끝: {}", startDate, endDate);
 
         return schedules.stream()
                 .map(schedule -> {

@@ -103,4 +103,28 @@ public class SchedulesController {
             throw e;
         }
     }
+
+    @Operation(summary = "특정 월의 일정 목록 조회", description = "현재 로그인한 사용자에 대해 특정 year, month에 해당하는 일정을 조회합니다.")
+    @GetMapping("/month")
+    public ResponseEntity<ApiResponseDTO<List<Map<String, Object>>>> getSchedulesByMonth(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        try {
+            // 입력값의 유효성 검사
+            if (year < 2000 || year > 2100 || month < 1 || month >12) {
+                throw new IllegalArgumentException("유효하지 않은 년월입니다.");
+            }
+
+            // 임시 하드코딩. JWT 추출 필요
+            Integer userId = 1;
+
+            List<Map<String, Object>> schedules = scheduleService.getSchedulesByMonth(userId, year, month);
+            return ResponseEntity.ok(ApiResponseDTO.success(schedules));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }
