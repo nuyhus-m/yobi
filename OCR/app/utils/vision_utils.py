@@ -5,6 +5,7 @@ import re
 from dotenv import load_dotenv
 from datetime import datetime
 import logging
+import numpy as np
 
 # 환경 변수 로드
 load_dotenv()
@@ -30,7 +31,7 @@ def detect_table_from_image(image_content):
     full_text = response.full_text_annotation.text
     logger.info(f"Detected text: {full_text[:100]}...")  # 처음 100자만 로깅
     
-    return response.full_text_annotation
+    return response
 
 def extract_year_month(text):
     """텍스트에서 연도와 월 추출 (표 상단에 일반적으로 표시됨)"""
@@ -51,79 +52,216 @@ def extract_year_month(text):
     logger.info(f"Extracted year: {year}, month: {month}")
     return year, month
 
-def extract_daily_schedules(annotation, year, month):
-    schedules = set()
-    full_text = annotation.text
-    logger.info(f"Processing full text: {full_text}")
+def extract_schedules_position_based(text_blocks, year, month):
+    """위치 기반 일정 추출 - 달력 구조를 명확하게 인식"""
+    # 요일 헤더 식별 (일, 월, 화, 수, 목, 금, 토)
+    weekday_headers = []
+    for block in text_blocks:
+        if block["text"] in ["일", "월", "화", "수", "목", "금", "토"]:
+            weekday_headers.append(block)
     
-    lines = [line.strip() for line in full_text.splitlines() if line.strip()]
-    logger.info(f"Total lines: {len(lines)}")
+    # 요일 헤더 정렬
+    sorted_headers = sorted(weekday_headers, key=lambda x: x["center_x"])
     
-    # 날짜+시간+이름이 모두 있는 경우: ex) 13 10:00~13:00 김철수
-    date_time_name_pattern = r'(\d{1,2})\s*(\d{2})[:~](\d{2})[~\-](\d{2}):?(\d{2})\s+([가-힣]{2,4})'
-    # 시간+이름만 있는 경우: ex) 10:00~13:00 김철수
-    time_name_pattern = r'(\d{2})[:~](\d{2})[~\-](\d{2}):?(\d{2})\s+([가-힣]{2,4})'
-    date_pattern = r'^(\d{1,2})$'
+    # 칸 너비 계산
+    if len(sorted_headers) < 7:
+        logger.warning(f"요일 헤더 감지 부족: {len(sorted_headers)}개")
+        # 이미지 너비 추정
+        img_width = max([block["max_x"] for block in text_blocks]) if text_blocks else 1800
+        # 7개 칸으로 나누기
+        column_widths = [img_width / 7] * 7
+        column_centers = [i * img_width / 7 + img_width / 14 for i in range(7)]
+    else:
+        # 각 요일 헤더의 중심점으로 열 중심 설정
+        column_centers = [header["center_x"] for header in sorted_headers]
+        # 칸 너비 추정
+        if len(column_centers) > 1:
+            column_widths = [column_centers[i+1] - column_centers[i] for i in range(len(column_centers)-1)]
+            column_widths.append(column_widths[-1])  # 마지막 열 너비는 이전과 동일하게
+        else:
+            column_widths = [200] * 7  # 기본값
     
-    current_day = None
-    for line in lines:
-        # 1. 한 줄에 날짜+시간+이름이 여러 개 있을 수도 있음
-        for match in re.finditer(date_time_name_pattern, line):
-            day, sh, sm, eh, em, name = match.groups()
-            if all(0 <= int(x) <= 23 for x in [sh, eh]) and all(0 <= int(x) <= 59 for x in [sm, em]):
-                date_str = f"{year}-{month:02d}-{int(day):02d}"
-                start_time = f"{int(sh):02d}:{int(sm):02d}"
-                end_time = f"{int(eh):02d}:{int(em):02d}"
-                schedules.add((date_str, start_time, end_time, name))
-                logger.info(f"Extracted schedule (inline): {date_str}, {start_time}, {end_time}, {name}")
-        # 2. 날짜만 있는 줄이면 current_day 갱신
-        date_match = re.match(date_pattern, line)
-        if date_match:
-            current_day = int(date_match.group(1))
-            logger.info(f"Current day set to: {current_day}")
-            continue
-        # 3. 날짜가 이미 정해져 있고, 시간+이름만 있는 줄이면 해당 날짜로 스케줄 추가
-        if current_day is not None:
-            for match in re.finditer(time_name_pattern, line):
-                sh, sm, eh, em, name = match.groups()
-                if all(0 <= int(x) <= 23 for x in [sh, eh]) and all(0 <= int(x) <= 59 for x in [sm, em]):
-                    date_str = f"{year}-{month:02d}-{current_day:02d}"
-                    start_time = f"{int(sh):02d}:{int(sm):02d}"
-                    end_time = f"{int(eh):02d}:{int(em):02d}"
-                    schedules.add((date_str, start_time, end_time, name))
-                    logger.info(f"Extracted schedule (date context): {date_str}, {start_time}, {end_time}, {name}")
-    # set -> list of dicts
-    result = [
-        {"date": d, "startAt": s, "endAt": e, "clientName": n}
-        for (d, s, e, n) in sorted(schedules)
-    ]
-    logger.info(f"Total extracted schedules: {len(result)}")
-    for idx, schedule in enumerate(result, 1):
-        logger.info(f"Schedule {idx}: {schedule}")
-    return result
+    # 날짜 블록 찾기
+    day_pattern = re.compile(r'^(\d{1,2})$')
+    days = []
+    
+    for block in text_blocks:
+        match = day_pattern.match(block["text"])
+        if match:
+            day = int(match.group(1))
+            if 1 <= day <= 31:  # 유효한 날짜인지 확인
+                days.append({
+                    "day": day,
+                    "center_x": block["center_x"],
+                    "center_y": block["center_y"],
+                    "min_y": block["min_y"],
+                    "max_y": block["max_y"]
+                })
+    
+    # 행 나누기 (날짜 기준)
+    days_sorted_by_y = sorted(days, key=lambda x: x["center_y"])
+    row_breaks = []
+    
+    if days_sorted_by_y:
+        current_row_y = days_sorted_by_y[0]["center_y"]
+        for i in range(1, len(days_sorted_by_y)):
+            if days_sorted_by_y[i]["center_y"] - current_row_y > 50:  # 50픽셀 이상 차이면 새 행
+                mid_y = (days_sorted_by_y[i]["center_y"] + current_row_y) / 2
+                row_breaks.append(mid_y)
+                current_row_y = days_sorted_by_y[i]["center_y"]
+    
+    # 날짜를 열에 할당
+    for day in days:
+        # 가장 가까운 열 찾기
+        col_idx = min(range(len(column_centers)), 
+                     key=lambda i: abs(day["center_x"] - column_centers[i]))
+        day["col"] = col_idx
+        
+        # 행 번호 찾기
+        row_idx = 0
+        for break_y in row_breaks:
+            if day["center_y"] > break_y:
+                row_idx += 1
+        day["row"] = row_idx
+    
+    # 로깅
+    for day in days:
+        logger.info(f"날짜 {day['day']}: 행 {day['row']}, 열 {day['col']}")
+    
+    # 시간+이름 패턴
+    schedule_pattern = re.compile(r'(\d{1,2})\s*:\s*(\d{2})\s*[\~\-]\s*(\d{1,2})\s*:\s*(\d{2})\s+([가-힣]{2,})')
+    
+    # 일정 추출
+    schedules = []
+    
+    # 일정 텍스트 블록 찾기
+    for block in text_blocks:
+        matches = schedule_pattern.finditer(block["text"])
+        for match in matches:
+            sh, sm, eh, em, name = match.groups()
+            
+            # 위치 기반으로 이 일정이 속한 날짜 찾기
+            best_day = None
+            min_distance = float('inf')
+            
+            for day in days:
+                # 같은 열에 있고 날짜보다 아래에 있는지 확인
+                if (day["col"] == find_column(block["center_x"], column_centers) and
+                    block["min_y"] > day["max_y"]):
+                    
+                    # 다음 행의 날짜보다는 위에 있어야 함
+                    next_row_days = [d for d in days if d["row"] == day["row"] + 1 and d["col"] == day["col"]]
+                    if not next_row_days or block["max_y"] < min(d["min_y"] for d in next_row_days):
+                        # 거리 계산 (y축 거리를 주요 기준으로)
+                        x_dist = abs(block["center_x"] - day["center_x"])
+                        y_dist = block["min_y"] - day["max_y"]
+                        
+                        # 거리 계산 (y축 거리에 가중치 부여)
+                        distance = x_dist + y_dist * 0.5
+                        
+                        if distance < min_distance:
+                            min_distance = distance
+                            best_day = day
+            
+            # 날짜를 찾았으면 일정 추가
+            if best_day and min_distance < 300:  # 거리 제한
+                try:
+                    if 0 <= int(sh) <= 23 and 0 <= int(eh) <= 23 and 0 <= int(sm) <= 59 and 0 <= int(em) <= 59:
+                        schedule = {
+                            "day": best_day["day"],
+                            "startAt": f"{int(sh):02d}:{sm}",
+                            "endAt": f"{int(eh):02d}:{em}",
+                            "clientName": name.strip()
+                        }
+                        
+                        # 중복 방지
+                        if not any(s["day"] == schedule["day"] and 
+                                  s["startAt"] == schedule["startAt"] and 
+                                  s["endAt"] == schedule["endAt"] and 
+                                  s["clientName"] == schedule["clientName"] 
+                                  for s in schedules):
+                            schedules.append(schedule)
+                            logger.info(f"일정 추출: 날짜 {best_day['day']}일, {sh}:{sm}-{eh}:{em} {name}")
+                except ValueError:
+                    logger.warning(f"시간 변환 오류: {sh}:{sm}-{eh}:{em}")
+                    continue
+    
+    return schedules
+
+def find_column(x, column_centers):
+    """x 좌표에 가장 가까운 열 인덱스 찾기"""
+    return min(range(len(column_centers)), key=lambda i: abs(x - column_centers[i]))
 
 def process_image(image_content, user_id):
     """이미지 처리 및 OCR 결과 반환"""
     try:
         # 텍스트 감지
-        annotation = detect_table_from_image(image_content)
+        response = detect_table_from_image(image_content)
         
         # 연도와 월 추출
-        year, month = extract_year_month(annotation.text)
+        year, month = extract_year_month(response.full_text_annotation.text)
         
-        # 일정 항목 추출
-        schedules = extract_daily_schedules(annotation, year, month)
+        # 모든 텍스트 블록 추출
+        text_blocks = []
+        for page in response.full_text_annotation.pages:
+            for block in page.blocks:
+                # 텍스트 추출
+                block_text = ""
+                for paragraph in block.paragraphs:
+                    for word in paragraph.words:
+                        word_text = ''.join([symbol.text for symbol in word.symbols])
+                        block_text += word_text + " "
+                
+                block_text = block_text.strip()
+                if not block_text:
+                    continue
+                
+                # 바운딩 박스 위치 계산
+                vertices = block.bounding_box.vertices
+                min_x = min(vertex.x for vertex in vertices)
+                min_y = min(vertex.y for vertex in vertices)
+                max_x = max(vertex.x for vertex in vertices)
+                max_y = max(vertex.y for vertex in vertices)
+                
+                # 블록 정보 저장
+                text_blocks.append({
+                    "text": block_text,
+                    "min_x": min_x,
+                    "min_y": min_y,
+                    "max_x": max_x,
+                    "max_y": max_y,
+                    "center_x": (min_x + max_x) / 2,
+                    "center_y": (min_y + max_y) / 2
+                })
+        
+        # 디버깅: 모든 텍스트 블록 로깅
+        for i, block in enumerate(text_blocks):
+            logger.info(f"블록 {i}: '{block['text']}' 위치: ({block['min_x']}, {block['min_y']}) ~ ({block['max_x']}, {block['max_y']})")
+        
+        # 위치 기반 일정 추출 - 더 정확한 열 인식
+        schedules = extract_schedules_position_based(text_blocks, year, month)
+        
+        # 최종 형식으로 변환
+        formatted_schedules = []
+        for item in schedules:
+            formatted_schedules.append({
+                "date": f"{year}-{month:02d}-{item['day']:02d}",
+                "startAt": item["startAt"],
+                "endAt": item["endAt"],
+                "clientName": item["clientName"]
+            })
         
         # 응답 생성
-        response = {
+        response_data = {
             "userId": user_id,
             "year": year,
             "month": month,
-            "schedules": schedules
+            "schedules": formatted_schedules
         }
         
-        logger.info(f"Final response: {response}")
-        return response
+        logger.info(f"Final response: {response_data}")
+        return response_data
+        
     except Exception as e:
-        logger.error(f"Error processing image: {str(e)}")
+        logger.error(f"Error processing image: {str(e)}", exc_info=True)
         raise
