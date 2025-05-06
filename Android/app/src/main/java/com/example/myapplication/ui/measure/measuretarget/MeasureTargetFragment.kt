@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
@@ -19,6 +20,10 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         setupSpinner()
+
+        binding.btnNext.setOnClickListener {
+            findNavController().navigate(R.id.dest_measure_item)
+        }
     }
 
     private fun setupSpinner() {

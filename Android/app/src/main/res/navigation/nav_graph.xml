@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_measure_target" />
 
     <fragment
+        android:id="@+id/dest_measure_item"
+        android:name="com.example.myapplication.ui.measure.measureitem.MeasureItemFragment"
+        android:label="fragment_measure_item"
+        tools:layout="@layout/fragment_measure_item" />
+
+    <fragment
         android:id="@+id/dest_visit_log_list"
         android:name="com.example.myapplication.ui.visitlog.visitloglist.VisitLogListFragment"
         android:label="fragment_visit_log_list"
