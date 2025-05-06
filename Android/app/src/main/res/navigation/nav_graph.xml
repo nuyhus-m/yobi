@@ -18,10 +18,16 @@
         tools:layout="@layout/fragment_care_list" />
 
     <fragment
-        android:id="@+id/dest_measurement_target"
-        android:name="com.example.myapplication.ui.measurement.MeasurementTargetFragment"
-        android:label="fragment_measurement_target"
-        tools:layout="@layout/fragment_measurement_target" />
+        android:id="@+id/dest_measure_target"
+        android:name="com.example.myapplication.ui.measure.measuretarget.MeasureTargetFragment"
+        android:label="fragment_measure_target"
+        tools:layout="@layout/fragment_measure_target" />
+
+    <fragment
+        android:id="@+id/dest_measure_item"
+        android:name="com.example.myapplication.ui.measure.measureitem.MeasureItemFragment"
+        android:label="fragment_measure_item"
+        tools:layout="@layout/fragment_measure_item" />
 
     <fragment
         android:id="@+id/dest_visit_log_list"
@@ -41,13 +47,13 @@
 
         <argument
             android:name="name"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
 
         <argument
             android:name="date"
-            app:argType="string"
-            android:defaultValue="" />
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
 

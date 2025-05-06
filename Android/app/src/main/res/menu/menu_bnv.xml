@@ -13,7 +13,7 @@
         android:title="@string/care_list" />
 
     <item
-        android:id="@+id/dest_measurement_target"
+        android:id="@+id/dest_measure_target"
         android:enabled="true"
         android:icon="@drawable/ic_check"
         android:title="@string/measurement" />

@@ -30,7 +30,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             binding.bnv.visibility = when (destination.id) {
                 R.id.dest_schedule -> View.VISIBLE
                 R.id.dest_care_list -> View.VISIBLE
-                R.id.dest_measurement_target -> View.VISIBLE
+                R.id.dest_measure_target -> View.VISIBLE
                 R.id.dest_visit_log_list -> View.VISIBLE
                 R.id.dest_my_page -> View.VISIBLE
                 R.id.dest_schedule_register_dialog -> View.VISIBLE
