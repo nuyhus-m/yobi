@@ -13,4 +13,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByUserIdOrderByVisitedDateAscStartAtAsc(Integer userId);
     List<Schedule> findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
             Integer userId, LocalDate startDate, LocalDate endDate);
+    List<Schedule> findByUserIdAndVisitedDateOrderByStartAtAsc(Integer userId, LocalDate visitedDate);
 }

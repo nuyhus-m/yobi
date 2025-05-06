@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.file.AccessDeniedException;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +113,7 @@ public class SchedulesController {
         try {
             // 입력값의 유효성 검사
             if (year < 2000 || year > 2100 || month < 1 || month >12) {
-                throw new IllegalArgumentException("유효하지 않은 년월입니다.");
+                throw new IllegalArgumentException("유효하지 않은 년월임.");
             }
 
             // 임시 하드코딩. JWT 추출 필요
@@ -121,6 +121,32 @@ public class SchedulesController {
 
             List<Map<String, Object>> schedules = scheduleService.getSchedulesByMonth(userId, year, month);
             return ResponseEntity.ok(ApiResponseDTO.success(schedules));
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Operation(summary = "특정일 일정 목록 조회", description = "현재 로그인한 사용자에 대해 특정일의 일정을 조회합니다.<br/>"
+    + "2025-05-04 형태로 입력하면 결과를 반환합니다.")
+    @GetMapping("/day")
+    public ResponseEntity<ApiResponseDTO<List<Map<String, Object>>>> getSchedulesByDay(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        try {
+            // 입력값 유효성 검사
+            if (date == null) {
+                throw new IllegalArgumentException("날짜를 입력해주세요.");
+            }
+
+            // 임시 하드코딩
+            Integer userId = 1;
+
+            List<Map<String, Object>> schedules = scheduleService.getSchedulesByDay(userId, date);
+
+            return ResponseEntity.ok(ApiResponseDTO.success(schedules));
+
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
