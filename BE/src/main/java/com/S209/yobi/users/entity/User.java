@@ -33,6 +33,7 @@ public class User {
 
     @NotNull
     @Column(name = "consent", nullable = false)
+    @Builder.Default
     private Boolean consent = false;
 
     @Size(max = 255)

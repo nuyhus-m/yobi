@@ -1,21 +1,26 @@
 package com.S209.yobi.schedules.service;
 
-import com.S209.yobi.DTO.requestDTO.ScheduleRequestDto;
+import com.S209.yobi.DTO.requestDTO.OcrDTO;
+import com.S209.yobi.DTO.requestDTO.OcrDTO.OcrResponseDTO;
+import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO;
 import com.S209.yobi.clients.entity.Client;
 import com.S209.yobi.clients.repository.ClientRepository;
 import com.S209.yobi.schedules.entity.Schedule;
 import com.S209.yobi.schedules.repository.ScheduleRepository;
 import com.S209.yobi.users.entity.User;
 import com.S209.yobi.users.repository.UserRepository;
+import com.S209.yobi.schedules.service.OcrFastApiClient;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +34,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final OcrFastApiClient ocrFastApiClient;
 
     // 단건 일정 조회
     @Transactional(readOnly = true)
@@ -65,7 +71,7 @@ public class ScheduleService {
 
     // 단건 일정 등록
     @Transactional
-    public void createSchedule(ScheduleRequestDto requestDto) {
+    public void createSchedule(ScheduleRequestDTO requestDto) {
         Client client = clientRepository.findById(requestDto.getClientId())
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + requestDto.getClientId()));
 
@@ -92,7 +98,7 @@ public class ScheduleService {
 
     // 단건 일정 수정
     @Transactional
-    public void updateSchedule(Integer scheduleId, ScheduleRequestDto requestDto) throws AccessDeniedException {
+    public void updateSchedule(Integer scheduleId, ScheduleRequestDTO requestDto) throws AccessDeniedException {
         // 현재 인증된 사용자인지 확인
         // 임시 하드코딩! 추후 JWT에서 추출해야 합니다.
         Integer currentUserId = 1;
@@ -202,5 +208,47 @@ public class ScheduleService {
                     return map;
                 })
                 .collect(Collectors.toList());
+    }
+
+    // OCR로 일정 등록
+    @Transactional
+    public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId) {
+
+        //FastAPI 서버에 이미지 전송
+        OcrResponseDTO ocrResult = ocrFastApiClient.processImage(image, userId);
+
+        //일정 등록
+        int count = 0;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        //결과에서 일정 정보 추출 및 저장
+        for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
+            try {
+                Client client = clientRepository.findById(item.getClientId())
+                        .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+
+                //날짜, 시간 파싱
+                LocalDate visitedDate = LocalDate.parse(item.getDate());
+                LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
+                LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
+
+                // Schedule 생성 및 저장
+                Schedule schedule = Schedule.builder()
+                        .user(user)
+                        .client(client)
+                        .visitedDate(visitedDate)
+                        .startAt(startAt)
+                        .endAt(endAt)
+                        .build();
+
+                scheduleRepository.save(schedule);
+                count++;
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+
+        return OcrDTO.OcrResultDTO.builder().count(count).build();
     }
 }
