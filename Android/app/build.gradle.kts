@@ -43,6 +43,15 @@ android {
     viewBinding {
         enable = true
     }
+    packaging {
+        resources {
+            // build 실패를 일으키는 중복 메타-데이터 파일 제거
+            excludes += setOf(
+                "/META-INF/INDEX.LIST",
+                "/META-INF/DEPENDENCIES"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -53,6 +62,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,4 +93,16 @@ dependencies {
     // hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
+
+    /*  Google Cloud  */
+    implementation(platform(libs.google.cloud.bom))
+    implementation(libs.google.cloud.speech)
+    implementation(libs.google.cloud.language)
+    implementation(libs.grpc.google.cloud.speech.v1)
+
+    /* gRPC (full runtime)  */
+    implementation(libs.grpc.okhttp)
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.stub)
+
 }
