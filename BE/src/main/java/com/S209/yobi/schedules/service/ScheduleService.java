@@ -182,4 +182,25 @@ public class ScheduleService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 특정일의 일정 리스트
+    @Transactional
+    public List<Map<String, Object>> getSchedulesByDay(Integer userId, LocalDate date) {
+        List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateOrderByStartAtAsc(
+                userId, date
+        );
+
+        return schedules.stream()
+                .map(schedule -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("scheduleId", schedule.getId());
+                    map.put("clientId", schedule.getClient().getId());
+                    map.put("clientName", schedule.getClient().getName());
+                    map.put("visitedDate", schedule.getVisitedDate());
+                    map.put("startAt", schedule.getStartAt());
+                    map.put("endAt", schedule.getEndAt());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 }
