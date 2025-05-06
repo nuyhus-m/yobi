@@ -11,6 +11,14 @@
     <string name="back">뒤로가기</string>
     <string name="yes">확인</string>
     <string name="no">취소</string>
+    <string name="next">다음</string>
+
+    <!-- 건강 지표 -->
+    <string name="body_composition">체성분</string>
+    <string name="heart_rate">심박</string>
+    <string name="blood_pressure">혈압</string>
+    <string name="stress">스트레스</string>
+    <string name="body_temperature">체온</string>
 
     <!-- 다이얼로그 -->
     <string name="logout_title">로그아웃 하시겠습니까?</string>
@@ -23,5 +31,11 @@
     <string name="schedule_delete_subtitle">일정에 대한 모든 내용이 삭제됩니다.</string>
     <string name="register_by_photo">사진으로 등록</string>
     <string name="register_by_text">직접 등록</string>
+
+    <!-- 측정 -->
+    <string name="measure">측정하기</string>
+    <string name="measure_title">%s님 측정하기</string>
+    <string name="measure_target_question">어떤 분의 건강상태를\n측정하시나요?</string>
+    <string name="measure_item_subtitle">주간 보고서 생성이 가능한 상태입니다</string>
 
 </resources>
