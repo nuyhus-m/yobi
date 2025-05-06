@@ -1,16 +1,20 @@
 package com.S209.yobi.DTO.requestDTO;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class HeartRateDTO {
+
+    @NotNull(message = "clientId 은 필수값입니다.")
     private Integer clientId;
+
+    @NotNull(message = "bpm 은 필수값입니다.")
     private Short bpm;
+
+    @NotNull(message = "oxygen 은 필수값입니다.")
     private Short oxygen;
 
 }
