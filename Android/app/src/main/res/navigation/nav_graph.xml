@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/dest_measure_target"
-        android:name="com.example.myapplication.ui.measure.MeasureTargetFragment"
+        android:name="com.example.myapplication.ui.measure.measuretarget.MeasureTargetFragment"
         android:label="fragment_measure_target"
         tools:layout="@layout/fragment_measure_target" />
 

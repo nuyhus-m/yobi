@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.measure
+package com.example.myapplication.ui.measure.measuretarget
 
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
