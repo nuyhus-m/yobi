@@ -9,21 +9,17 @@ public class OcrDTO {
     @Getter
     @Setter
     public static class OcrResponseDTO {
-        private Integer userId;
-        private Integer year;
-        private Integer month;
         private List<ScheduleItem> schedules;
 
         @Getter
         @Setter
         public static class ScheduleItem {
-            private String date;
+            private Integer day;
             private String startAt;
             private String endAt;
-            private Integer clientId;
+            private String clientName;
         }
     }
-
 
     @Getter
     @Builder

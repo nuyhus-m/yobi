@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -25,35 +24,38 @@ public class OcrFastApiClient {
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
-    public OcrResponseDTO processImage(MultipartFile image, Integer userId) {
+    public OcrResponseDTO processImage(MultipartFile image) {
         try {
+            log.info("FastAPI 서버로 OCR 요청 시작 - URL: {}", fastApiUrl + "/api/schedules/ocr");
+            
             //멀티파트 요청 생성
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("image", createFileResource(image));
-            body.add("userId", userId);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            log.info("FastAPI 요청 생성 완료");
 
             // FastAPI 서버에 요청 전송
-            String url = fastApiUrl + "/ocr/process";
+            String url = fastApiUrl + "/api/schedules/ocr";
+            log.info("FastAPI 서버로 요청 전송 - URL: {}", url);
+            
             ResponseEntity<OcrResponseDTO> response = restTemplate.postForEntity(
                     url, requestEntity, OcrResponseDTO.class
             );
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                log.info("FastAPI서버에서 응답 받음: year={}, month={}, schedules={}",
-                        response.getBody().getYear(),
-                        response.getBody().getMonth(),
+                log.info("FastAPI 서버 응답 성공 - schedules={}",
                         response.getBody().getSchedules().size());
                 return response.getBody();
             } else {
-                log.error("FastAPI 서버 오류: {}", response.getStatusCodeValue());
+                log.error("FastAPI 서버 오류 응답 - status: {}", response.getStatusCodeValue());
                 throw new RuntimeException("FastAPI 서버 오류: " + response.getStatusCodeValue());
             }
         } catch (Exception e) {
+            log.error("FastAPI 서버 요청 중 오류 발생", e);
             throw new RuntimeException(e);
         }
     }

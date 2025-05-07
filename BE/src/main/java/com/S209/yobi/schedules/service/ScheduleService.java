@@ -215,7 +215,7 @@ public class ScheduleService {
     public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId) {
 
         //FastAPI 서버에 이미지 전송
-        OcrResponseDTO ocrResult = ocrFastApiClient.processImage(image, userId);
+        OcrResponseDTO ocrResult = ocrFastApiClient.processImage(image);
 
         //일정 등록
         int count = 0;
@@ -225,11 +225,12 @@ public class ScheduleService {
         //결과에서 일정 정보 추출 및 저장
         for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
             try {
-                Client client = clientRepository.findById(item.getClientId())
-                        .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+                // 클라이언트 이름으로 클라이언트 찾기
+                Client client = clientRepository.findByName(item.getClientName())
+                        .orElseThrow(() -> new EntityNotFoundException("Client not found with name: " + item.getClientName()));
 
                 //날짜, 시간 파싱
-                LocalDate visitedDate = LocalDate.parse(item.getDate());
+                LocalDate visitedDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), item.getDay());
                 LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
                 LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
 

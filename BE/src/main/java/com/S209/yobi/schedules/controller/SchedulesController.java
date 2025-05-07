@@ -160,11 +160,13 @@ public class SchedulesController {
     }
 
     @Operation(summary = "OCR을 이용한 일정 등록", description = "이미지, 년, 월을 등록하면 OCR로 분석 후 일정을 자동 등록합니다.")
-    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponseDTO<OcrDTO.OcrResultDTO>> registerScheduleByOcr(
-            @RequestParam("image")MultipartFile image
-            ) {
+            @RequestParam("image") MultipartFile image
+    ) {
         try {
+            log.info("OCR 요청 시작 - 이미지 크기: {} bytes", image.getSize());
+            
             //이미지 유효성 검사
             if (image == null || image.isEmpty()) {
                 throw new IllegalArgumentException("이미지 파일이 없음.");
@@ -175,11 +177,14 @@ public class SchedulesController {
 
             // ocr처리
             OcrDTO.OcrResultDTO result = scheduleService.processOcrSchedules(image, userId);
+            log.info("OCR 처리 완료 - 등록된 일정 수: {}", result.getCount());
 
             return ResponseEntity.ok(ApiResponseDTO.success(result));
         } catch (IllegalArgumentException e) {
+            log.error("OCR 요청 유효성 검사 실패", e);
             throw e;
         } catch (Exception e) {
+            log.error("OCR 처리 중 오류 발생", e);
             throw e;
         }
     }
