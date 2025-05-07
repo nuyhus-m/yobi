@@ -1,15 +1,19 @@
 package com.S209.yobi.DTO.requestDTO;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class ReBloodPressureDTO {
+
+    @NotNull(message = "clientId 은 필수값입니다.")
     private Integer clientId;
+
+    @NotNull(message = "sbp 은 필수값입니다.")
     private Float sbp;
+
+    @NotNull(message = "dbp 은 필수값입니다.")
     private Float dbp;
 }
