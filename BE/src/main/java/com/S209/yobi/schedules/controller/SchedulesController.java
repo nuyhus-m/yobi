@@ -1,15 +1,20 @@
 package com.S209.yobi.schedules.controller;
 
-import com.S209.yobi.DTO.requestDTO.ScheduleRequestDto;
+import com.S209.yobi.DTO.requestDTO.OcrDTO;
+import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO;
 import com.S209.yobi.exception.ApiResponseDTO;
 import com.S209.yobi.schedules.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +50,7 @@ public class SchedulesController {
             "의 형태로 request 넘기면 됩니다.")
     @PostMapping
     public ResponseEntity<ApiResponseDTO<Void>> createSchedule(
-            @Valid @RequestBody ScheduleRequestDto requestDto
+            @Valid @RequestBody ScheduleRequestDTO requestDto
             ) {
         try {
             scheduleService.createSchedule(requestDto);
@@ -64,7 +69,7 @@ public class SchedulesController {
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<ApiResponseDTO<Void>> updateSchedule(
             @PathVariable Integer scheduleId,
-            @Valid @RequestBody ScheduleRequestDto requestDto) {
+            @Valid @RequestBody ScheduleRequestDTO requestDto) {
 
         try {
             scheduleService.updateSchedule(scheduleId, requestDto);
@@ -150,6 +155,36 @@ public class SchedulesController {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Operation(summary = "OCR을 이용한 일정 등록", description = "이미지, 년, 월을 등록하면 OCR로 분석 후 일정을 자동 등록합니다.")
+    @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponseDTO<OcrDTO.OcrResultDTO>> registerScheduleByOcr(
+            @RequestParam("image") MultipartFile image
+    ) {
+        try {
+            log.info("OCR 요청 시작 - 이미지 크기: {} bytes", image.getSize());
+            
+            //이미지 유효성 검사
+            if (image == null || image.isEmpty()) {
+                throw new IllegalArgumentException("이미지 파일이 없음.");
+            }
+
+            //임시 하드코딩. JWT에서 추출 필요
+            Integer userId = 1;
+
+            // ocr처리
+            OcrDTO.OcrResultDTO result = scheduleService.processOcrSchedules(image, userId);
+            log.info("OCR 처리 완료 - 등록된 일정 수: {}", result.getCount());
+
+            return ResponseEntity.ok(ApiResponseDTO.success(result));
+        } catch (IllegalArgumentException e) {
+            log.error("OCR 요청 유효성 검사 실패", e);
+            throw e;
+        } catch (Exception e) {
+            log.error("OCR 처리 중 오류 발생", e);
             throw e;
         }
     }

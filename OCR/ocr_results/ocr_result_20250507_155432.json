@@ -1,0 +1,103 @@
+{
+  "userId": 1,
+  "year": 2025,
+  "month": 5,
+  "schedules": [
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "14:00",
+      "endAt": "15:00",
+      "clientName": "이영희"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "14:00",
+      "endAt": "15:00",
+      "clientName": "이영희"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "14:00",
+      "endAt": "15:00",
+      "clientName": "박지성"
+    },
+    {
+      "date": "2025-05-28",
+      "startAt": "10:00",
+      "endAt": "13:00",
+      "clientName": "김철수"
+    }
+  ]
+}
