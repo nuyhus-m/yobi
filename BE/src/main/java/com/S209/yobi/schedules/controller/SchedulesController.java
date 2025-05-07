@@ -162,21 +162,28 @@ public class SchedulesController {
     @Operation(summary = "OCR을 이용한 일정 등록", description = "이미지, 년, 월을 등록하면 OCR로 분석 후 일정을 자동 등록합니다.")
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponseDTO<OcrDTO.OcrResultDTO>> registerScheduleByOcr(
-            @RequestParam("image") MultipartFile image
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("year") Integer year,
+            @RequestParam("month") Integer month
     ) {
         try {
-            log.info("OCR 요청 시작 - 이미지 크기: {} bytes", image.getSize());
+            log.info("OCR 요청 시작 - 이미지 크기: {} bytes, year: {}, month: {}", image.getSize(), year, month);
             
             //이미지 유효성 검사
             if (image == null || image.isEmpty()) {
                 throw new IllegalArgumentException("이미지 파일이 없음.");
             }
 
+            //년월 유효성 검사
+            if (year < 2000 || year > 2100 || month < 1 || month > 12) {
+                throw new IllegalArgumentException("유효하지 않은 년월입니다.");
+            }
+
             //임시 하드코딩. JWT에서 추출 필요
             Integer userId = 1;
 
             // ocr처리
-            OcrDTO.OcrResultDTO result = scheduleService.processOcrSchedules(image, userId);
+            OcrDTO.OcrResultDTO result = scheduleService.processOcrSchedules(image, userId, year, month);
             log.info("OCR 처리 완료 - 등록된 일정 수: {}", result.getCount());
 
             return ResponseEntity.ok(ApiResponseDTO.success(result));
