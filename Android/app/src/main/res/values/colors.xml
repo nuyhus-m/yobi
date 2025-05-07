@@ -10,4 +10,9 @@
     <color name="gray_text_sub">#BFA3A3A3</color>
     <color name="gray_text_secondary">#FF535862</color>
     <color name="red">#FFE63D3D</color>
+    <color name="red_sub">#12E63D3D</color>
+    <color name="green">#FF4DAF37</color>
+    <color name="green_sub">#364DAF37</color>
+    <color name="blue">#FF4A90E2</color>
+    <color name="blue_sub">#124A90E2</color>
 </resources>
