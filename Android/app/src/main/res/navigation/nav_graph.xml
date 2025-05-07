@@ -15,7 +15,32 @@
         android:id="@+id/dest_care_list"
         android:name="com.example.myapplication.ui.care.carelist.CareListFragment"
         android:label="fragment_care_list"
-        tools:layout="@layout/fragment_care_list" />
+        tools:layout="@layout/fragment_care_list">
+
+        <action
+            android:id="@+id/action_careListFragment_to_careMainFragment"
+            app:destination="@+id/dest_care_main_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_main_fragment"
+        android:name="com.example.myapplication.ui.care.caremain.CareMainFragment"
+        android:label="fragment_care_main"
+        tools:layout="@layout/fragment_care_main">
+
+        <argument
+            android:name="image"
+            app:argType="reference" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="gender"
+            app:argType="string" />
+        <argument
+            android:name="birth"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_measure_target"
@@ -86,5 +111,6 @@
         android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
         android:label="WithdrawalDialog"
         tools:layout="@layout/dialog_withdrawal" />
+
 
 </navigation>

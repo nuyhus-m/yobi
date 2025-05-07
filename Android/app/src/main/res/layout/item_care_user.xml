@@ -50,7 +50,7 @@
                     android:textColor="@color/gray_text" />
 
                 <TextView
-                    android:id="@+id/tvGender"
+                    android:id="@+id/tv_gender"
                     style="@style/BodyTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                     android:textColor="@color/gray_text" />
 
                 <TextView
-                    android:id="@+id/tvBirth"
+                    android:id="@+id/tv_birth"
                     style="@style/BodyTextStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

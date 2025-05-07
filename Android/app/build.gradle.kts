@@ -105,4 +105,9 @@ dependencies {
     implementation(libs.grpc.protobuf)
     implementation(libs.grpc.stub)
 
+    // https://github.com/PhilJay/MPAndroidChart
+    implementation(libs.mpandroidchart)
+
+
+
 }

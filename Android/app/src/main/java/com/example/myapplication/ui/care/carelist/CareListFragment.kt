@@ -3,6 +3,7 @@ package com.example.myapplication.ui.care.carelist
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -18,7 +19,16 @@ class CareListFragment : BaseFragment<FragmentCareListBinding>(
 ) {
 
     private val viewModel: CareListViewModel by viewModels()
-    private val adapter = CareListAdapter()
+    private val adapter = CareListAdapter { selectedUser ->
+        val action = CareListFragmentDirections
+            .actionCareListFragmentToCareMainFragment(
+                image = selectedUser.image,
+                name = selectedUser.name,
+                gender = selectedUser.gender,
+                birth = selectedUser.birth
+            )
+        findNavController().navigate(action)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,7 +36,7 @@ class CareListFragment : BaseFragment<FragmentCareListBinding>(
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
-        viewModel.careUserList.observe(viewLifecycleOwner){
+        viewModel.careUserList.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
     }

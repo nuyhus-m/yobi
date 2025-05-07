@@ -37,5 +37,7 @@
     <string name="measure_title">%s님 측정하기</string>
     <string name="measure_target_question">어떤 분의 건강상태를\n측정하시나요?</string>
     <string name="measure_item_subtitle">주간 보고서 생성이 가능한 상태입니다</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

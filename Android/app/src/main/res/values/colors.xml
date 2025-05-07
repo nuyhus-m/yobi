@@ -10,4 +10,8 @@
     <color name="gray_text_sub">#BFA3A3A3</color>
     <color name="gray_text_secondary">#FF535862</color>
     <color name="red">#FFE63D3D</color>
+
+
+    <color name="chart_purple">#A78BFA</color>
+
 </resources>
