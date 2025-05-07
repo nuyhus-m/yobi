@@ -1,7 +1,6 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.BaseRequestDTO;
-import com.S209.yobi.DTO.requestDTO.HeartRateDTO;
+import com.S209.yobi.DTO.requestDTO.HeartRateRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +33,7 @@ public class HeartRate {
         this.createdAt = now;
     }
 
-    public static HeartRate fromDTO(HeartRateDTO dto) {
+    public static HeartRate fromDTO(HeartRateRequestDTO dto) {
         return HeartRate.builder()
                 .bpm(dto.getBpm())
                 .oxygen(dto.getOxygen())

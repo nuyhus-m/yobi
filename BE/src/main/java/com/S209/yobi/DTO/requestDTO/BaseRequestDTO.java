@@ -12,9 +12,9 @@ public class BaseRequestDTO {
     private Integer clientId;
 
     @NotNull(message = "bodyComposition은 필수값입니다.")
-    private BodyCompositionDTO bodyCompositionDTO;
+    private BodyRequestDTO bodyRequestDTO;
 
     @NotNull(message = "bloodPressure은 필수값입니다.")
-    private BloodPressureDTO bloodPressureDTO;
+    private BloodRequestDTO bloodPressureDTO;
 
 }

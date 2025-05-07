@@ -7,12 +7,9 @@ import com.S209.yobi.measures.service.MeasureService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Check;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +25,7 @@ public class MeasureController {
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
             @RequestBody BaseRequestDTO requestDTO
-    ) throws IOException{
+    ){
 
         ApiResponseDTO<?> response = measureService.saveBaseElement(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
@@ -41,8 +38,8 @@ public class MeasureController {
     public ResponseEntity<ApiResponseDTO<?>> saveHeartRate(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody HeartRateDTO requestDTO
-    ) throws IOException{
+            @RequestBody HeartRateRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.saveHeartRate(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
@@ -53,8 +50,8 @@ public class MeasureController {
     public ResponseEntity<ApiResponseDTO<?>> saveStress(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody StressDTO requestDTO
-    ) throws IOException{
+            @RequestBody StressRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.saveStress(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
@@ -65,8 +62,8 @@ public class MeasureController {
     public ResponseEntity<ApiResponseDTO<?>> saveStress(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody TemperatureDTO requestDTO
-    ) throws IOException{
+            @RequestBody TemperatureRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.saveTemperature(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
@@ -77,8 +74,8 @@ public class MeasureController {
     public ResponseEntity<ApiResponseDTO<?>> saveStress(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody ReBodyCompositionDTO requestDTO
-    ) throws IOException{
+            @RequestBody ReBodyRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.saveBodyComposition(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
@@ -90,21 +87,36 @@ public class MeasureController {
     public ResponseEntity<ApiResponseDTO<?>> saveStress(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody ReBloodPressureDTO requestDTO
-    ) throws IOException{
+            @RequestBody ReBloodRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.saveBloodPressure(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
     }
+
 
     @Operation(summary = "오늘 필수 데이터 측정했는지 여부(T/F)", description = "당일 필수 데이터 측정여부를 확인합니다.")
     @PostMapping(value = "/health/check/{userId}")
     public ResponseEntity<ApiResponseDTO<?>> checkBase(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody CheckBaseDTO requestDTO
-    )throws IOException{
+            @RequestBody CheckBaseRequestDTO requestDTO
+    ){
         ApiResponseDTO<?> response = measureService.checkBase(userId, requestDTO);
+        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
+        return ResponseEntity.status(status).body(response);
+    }
+
+
+    @Operation(summary = "단건 데이터 조회 (주요 데이터)",
+            description = "건강 주요 데이터를 조회합니다(체지방률/기초대사량/체내수분/스트레스/심박/혈압)")
+    @PostMapping(value = "/health/main/{userId}")
+    public ResponseEntity<ApiResponseDTO<?>> getMainData(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int userId,
+            @RequestBody CheckBaseRequestDTO requestDTO
+    ){
+        ApiResponseDTO<?>response = measureService.getMainData(userId, requestDTO);
         HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
         return ResponseEntity.status(status).body(response);
     }

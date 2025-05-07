@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TemperatureDTO {
+public class TemperatureRequestDTO {
 
     @NotNull(message = "clientId 은 필수값입니다.")
     private Integer clientId;
