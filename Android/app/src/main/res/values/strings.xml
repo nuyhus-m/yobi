@@ -12,6 +12,11 @@
     <string name="yes">확인</string>
     <string name="no">취소</string>
     <string name="next">다음</string>
+    <string name="complete">완료</string>
+    <string name="result">결과</string>
+    <string name="high">높음</string>
+    <string name="mid">보통</string>
+    <string name="low">낮음</string>
 
     <!-- 건강 지표 -->
     <string name="body_composition">체성분</string>
@@ -19,6 +24,32 @@
     <string name="blood_pressure">혈압</string>
     <string name="stress">스트레스</string>
     <string name="body_temperature">체온</string>
+
+    <!-- 건강 지표 항목 이름 -->
+    <string name="bfp">체지방률</string>
+    <string name="protein">단백질량</string>
+    <string name="smm">근육량</string>
+    <string name="mineral">무기질량</string>
+    <string name="bmr">기초대사량</string>
+    <string name="body_age">신체나이</string>
+    <string name="water">체내수분</string>
+    <string name="sbp">수축기</string>
+    <string name="dbp">이완기</string>
+    <string name="bpm">심박수</string>
+    <string name="oxygen">산소포화도</string>
+    <string name="stress_value">스트레스 지수</string>
+    <string name="stress_level">스트레스 등급</string>
+    <string name="temp">체온</string>
+
+    <!-- 건강 지표 단위 -->
+    <string name="unit_percent">%</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_kcal">kcal</string>
+    <string name="unit_age">세</string>
+    <string name="unit_liter">L</string>
+    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_bpm">bpm</string>
+    <string name="unit_celsius">°C</string>
 
     <!-- 다이얼로그 -->
     <string name="logout_title">로그아웃 하시겠습니까?</string>

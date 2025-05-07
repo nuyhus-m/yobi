@@ -86,7 +86,7 @@
                         style="@style/LabelTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_label_red"
+                        android:background="@drawable/bg_red_sub_radius_4"
                         android:text="높음"
                         android:textColor="@color/red" />
                 </LinearLayout>
@@ -127,7 +127,7 @@
                         style="@style/LabelTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_label_green"
+                        android:background="@drawable/bg_green_sub_radius_4"
                         android:text="보통"
                         android:textColor="#4DAF37" />
                 </LinearLayout>
@@ -168,7 +168,7 @@
                         style="@style/LabelTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_label_blue"
+                        android:background="@drawable/bg_blue_sub_radius_4"
                         android:text="낮음"
                         android:textColor="#4A90E2" />
                 </LinearLayout>
@@ -282,7 +282,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:background="@drawable/bg_label_red"
+                            android:background="@drawable/bg_red_sub_radius_4"
                             android:text="높음"
                             android:textColor="@color/red" />
                     </LinearLayout>
@@ -377,7 +377,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/space_4dp"
-                                    android:background="@drawable/bg_label_red"
+                                    android:background="@drawable/bg_red_sub_radius_4"
                                     android:text="높음"
                                     android:textColor="@color/red" />
                             </LinearLayout>
@@ -407,7 +407,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/space_4dp"
-                                    android:background="@drawable/bg_label_red"
+                                    android:background="@drawable/bg_red_sub_radius_4"
                                     android:text="높음"
                                     android:textColor="@color/red" />
                             </LinearLayout>
