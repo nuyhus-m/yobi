@@ -85,4 +85,11 @@
         <item name="android:background">@drawable/bg_purple_radius_12</item>
     </style>
 
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>
