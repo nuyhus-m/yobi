@@ -21,6 +21,10 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
             findNavController().popBackStack()
         }
 
+        binding.tvBodyComp.setOnClickListener {
+            findNavController().navigate(R.id.dest_measure_guide)
+        }
+
         binding.tvBodyTemp.setOnClickListener {
             findNavController().navigate(R.id.dest_measure_result)
         }

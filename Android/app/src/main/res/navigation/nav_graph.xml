@@ -57,6 +57,12 @@
         tools:layout="@layout/fragment_measure_item" />
 
     <fragment
+        android:id="@+id/dest_measure_guide"
+        android:name="com.example.myapplication.ui.measure.measureguide.MeasureGuideFragment"
+        android:label="fragment_measure_guide"
+        tools:layout="@layout/fragment_measure_guide" />
+
+    <fragment
         android:id="@+id/dest_measure_result"
         android:name="com.example.myapplication.ui.measure.measureresult.MeasureResultFragment"
         android:label="fragment_measure_result"
@@ -151,6 +157,5 @@
         android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
         android:label="WithdrawalDialog"
         tools:layout="@layout/dialog_withdrawal" />
-
 
 </navigation>
