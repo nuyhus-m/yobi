@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="16dp"
     tools:context=".ui.care.daily.CareDailyFragment">
 
     <LinearLayout
@@ -23,6 +22,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="@dimen/space_20dp"
+                android:layout_marginTop="@dimen/space_24dp"
                 android:text="체성분" />
 
             <TextView
@@ -32,6 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/space_8dp"
+                android:layout_marginEnd="@dimen/space_24dp"
                 android:text="자세히 보기" />
         </RelativeLayout>
 
@@ -39,7 +43,9 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/space_24dp"
+            android:layout_marginTop="@dimen/space_16dp"
+            android:layout_marginEnd="@dimen/space_24dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp">
@@ -71,6 +77,7 @@
                         style="@style/CardTitleTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:text="33.3" />
 
                     <TextView
@@ -87,6 +94,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_red_sub_radius_4"
+                        android:paddingHorizontal="@dimen/space_8dp"
+                        android:paddingVertical="1dp"
                         android:text="높음"
                         android:textColor="@color/red" />
                 </LinearLayout>
@@ -109,8 +118,10 @@
                     <TextView
                         android:id="@+id/tv_bmr"
                         style="@style/CardTitleTextStyle"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:text="1083.8" />
 
                     <TextView
@@ -128,6 +139,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_green_sub_radius_4"
+                        android:paddingHorizontal="@dimen/space_8dp"
+                        android:paddingVertical="1dp"
                         android:text="보통"
                         android:textColor="#4DAF37" />
                 </LinearLayout>
@@ -152,6 +165,8 @@
                         style="@style/CardTitleTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+
+                        android:layout_marginTop="6dp"
                         android:text="48.6" />
 
                     <TextView
@@ -169,6 +184,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_blue_sub_radius_4"
+                        android:paddingHorizontal="@dimen/space_8dp"
+                        android:paddingVertical="1dp"
                         android:text="낮음"
                         android:textColor="#4A90E2" />
                 </LinearLayout>
@@ -181,13 +198,16 @@
             style="@style/CardTitleTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginStart="@dimen/space_20dp"
+            android:layout_marginTop="15dp"
             android:text="스트레스" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/space_24dp"
+            android:layout_marginTop="@dimen/space_16dp"
+            android:layout_marginEnd="@dimen/space_24dp"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp">
@@ -237,12 +257,15 @@
                     style="@style/CardTitleTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_20dp"
+
                     android:text="심박" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="@dimen/space_24dp"
+                    android:layout_marginTop="@dimen/space_16dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp">
@@ -283,6 +306,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:background="@drawable/bg_red_sub_radius_4"
+                            android:paddingHorizontal="@dimen/space_8dp"
+                            android:paddingVertical="1dp"
                             android:text="높음"
                             android:textColor="@color/red" />
                     </LinearLayout>
@@ -306,7 +331,8 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/space_16dp"
+                    android:layout_marginEnd="@dimen/space_24dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp">
@@ -369,7 +395,9 @@
                                     style="@style/CaptionTextStyle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="  수축기" />
+                                    android:layout_marginTop="2dp"
+                                    android:layout_marginBottom="@dimen/space_4dp"
+                                    android:text="수축기" />
 
                                 <TextView
                                     android:id="@+id/tv_systole_level"
@@ -378,6 +406,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/space_4dp"
                                     android:background="@drawable/bg_red_sub_radius_4"
+                                    android:paddingHorizontal="@dimen/space_8dp"
+                                    android:paddingVertical="1dp"
                                     android:text="높음"
                                     android:textColor="@color/red" />
                             </LinearLayout>
@@ -399,6 +429,8 @@
                                     style="@style/CaptionTextStyle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:layout_marginBottom="@dimen/space_4dp"
                                     android:text="이완기" />
 
                                 <TextView
@@ -408,6 +440,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/space_4dp"
                                     android:background="@drawable/bg_red_sub_radius_4"
+                                    android:paddingHorizontal="@dimen/space_8dp"
+                                    android:paddingVertical="1dp"
                                     android:text="높음"
                                     android:textColor="@color/red" />
                             </LinearLayout>
