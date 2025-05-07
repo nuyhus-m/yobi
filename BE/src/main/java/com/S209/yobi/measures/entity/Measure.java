@@ -1,18 +1,13 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.BloodPressureDTO;
-import com.S209.yobi.DTO.requestDTO.BodyCompositionDTO;
+import com.S209.yobi.DTO.requestDTO.BloodRequestDTO;
+import com.S209.yobi.DTO.requestDTO.BodyRequestDTO;
 import com.S209.yobi.clients.entity.Client;
-import com.S209.yobi.measures.entity.BloodPressure;
-import com.S209.yobi.measures.entity.BodyComposition;
-import com.S209.yobi.measures.entity.HeartRate;
-import com.S209.yobi.measures.service.MeasureService;
 import com.S209.yobi.users.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 
@@ -70,7 +65,7 @@ public class Measure {
     }
 
 
-    public static Measure fromBase(User user, Client client, BodyCompositionDTO bodyDTO, BloodPressureDTO bloodDTO){
+    public static Measure fromBase(User user, Client client, BodyRequestDTO bodyDTO, BloodRequestDTO bloodDTO){
         return Measure.builder()
                 .user(user)
                 .client(client)

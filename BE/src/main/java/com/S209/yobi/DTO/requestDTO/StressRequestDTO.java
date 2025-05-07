@@ -1,12 +1,13 @@
 package com.S209.yobi.DTO.requestDTO;
 
+import com.S209.yobi.measures.Enum.StressLevel;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class StressDTO {
+public class StressRequestDTO {
 
     @NotNull(message = "clientId 은 필수값입니다.")
     private Integer clientId;
@@ -15,7 +16,7 @@ public class StressDTO {
     private Short stressValue;
 
     @NotNull(message = "stressLevel 은 필수값입니다.")
-    private String stressLevel;
+    private StressLevel stressLevel;
 
     @NotNull(message = "oxygen 은 필수값입니다.")
     private Short oxygen;

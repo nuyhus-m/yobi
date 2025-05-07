@@ -1,7 +1,7 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.BodyCompositionDTO;
-import com.S209.yobi.DTO.requestDTO.ReBodyCompositionDTO;
+import com.S209.yobi.DTO.requestDTO.BodyRequestDTO;
+import com.S209.yobi.DTO.requestDTO.ReBodyRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +34,9 @@ public class BodyComposition {
     @Column(name = "icw")
     private Float  icw;
 
+    @Column(name = "ecw")
+    private Float  ecw;
+
     @Column(name = "protein")
     private Float  protein;
 
@@ -53,26 +56,28 @@ public class BodyComposition {
     }
 
 
-    public static BodyComposition fromDTO(BodyCompositionDTO dto){
+    public static BodyComposition fromDTO(BodyRequestDTO dto){
         return BodyComposition.builder()
                 .bfp(dto.getBfp())
                 .bfm(dto.getBfm())
                 .smm(dto.getSmm())
                 .bmr(dto.getBmr())
                 .icw(dto.getIcw())
+                .ecw(dto.getEcw())
                 .protein(dto.getProtein())
                 .mineral(dto.getMineral())
                 .bodyage(dto.getBodyage())
                 .build();
     }
 
-    public static BodyComposition fromReDTO(ReBodyCompositionDTO dto){
+    public static BodyComposition fromReDTO(ReBodyRequestDTO dto){
         return BodyComposition.builder()
                 .bfp(dto.getBfp())
                 .bfm(dto.getBfm())
                 .smm(dto.getSmm())
                 .bmr(dto.getBmr())
                 .icw(dto.getIcw())
+                .ecw(dto.getEcw())
                 .protein(dto.getProtein())
                 .mineral(dto.getMineral())
                 .bodyage(dto.getBodyage())

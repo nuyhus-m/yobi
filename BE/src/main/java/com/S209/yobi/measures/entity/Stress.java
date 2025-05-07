@@ -1,6 +1,7 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.StressDTO;
+import com.S209.yobi.DTO.requestDTO.StressRequestDTO;
+import com.S209.yobi.measures.Enum.StressLevel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -22,9 +23,9 @@ public class Stress {
     @Column(name = "stress_value")
     private Short stressValue;
 
-    @Size(max = 10)
+    @Enumerated(EnumType.STRING)
     @Column(name = "stress_level", length = 10)
-    private String stressLevel;
+    private StressLevel stressLevel;
 
     @Column(name = "oxygen")
     private Short oxygen;
@@ -41,7 +42,7 @@ public class Stress {
         this.createdAt = now;
     }
 
-    public static Stress fromDTO(StressDTO dto){
+    public static Stress fromDTO(StressRequestDTO dto){
         return Stress.builder()
                 .stressValue(dto.getStressValue())
                 .stressLevel(dto.getStressLevel())

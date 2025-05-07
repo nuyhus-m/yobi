@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ReBodyCompositionDTO {
+public class ReBodyRequestDTO {
 
     @NotNull(message = "clientId 은 필수값입니다.")
     private Integer clientId;
@@ -25,6 +25,9 @@ public class ReBodyCompositionDTO {
 
     @NotNull(message = "icw 은 필수값입니다.")
     private Float icw;
+
+    @NotNull(message = "ecw 은 필수값입니다.")
+    private Float ecw;
 
     @NotNull(message = "protein 은 필수값입니다.")
     private Float protein;

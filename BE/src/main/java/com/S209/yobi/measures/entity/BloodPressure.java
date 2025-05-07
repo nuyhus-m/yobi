@@ -1,7 +1,7 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.BloodPressureDTO;
-import com.S209.yobi.DTO.requestDTO.ReBloodPressureDTO;
+import com.S209.yobi.DTO.requestDTO.BloodRequestDTO;
+import com.S209.yobi.DTO.requestDTO.ReBloodRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,14 +34,14 @@ public class BloodPressure {
         this.createdAt = now;
     }
 
-    public static BloodPressure fromDTO(BloodPressureDTO dto) {
+    public static BloodPressure fromDTO(BloodRequestDTO dto) {
         return BloodPressure.builder()
                 .sbp(dto.getSbp())
                 .dbp(dto.getDbp())
                 .build();
     }
 
-    public static BloodPressure fromReDTO(ReBloodPressureDTO dto) {
+    public static BloodPressure fromReDTO(ReBloodRequestDTO dto) {
         return BloodPressure.builder()
                 .sbp(dto.getSbp())
                 .dbp(dto.getDbp())

@@ -3,12 +3,10 @@ package com.S209.yobi.DTO.requestDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.Instant;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class BodyCompositionDTO {
+public class BodyRequestDTO {
 
     @NotNull(message = "sbp 은 필수값입니다.")
     private Float bfp;
@@ -24,6 +22,9 @@ public class BodyCompositionDTO {
 
     @NotNull(message = "icw 은 필수값입니다.")
     private Float icw;
+
+    @NotNull(message = "ecw 은 필수값입니다.")
+    private Float ecw;
 
     @NotNull(message = "protein 은 필수값입니다.")
     private Float protein;

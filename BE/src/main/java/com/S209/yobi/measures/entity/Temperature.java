@@ -1,6 +1,6 @@
 package com.S209.yobi.measures.entity;
 
-import com.S209.yobi.DTO.requestDTO.TemperatureDTO;
+import com.S209.yobi.DTO.requestDTO.TemperatureRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +30,7 @@ public class Temperature {
         this.createdAt = now;
     }
 
-    public static Temperature fromDTO(TemperatureDTO dto){
+    public static Temperature fromDTO(TemperatureRequestDTO dto){
         return Temperature.builder()
                 .temperature(dto.getTemperature())
                 .build();
