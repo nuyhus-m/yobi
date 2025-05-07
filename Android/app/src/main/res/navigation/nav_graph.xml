@@ -27,7 +27,9 @@
         android:name="com.example.myapplication.ui.care.caremain.CareMainFragment"
         android:label="fragment_care_main"
         tools:layout="@layout/fragment_care_main">
-
+        <action
+            android:id="@+id/action_careMainFragment_to_reportDetailFragment"
+            app:destination="@id/dest_report_detail_fragment" />
         <argument
             android:name="image"
             app:argType="reference" />
@@ -86,6 +88,37 @@
             android:defaultValue=""
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/dest_care_report_fragment"
+        android:name="com.example.myapplication.ui.care.report.CareReportFragment"
+        android:label="fragment_care_report"
+        tools:layout="@layout/fragment_care_report">
+        <argument
+            android:name="name"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="dateRange"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/actionCareReportFragmentToReportDetailFragment"
+            app:destination="@id/dest_report_detail_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dest_report_detail_fragment"
+        android:name="com.example.myapplication.ui.care.reportdetail.ReportDetailFragment"
+        android:label="fragment_report_detail"
+        tools:layout="@layout/fragment_report_detail">
+        <argument
+            android:name="name"
+            app:argType="string" />
+
+        <argument
+            android:name="dateRange"
+            app:argType="string" />
+    </fragment>
 
 
     <fragment
@@ -93,6 +126,7 @@
         android:name="com.example.myapplication.ui.mypage.MyPageFragment"
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" />
+
 
     <dialog
         android:id="@+id/dest_schedule_register_dialog"
