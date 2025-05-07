@@ -24,7 +24,7 @@ lifecycleLivedataKtx = "2.6.1"
 lifecycleViewmodelKtx = "2.6.1"
 grpc = "1.63.0"
 google-cloud = "2.43.0"
-
+mp = "v3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +57,7 @@ grpc-google-cloud-speech-v1 = { module = "com.google.api.grpc:grpc-google-cloud-
 grpc-okhttp = { module = "io.grpc:grpc-okhttp", version.ref = "grpc" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mp" }
 
 
 [plugins]

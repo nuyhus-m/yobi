@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 0x2E = alpha 18%, 0000FF = pure blue -->
+    <solid android:color="#2E0000FF"/>
+    <corners android:radius="4.5dp"/>
+</shape>

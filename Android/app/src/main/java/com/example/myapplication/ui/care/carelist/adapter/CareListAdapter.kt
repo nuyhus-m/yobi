@@ -1,13 +1,14 @@
 package com.example.myapplication.ui.care.carelist.adapter
 
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemCareUserBinding
 import com.example.myapplication.ui.care.carelist.data.CareUser
 
-class CareListAdapter : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
+class CareListAdapter(
+    private val onClick: (CareUser) -> Unit
+) : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
 
     private val items = mutableListOf<CareUser>()
 
@@ -17,16 +18,8 @@ class CareListAdapter : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class CareViewHolder(private val binding: ItemCareUserBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CareUser) {
-            binding.imageView.setImageResource(item.image)
-            binding.tvName.text = item.name
-            binding.tvGender.text = item.gender
-            binding.tvBirth.text = item.birth
-        }
-
-    }
+    class CareViewHolder(val binding: ItemCareUserBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -41,7 +34,17 @@ class CareListAdapter : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CareViewHolder, position: Int) {
-        holder.bind(items[position])
+        val item = items[position]
+        val binding = holder.binding
+        binding.imageView.setImageResource(item.image)
+        binding.tvName.text = item.name
+        binding.tvGender.text = item.gender
+        binding.tvBirth.text = item.birth
+
+
+        holder.itemView.setOnClickListener {
+            onClick(item)
+        }
     }
 
     override fun getItemCount(): Int {
