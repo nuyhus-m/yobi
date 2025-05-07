@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/SubTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="박진현님 주간 보고서" />
+
+        <!-- 날짜 범위 -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/purple"
+                    android:backgroundTint="@color/purple" />
+
+                <TextView
+                    android:id="@+id/tvDateRange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2025/04/22 - 2025/04/28"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 주간 요약 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="주간 요약"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="- 평균 체지방: 17.81 %\n- 평균 체중: 71.31 kg\n- 평균 심박수: 65.14 bpm\n- 평균 혈압: 121 / 78 mmHg" />
+
+        <!-- 특이 변동 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="특이 변동"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="- 2025-06-02\n체지방이 평균보다 ▼0.0% 낮습니다\n\n- 2025-06-08\n체지방이 평균보다 ▲4.2% 높습니다\n\n- 2025-06-08\n체내수분이 평균보다 ▼1.9% 낮습니다\n\n- 2025-06-08\n이완기 혈압이 평균보다 ▲3.1% 높습니다\n\n- 2025-06-08\n심박수가 평균보다 ▲4.3% 높습니다" />
+
+        <!-- 총평 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="총평"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="체지방과 혈압이 평균보다 높아지는 경향이 있으며, 체내 수분이 다소 낮아지는 모습이 관찰됩니다. 전반적으로 건강 상태를 유지하기 위한 식단 조절이 필요합니다." />
+
+        <!-- 추천 식단 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="추천 식단"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="• 닭가슴살 샐러드: 단백질이 풍부하고 저칼로리 식사로, 체중 관리에 도움이 됩니다.\n• 구운 연어와 브로콜리: 오메가-3 지방산과 비타민이 풍부하여 심장과 신체 전반 건강에 기여합니다.\n• 귀리 오트밀: 섬유질이 풍부하며 포만감을 줘 탄수화물 조절에 도움을 줍니다." />
+
+        <!-- 일지 요약 (선택적) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="일지 요약"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="일지 주간 기록 요약은 전주 일요일에서 시작합니다." />
+    </LinearLayout>
+</ScrollView>
