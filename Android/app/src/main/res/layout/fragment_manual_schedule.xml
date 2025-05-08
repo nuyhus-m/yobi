@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="@dimen/space_40dp"
+    android:paddingHorizontal="@dimen/space_24dp"
+    android:paddingBottom="@dimen/space_40dp">
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="일정 등록"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/space_70dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/TitleTextStyle"/>
+
+    <!-- 대상 선택 라벨 -->
+    <TextView
+        android:id="@+id/tv_target_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방문 요양 대상이 누구인가요?"
+        style="@style/CardTitleTextStyle"
+        android:textColor="@color/gray_text"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/space_40dp" />
+
+    <Spinner
+        android:id="@+id/tv_spinner_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_target_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/space_8dp"/>
+
+<!--    <com.google.android.material.textfield.TextInputLayout-->
+<!--        android:id="@+id/tv_spinner_client2"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:endIconMode="custom"-->
+<!--        app:endIconDrawable="@drawable/ic_arrow_spiner"-->
+<!--        app:boxStrokeColor="@color/purple"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tv_target_label"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:layout_marginTop="@dimen/space_8dp">-->
+
+<!--        <com.google.android.material.textfield.TextInputEditText-->
+<!--            android:id="@+id/tv_who"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:inputType="date"-->
+<!--            android:hint="박진현"-->
+<!--            android:focusable="false"-->
+<!--            android:clickable="true"-->
+<!--            style="@style/BodyTextStyle"/>-->
+<!--    </com.google.android.material.textfield.TextInputLayout>-->
+
+    <!-- 날짜 선택 라벨 -->
+    <TextView
+        android:id="@+id/tv_date_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방문 날짜가 언제인가요?"
+        style="@style/CardTitleTextStyle"
+        android:textColor="@color/gray_text"
+        app:layout_constraintTop_toBottomOf="@id/tv_spinner_client"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/space_24dp" />
+
+    <!-- 날짜 입력 -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_calendar_month"
+        app:boxStrokeColor="@color/purple"
+        app:layout_constraintTop_toBottomOf="@id/tv_date_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/space_8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:hint="2025-04-29"
+            android:focusable="false"
+            android:clickable="true"
+            style="@style/BodyTextStyle"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 시간 선택 라벨 -->
+    <TextView
+        android:id="@+id/tv_time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="방문 시간이 언제인가요?"
+        style="@style/CardTitleTextStyle"
+        android:textColor="@color/gray_text"
+        app:layout_constraintTop_toBottomOf="@id/til_date"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/space_24dp" />
+
+    <!-- 시간 선택 영역 -->
+    <LinearLayout
+        android:id="@+id/time_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tv_time_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:weightSum="3">
+
+        <TextView
+            android:id="@+id/tv_start_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_white_stroke_purple_radius_8"
+            android:padding="@dimen/space_16dp"
+            android:gravity="center"
+            android:text="오후 3:00"
+            android:textColor="@color/purple" />
+
+        <ImageView
+            android:id="@+id/iv_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_16dp"
+            android:src="@drawable/ic_arrow_right" />
+
+        <TextView
+            android:id="@+id/tv_end_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_white_stroke_purple_radius_8"
+            android:padding="@dimen/space_16dp"
+            android:gravity="center"
+            android:text="오후 4:00"
+            android:textColor="@color/purple" />
+    </LinearLayout>
+
+    <!-- 등록 버튼 -->
+    <Button
+        android:id="@+id/btn_register"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="일정 등록하기"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_purple_radius_40"
+        style="@style/TitleTextStyle"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/space_24dp" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

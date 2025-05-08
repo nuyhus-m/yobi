@@ -108,6 +108,7 @@ dependencies {
     // https://github.com/PhilJay/MPAndroidChart
     implementation(libs.mpandroidchart)
 
-
+    /* calendar custom */
+    implementation("com.kizitonwose.calendar:view:2.6.2")
 
 }

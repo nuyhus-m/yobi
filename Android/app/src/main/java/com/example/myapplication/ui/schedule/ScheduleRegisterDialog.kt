@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.DialogScheduleRegisterBinding
 
@@ -33,11 +34,13 @@ class ScheduleRegisterDialog : DialogFragment() {
         }
 
         binding.btnPhoto.setOnClickListener {
-            // TODO 사진으로 등록 버튼 기능
+            findNavController().navigate(R.id.dest_photo_schedule)
+            dismiss()
         }
 
         binding.btnText.setOnClickListener {
-            // TODO 직접 등록 버튼 기능
+            findNavController().navigate(R.id.dest_manual_schedule)
+            dismiss()
         }
     }
 

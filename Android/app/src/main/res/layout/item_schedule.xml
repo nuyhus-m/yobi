@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingVertical="@dimen/space_8dp">
+
+    <!-- 색상 동그라미 -->
+    <View
+        android:id="@+id/view_color_dot"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_schedule_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_time"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_time"/>
+
+    <!-- 시간 텍스트 -->
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:00-13:00"
+        android:textColor="@color/gray_text"
+        style="@style/BodyTextStyle"
+        app:layout_constraintStart_toEndOf="@id/view_color_dot"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/space_8dp" />
+
+    <!-- 방문자 이름 + 유형 -->
+    <TextView
+        android:id="@+id/tv_name_with_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="홍길동님 방문요양"
+        style="@style/SubTitleTextStyle"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/tv_time"
+        app:layout_constraintStart_toStartOf="@+id/view_color_dot"
+        android:layout_marginTop="12dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_create_report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="일지 생성"
+            style="@style/ButtonTextStyle"
+            android:textColor="@color/purple"
+            android:background="@drawable/bg_purple_sub_radius_8"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_edit_schedule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="일정 수정"
+            style="@style/ButtonTextStyle"
+            android:textColor="@color/peach"
+            android:background="@drawable/bg_peach_sub_radius_8"
+            android:layout_marginTop="@dimen/space_4dp"/>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
