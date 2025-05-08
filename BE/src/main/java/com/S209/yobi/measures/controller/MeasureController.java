@@ -108,18 +108,6 @@ public class MeasureController {
     }
 
 
-    @Operation(summary = "단건 데이터 조회 (주요 데이터)",
-            description = "건강 주요 데이터를 조회합니다(체지방률/기초대사량/체내수분/스트레스/심박/혈압)")
-    @PostMapping(value = "/health/main/{userId}")
-    public ResponseEntity<ApiResponseDTO<?>> getMainData(
-//            @AuthenticationPrincipal CustomUserDetail userDetail,
-            @PathVariable int userId,
-            @RequestBody CheckBaseRequestDTO requestDTO
-    ){
-        ApiResponseDTO<?>response = measureService.getMainData(userId, requestDTO);
-        HttpStatus status = ApiResponseCode.fromCode(response.getCode()).getHttpStatus();
-        return ResponseEntity.status(status).body(response);
-    }
 
 
 
