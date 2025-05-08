@@ -6,16 +6,15 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnFilter"
+        style="@style/SubTitleTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_70dp"
         android:layout_marginEnd="@dimen/space_8dp"
-        android:layout_marginBottom="@dimen/space_40dp"
+        android:layout_marginBottom="@dimen/space_8dp"
         android:background="@drawable/bg_filter_button_selector"
-        android:fontFamily="@font/pretendard_bold"
         android:text="필터"
         android:textColor="@color/white"
-        android:textSize="24sp"
         app:backgroundTint="@null" />
 </FrameLayout>
 

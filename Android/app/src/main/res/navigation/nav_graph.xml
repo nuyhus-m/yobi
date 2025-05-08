@@ -112,6 +112,7 @@
             android:id="@+id/actionCareReportFragmentToReportDetailFragment"
             app:destination="@id/dest_report_detail_fragment" />
     </fragment>
+
     <fragment
         android:id="@+id/dest_report_detail_fragment"
         android:name="com.example.myapplication.ui.care.reportdetail.ReportDetailFragment"
@@ -125,6 +126,24 @@
             android:name="dateRange"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_daily_fragment"
+        android:name="com.example.myapplication.ui.care.daily.CareDailyFragment"
+        android:label="fragment_care_daily"
+        tools:layout="@layout/fragment_care_daily" />
+
+    <fragment
+        android:id="@+id/dest_care_seven_fragment"
+        android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
+        android:label="fragment_care_seven"
+        tools:layout="@layout/fragment_care_seven" />
+
+    <fragment
+        android:id="@+id/dest_daily_detail_fragment"
+        android:name="com.example.myapplication.ui.care.dailydetail.DailyDetailFragment"
+        android:label="fragment_daily_detail"
+        tools:layout="@layout/fragment_daily_detail" />
 
 
     <fragment
@@ -157,5 +176,6 @@
         android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
         android:label="WithdrawalDialog"
         tools:layout="@layout/dialog_withdrawal" />
+
 
 </navigation>
