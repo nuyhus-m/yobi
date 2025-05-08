@@ -16,6 +16,20 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
+        android:id="@+id/btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="삭제"
+        style="@style/ButtonTextStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_back"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:paddingHorizontal="@dimen/space_16dp"
+        android:paddingVertical="@dimen/space_4dp"
+        android:textColor="@color/purple"
+        android:visibility="gone"/>
+
+    <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,7 +40,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         style="@style/TitleTextStyle"/>
 
-    <!-- 대상 선택 라벨 -->
     <TextView
         android:id="@+id/tv_target_label"
         android:layout_width="wrap_content"
@@ -48,30 +61,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/space_8dp"/>
 
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        android:id="@+id/tv_spinner_client2"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:endIconMode="custom"-->
-<!--        app:endIconDrawable="@drawable/ic_arrow_spiner"-->
-<!--        app:boxStrokeColor="@color/purple"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv_target_label"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:layout_marginTop="@dimen/space_8dp">-->
-
-<!--        <com.google.android.material.textfield.TextInputEditText-->
-<!--            android:id="@+id/tv_who"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:inputType="date"-->
-<!--            android:hint="박진현"-->
-<!--            android:focusable="false"-->
-<!--            android:clickable="true"-->
-<!--            style="@style/BodyTextStyle"/>-->
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-    <!-- 날짜 선택 라벨 -->
     <TextView
         android:id="@+id/tv_date_label"
         android:layout_width="wrap_content"
@@ -83,31 +72,22 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/space_24dp" />
 
-    <!-- 날짜 입력 -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_date"
-        android:layout_width="0dp"
+    <EditText
+        android:id="@+id/et_date"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_calendar_month"
-        app:boxStrokeColor="@color/purple"
+        android:hint="날짜를 선택하세요"
+        android:inputType="date"
+        android:focusable="false"
+        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/tv_date_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/space_8dp">
+        android:layout_marginTop="8dp"
+        android:drawableEnd="@drawable/ic_calendar_month"
+        android:background="@drawable/bg_white_stroke_purple_radius_8"
+        android:padding="16dp"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            android:hint="2025-04-29"
-            android:focusable="false"
-            android:clickable="true"
-            style="@style/BodyTextStyle"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- 시간 선택 라벨 -->
     <TextView
         android:id="@+id/tv_time_label"
         android:layout_width="wrap_content"
@@ -115,33 +95,31 @@
         android:text="방문 시간이 언제인가요?"
         style="@style/CardTitleTextStyle"
         android:textColor="@color/gray_text"
-        app:layout_constraintTop_toBottomOf="@id/til_date"
+        app:layout_constraintTop_toBottomOf="@id/et_date"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/space_24dp" />
 
-    <!-- 시간 선택 영역 -->
     <LinearLayout
         android:id="@+id/time_selector"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/tv_time_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/space_8dp"
-        android:weightSum="3">
+        android:layout_marginTop="@dimen/space_8dp">
 
-        <TextView
+        <EditText
             android:id="@+id/tv_start_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="시작 시간"
+            android:focusable="false"
+            android:clickable="true"
             android:background="@drawable/bg_white_stroke_purple_radius_8"
-            android:padding="@dimen/space_16dp"
-            android:gravity="center"
-            android:text="오후 3:00"
-            android:textColor="@color/purple" />
+            android:padding="16dp"/>
 
         <ImageView
             android:id="@+id/iv_arrow"
@@ -150,16 +128,16 @@
             android:layout_marginHorizontal="@dimen/space_16dp"
             android:src="@drawable/ic_arrow_right" />
 
-        <TextView
+        <EditText
             android:id="@+id/tv_end_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bg_white_stroke_purple_radius_8"
-            android:padding="@dimen/space_16dp"
-            android:gravity="center"
-            android:text="오후 4:00"
-            android:textColor="@color/purple" />
+            android:clickable="true"
+            android:focusable="false"
+            android:hint="종료 시간"
+            android:padding="16dp" />
     </LinearLayout>
 
     <!-- 등록 버튼 -->

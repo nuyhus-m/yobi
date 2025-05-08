@@ -229,4 +229,17 @@
         android:label="WithdrawalDialog"
         tools:layout="@layout/dialog_withdrawal" />
 
+    <dialog
+        android:id="@+id/dest_year_month_picker_Dialog"
+        android:name="com.example.myapplication.ui.schedule.YearMonthPickerDialog"
+        android:label="YearMonthPickerDialog"
+        tools:layout="@layout/dialog_year_month_picker"/>
+
+    <dialog
+        android:id="@+id/dest_date_picker_dialog"
+        android:name="com.example.myapplication.ui.schedule.DatePickerDialog"
+        android:label="DatePickerDialog"
+        tools:layout="@layout/dialog_date_picker" />
+
+
 </navigation>

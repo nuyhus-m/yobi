@@ -8,50 +8,83 @@ import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentManualScheduleBinding
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.myapplication.ui.schedule.DatePickerDialog
+import com.example.myapplication.ui.schedule.TimePickerDialog
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
 
 class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
     FragmentManualScheduleBinding::bind,
     R.layout.fragment_manual_schedule
 ) {
+
+    private val args: ManualScheduleFragmentArgs by navArgs()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         setupScheduleSpinner()
+
+        val scheduleId = args.scheduleId
+        val isEditMode = scheduleId != -1L
+
+        if (isEditMode) {
+            // 수정 모드
+            binding.tvTitle.text = "일정 수정"
+            binding.btnDelete.visibility = View.VISIBLE
+
+            // TODO: scheduleId를 기반으로 ViewModel 또는 Repository에서 해당 데이터를 가져와서 세팅
+
+
+        } else {
+            // 등록 모드
+            binding.tvTitle.text = "일정 등록"
+            binding.btnDelete.visibility = View.GONE
+        }
 
         // 버튼 클릭: 이전 화면으로
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
-//        // 각 입력 항목 클릭 리스너 또는 변경 감지 등록
-//        binding.tvSpinnerClient.setOnClickListener {
-//            // TODO: 다이얼로그나 Spinner로 대상 선택 (임시 처리)
-////            binding.tvSpinnerClient.settext("박진현") // 예시
-////            checkValid()
-//        }
-
         binding.etDate.setOnClickListener {
-            // TODO: 날짜 선택 다이얼로그 띄우기
-            binding.etDate.setText("2025-04-29") // 예시
-            checkValid()
-        }
-
-        binding.tvStartTime.setOnClickListener {
-            // TODO: 시간 선택 다이얼로그
-            binding.tvStartTime.text = "오후 3:00"
-            checkValid()
-        }
-
-        binding.tvEndTime.setOnClickListener {
-            // TODO: 시간 선택 다이얼로그
-            binding.tvEndTime.text = "오후 4:00"
-            checkValid()
+            val dialog = DatePickerDialog()
+            dialog.onDateSelected = { selectedDate ->
+                binding.etDate.setText(selectedDate.toString()) // 포맷 조정 가능
+                checkValid()
+            }
+            dialog.show(parentFragmentManager, "DatePickerDialog")
         }
 
         // 등록 버튼 클릭 시
         binding.btnRegister.setOnClickListener {
             showToast("일정이 등록되었습니다.")
             findNavController().popBackStack()
+        }
+
+        binding.btnDelete.setOnClickListener{
+            showToast("일정이 삭제되었습니다.")
+            findNavController().popBackStack()
+        }
+
+        binding.tvStartTime.setOnClickListener {
+            val dialog = TimePickerDialog()
+            dialog.onTimeSelected = { time ->
+                binding.tvStartTime.setText(formatTime(time))
+                checkValid()
+            }
+            dialog.show(parentFragmentManager, "StartTimeDialog")
+        }
+
+        binding.tvEndTime.setOnClickListener {
+            val dialog = TimePickerDialog()
+            dialog.onTimeSelected = { time ->
+                binding.tvEndTime.setText(formatTime(time))
+                checkValid()
+            }
+            dialog.show(parentFragmentManager, "EndTimeDialog")
         }
     }
 
@@ -90,6 +123,11 @@ class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+    }
+
+    private fun formatTime(time: LocalTime): String {
+        val formatter = DateTimeFormatter.ofPattern("a h:mm") // 예: 오후 3:00
+        return time.format(formatter)
     }
 
 }
