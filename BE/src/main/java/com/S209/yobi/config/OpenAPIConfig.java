@@ -24,7 +24,7 @@ public class OpenAPIConfig {
                         .version("v1.0.0"))
                 .servers(List.of(
 //                        new Server().url("https://j12d107.p.ssafy.io/api").description("EC2 Server"),
-//                        new Server().url("http://192.168.100.203:8080/api").description("Local Server")
+                        new Server().url("http://192.168.100.162:8080/api").description("Local Server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new io.swagger.v3.oas.models.Components()

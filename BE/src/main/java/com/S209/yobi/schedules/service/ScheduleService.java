@@ -212,8 +212,7 @@ public class ScheduleService {
 
     // OCR로 일정 등록
     @Transactional
-    public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId) {
-
+    public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
         //FastAPI 서버에 이미지 전송
         OcrResponseDTO ocrResult = ocrFastApiClient.processImage(image);
 
@@ -230,7 +229,7 @@ public class ScheduleService {
                         .orElseThrow(() -> new EntityNotFoundException("Client not found with name: " + item.getClientName()));
 
                 //날짜, 시간 파싱
-                LocalDate visitedDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), item.getDay());
+                LocalDate visitedDate = LocalDate.of(year, month, item.getDay());
                 LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
                 LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
 
@@ -245,7 +244,13 @@ public class ScheduleService {
 
                 scheduleRepository.save(schedule);
                 count++;
+                log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}", 
+                    visitedDate, startAt, endAt, client.getName());
+            } catch (EntityNotFoundException e) {
+                log.error("클라이언트를 찾을 수 없음: {}", item.getClientName());
+                throw e;
             } catch (Exception e) {
+                log.error("스케줄 저장 중 오류 발생: {}", e.getMessage());
                 throw e;
             }
         }
