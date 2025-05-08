@@ -85,5 +85,6 @@
     <string name="bluetooth_method_1_detail">휴대폰 화면 내 설정창의 블루투스를 켜주세요</string>
     <string name="bluetooth_method_2_title">방법 2</string>
     <string name="bluetooth_method_2_detail">휴대폰 설정창을 켜 연결, 블루투스를 차례로\n선택해주세요</string>
+    <string name="bluetooth">블루투스</string>
 
 </resources>
