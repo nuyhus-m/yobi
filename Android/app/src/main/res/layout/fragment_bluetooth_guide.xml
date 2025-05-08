@@ -228,7 +228,7 @@
         style="@style/Widget.Button.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="92dp"
+        android:layout_marginHorizontal="@dimen/space_92dp"
         android:layout_marginTop="@dimen/space_40dp"
         android:layout_marginBottom="@dimen/space_40dp"
         android:text="@string/close"

@@ -7,4 +7,5 @@
     <dimen name="space_24dp">24dp</dimen>
     <dimen name="space_40dp">40dp</dimen>
     <dimen name="space_70dp">70dp</dimen>
+    <dimen name="space_92dp">92dp</dimen>
 </resources>
