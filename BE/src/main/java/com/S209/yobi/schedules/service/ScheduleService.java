@@ -9,14 +9,14 @@ import com.S209.yobi.schedules.entity.Schedule;
 import com.S209.yobi.schedules.repository.ScheduleRepository;
 import com.S209.yobi.users.entity.User;
 import com.S209.yobi.users.repository.UserRepository;
-import com.S209.yobi.schedules.service.OcrFastApiClient;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,6 +35,7 @@ public class ScheduleService {
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
     private final OcrFastApiClient ocrFastApiClient;
+    private final ImageResizeService imageResizeService;
 
     // 단건 일정 조회
     @Transactional(readOnly = true)
@@ -213,48 +214,59 @@ public class ScheduleService {
     // OCR로 일정 등록
     @Transactional
     public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
-        //FastAPI 서버에 이미지 전송
-        OcrResponseDTO ocrResult = ocrFastApiClient.processImage(image);
+        try {
+            // 이미지 리사이징 처리
+            MultipartFile resizedImage = imageResizeService.resizeImageIfNeeded(image);
+            log.info("이미지 크기: 원본 {}KB -> 변환 후 {}KB",
+                    image.getSize() / 1024,
+                    resizedImage.getSize() / 1024);
 
-        //일정 등록
-        int count = 0;
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            // FastAPI 서버에 리사이징된 이미지 전송
+            OcrResponseDTO ocrResult = ocrFastApiClient.processImage(resizedImage);
 
-        //결과에서 일정 정보 추출 및 저장
-        for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
-            try {
-                // 클라이언트 이름으로 클라이언트 찾기
-                Client client = clientRepository.findByName(item.getClientName())
-                        .orElseThrow(() -> new EntityNotFoundException("Client not found with name: " + item.getClientName()));
+            // 일정 등록
+            int count = 0;
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-                //날짜, 시간 파싱
-                LocalDate visitedDate = LocalDate.of(year, month, item.getDay());
-                LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
-                LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
+            // 결과에서 일정 정보 추출 및 저장
+            for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
+                try {
+                    // 클라이언트 이름으로 클라이언트 찾기
+                    Client client = clientRepository.findByName(item.getClientName())
+                            .orElseThrow(() -> new EntityNotFoundException("Client not found with name: " + item.getClientName()));
 
-                // Schedule 생성 및 저장
-                Schedule schedule = Schedule.builder()
-                        .user(user)
-                        .client(client)
-                        .visitedDate(visitedDate)
-                        .startAt(startAt)
-                        .endAt(endAt)
-                        .build();
+                    // 날짜, 시간 파싱
+                    LocalDate visitedDate = LocalDate.of(year, month, item.getDay());
+                    LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
+                    LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
 
-                scheduleRepository.save(schedule);
-                count++;
-                log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}", 
-                    visitedDate, startAt, endAt, client.getName());
-            } catch (EntityNotFoundException e) {
-                log.error("클라이언트를 찾을 수 없음: {}", item.getClientName());
-                throw e;
-            } catch (Exception e) {
-                log.error("스케줄 저장 중 오류 발생: {}", e.getMessage());
-                throw e;
+                    // Schedule 생성 및 저장
+                    Schedule schedule = Schedule.builder()
+                            .user(user)
+                            .client(client)
+                            .visitedDate(visitedDate)
+                            .startAt(startAt)
+                            .endAt(endAt)
+                            .build();
+
+                    scheduleRepository.save(schedule);
+                    count++;
+                    log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}",
+                            visitedDate, startAt, endAt, client.getName());
+                } catch (EntityNotFoundException e) {
+                    log.error("클라이언트를 찾을 수 없음: {}", item.getClientName());
+                    throw e;
+                } catch (Exception e) {
+                    log.error("스케줄 저장 중 오류 발생: {}", e.getMessage());
+                    throw e;
+                }
             }
-        }
 
-        return OcrDTO.OcrResultDTO.builder().count(count).build();
+            return OcrDTO.OcrResultDTO.builder().count(count).build();
+        } catch (IOException e) {
+            log.error("이미지 처리 중 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);
+        }
     }
 }
