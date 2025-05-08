@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.measure.bluetoothguide.BluetoothGuideFragment">
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/TitleTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_70dp"
+        android:text="@string/bluetooth_how_to_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        style="@style/BodyTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_4dp"
+        android:text="@string/bluetooth_method_select"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <TextView
+        android:id="@+id/tv_method_1_title"
+        style="@style/CardTitleTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:text="@string/bluetooth_method_1_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle" />
+
+    <TextView
+        android:id="@+id/tv_method_1_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:text="@string/bluetooth_method_1_detail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_method_1_title" />
+
+    <ImageView
+        android:id="@+id/iv_phone_off"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:contentDescription="@null"
+        android:src="@drawable/bg_gradient_gray_radius_corner_16"
+        app:layout_constraintDimensionRatio="3.85:1"
+        app:layout_constraintEnd_toEndOf="@id/tv_method_1_detail"
+        app:layout_constraintHeight_percent="0.08"
+        app:layout_constraintStart_toStartOf="@id/tv_method_1_detail"
+        app:layout_constraintTop_toBottomOf="@id/tv_method_1_detail" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_bluetooth_off"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/space_16dp"
+        android:layout_marginEnd="@dimen/space_16dp"
+        android:background="@drawable/bg_gray_radius_12"
+        app:layout_constraintBottom_toBottomOf="@id/iv_phone_off"
+        app:layout_constraintDimensionRatio="3.5:1"
+        app:layout_constraintEnd_toEndOf="@id/iv_phone_off"
+        app:layout_constraintTop_toTopOf="@id/iv_phone_off">
+
+        <ImageView
+            android:id="@+id/iv_bluetooth_off"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="5dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_gray_shape_oval"
+            android:contentDescription="@null"
+            android:paddingVertical="4dp"
+            android:src="@drawable/ic_bluetooth"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#FFD2C6C6" />
+
+        <TextView
+            android:id="@+id/tv_bluetooth_off"
+            style="@style/BodyTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_8dp"
+            android:text="@string/bluetooth"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_bluetooth_off"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/iv_arrow_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_arrow_down"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_phone_off" />
+
+    <ImageView
+        android:id="@+id/iv_phone_on"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:contentDescription="@null"
+        android:src="@drawable/bg_gradient_gray_radius_corner_16"
+        app:layout_constraintDimensionRatio="3.85:1"
+        app:layout_constraintEnd_toEndOf="@id/tv_method_1_detail"
+        app:layout_constraintHeight_percent="0.08"
+        app:layout_constraintStart_toStartOf="@id/tv_method_1_detail"
+        app:layout_constraintTop_toBottomOf="@id/iv_arrow_down"
+        app:layout_goneMarginTop="12dp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_bluetooth_on"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/space_16dp"
+        android:layout_marginEnd="@dimen/space_16dp"
+        android:background="@drawable/bg_gray_radius_12"
+        app:layout_constraintBottom_toBottomOf="@id/iv_phone_on"
+        app:layout_constraintDimensionRatio="3.5:1"
+        app:layout_constraintEnd_toEndOf="@id/iv_phone_on"
+        app:layout_constraintTop_toTopOf="@id/iv_phone_on">
+
+        <ImageView
+            android:id="@+id/iv_bluetooth_on"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="5dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_white_shape_oval"
+            android:contentDescription="@null"
+            android:paddingVertical="4dp"
+            android:src="@drawable/ic_bluetooth"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_bluetooth_on"
+            style="@style/BodyTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_8dp"
+            android:text="@string/bluetooth"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_bluetooth_on"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_method_2_title"
+        style="@style/CardTitleTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:text="@string/bluetooth_method_2_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_phone_on" />
+
+    <TextView
+        android:id="@+id/tv_method_2_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:text="@string/bluetooth_method_2_detail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_method_2_title" />
+
+    <ImageView
+        android:id="@+id/iv_phone_setting_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/img_phone_setting_1"
+        app:layout_constraintDimensionRatio="0.66:1"
+        app:layout_constraintStart_toStartOf="@id/tv_method_2_detail"
+        app:layout_constraintTop_toBottomOf="@id/tv_method_2_detail"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <ImageView
+        android:id="@+id/iv_arrow_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintBottom_toBottomOf="@id/iv_phone_setting_1"
+        app:layout_constraintEnd_toStartOf="@id/iv_phone_setting_2"
+        app:layout_constraintStart_toEndOf="@id/iv_phone_setting_1"
+        app:layout_constraintTop_toTopOf="@id/iv_phone_setting_1" />
+
+    <ImageView
+        android:id="@+id/iv_phone_setting_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:src="@drawable/img_phone_setting_2"
+        app:layout_constraintBottom_toBottomOf="@id/iv_phone_setting_1"
+        app:layout_constraintDimensionRatio="0.66:1"
+        app:layout_constraintEnd_toEndOf="@+id/tv_method_2_detail"
+        app:layout_constraintTop_toTopOf="@id/iv_phone_setting_1"
+        app:layout_constraintWidth_percent="0.28" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_close"
+        style="@style/Widget.Button.Secondary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="92dp"
+        android:layout_marginTop="@dimen/space_40dp"
+        android:layout_marginBottom="@dimen/space_40dp"
+        android:text="@string/close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_phone_setting_1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

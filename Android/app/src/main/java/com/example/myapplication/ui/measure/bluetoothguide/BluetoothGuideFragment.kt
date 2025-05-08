@@ -1,28 +1,24 @@
-package com.example.myapplication.ui.measure.deviceconnect
+package com.example.myapplication.ui.measure.bluetoothguide
 
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
-import com.example.myapplication.databinding.FragmentDeviceConnectBinding
+import com.example.myapplication.databinding.FragmentBluetoothGuideBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
-    FragmentDeviceConnectBinding::bind,
-    R.layout.fragment_device_connect
+class BluetoothGuideFragment : BaseFragment<FragmentBluetoothGuideBinding>(
+    FragmentBluetoothGuideBinding::bind,
+    R.layout.fragment_bluetooth_guide
 ) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.ivBack.setOnClickListener {
+        binding.btnClose.setOnClickListener {
             findNavController().popBackStack()
-        }
-
-        binding.clBtn.setOnClickListener {
-            findNavController().navigate(R.id.dest_bluetooth_guide)
         }
     }
 }
