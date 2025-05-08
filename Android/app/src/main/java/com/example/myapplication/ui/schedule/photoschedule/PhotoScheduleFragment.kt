@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentPhotoScheduleBinding
 import com.example.myapplication.R
+import com.example.myapplication.ui.schedule.YearMonthPickerDialog
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
@@ -55,7 +56,7 @@ class PhotoScheduleFragment: BaseFragment<FragmentPhotoScheduleBinding>(
 
         // 날짜 EditText 클릭 시 날짜 선택 다이얼로그
         binding.etDate.setOnClickListener {
-            showMonthPickerDialog()
+            showYearMonthPicker()
         }
 
         // 등록 버튼 클릭 시
@@ -65,25 +66,20 @@ class PhotoScheduleFragment: BaseFragment<FragmentPhotoScheduleBinding>(
         }
     }
 
-    private fun showMonthPickerDialog() {
-        val today = LocalDate.now()
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("일정 날짜 선택")
-            .setSelection(today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
-            .build()
-
-        datePicker.addOnPositiveButtonClickListener { millis ->
-            val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-            val formatted = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM"))
+    private fun showYearMonthPicker() {
+        val dialog = YearMonthPickerDialog()
+        dialog.setListener { year, month ->
+            val formatted = String.format("%d-%02d", year, month)
             binding.etDate.setText(formatted)
+            binding.tvDeleteNotice.text = "이전에 기록된 $formatted 스케줄은 모두 삭제됩니다."
             checkValid()
         }
-
-        datePicker.show(parentFragmentManager, "MonthPicker")
+        dialog.show(parentFragmentManager, "YEAR_MONTH_PICKER")
     }
 
     private fun checkValid() {
         val isPhotoSelected = selectedPhotoUri != null
-        binding.btnRegister.isEnabled = isPhotoSelected
+        val isDateSelected = binding.etDate.text.toString().isNotEmpty()
+        binding.btnRegister.isEnabled = isPhotoSelected && isDateSelected
     }
 }
