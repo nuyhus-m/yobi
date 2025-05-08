@@ -4,6 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginVertical="8dp"
+    android:layout_marginStart="@dimen/space_4dp"
+    android:layout_marginEnd="@dimen/space_4dp"
+    android:layout_marginBottom="@dimen/space_8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp">
 
@@ -11,21 +14,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="@dimen/space_4dp">
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/CaptionTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="@dimen/space_8dp"
             android:text="제목"
-            android:textSize="14sp"
             android:textStyle="bold" />
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/line_chart"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="@dimen/space_4dp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

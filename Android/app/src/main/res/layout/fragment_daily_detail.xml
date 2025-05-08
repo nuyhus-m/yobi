@@ -1,9 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.care.dailydetail.DailyDetailFragment">
+    android:padding="16dp"
+    tools:context=".ui.care.daily.DailyDetailFragment">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="일일 건강상태 자세히 보기"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/tv_body_fat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="체지방률: " />
+
+        <TextView
+            android:id="@+id/tv_muscle_mass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="근육량: " />
+
+        <TextView
+            android:id="@+id/tv_bmr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="기초대사량: " />
+
+        <TextView
+            android:id="@+id/tv_body_water"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="체내 수분: " />
+
+        <TextView
+            android:id="@+id/tv_protein"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="단백질량: " />
+
+        <TextView
+            android:id="@+id/tv_mineral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="무기질량: " />
+
+        <TextView
+            android:id="@+id/tv_body_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="신체나이: " />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="체온: " />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/tv_systolic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수축기: " />
+
+        <TextView
+            android:id="@+id/tv_diastolic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이완기: " />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/tv_heart_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="심박수: " />
+
+        <TextView
+            android:id="@+id/tv_oxygen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="산소포화도: " />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/tv_stress_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="스트레스 지수: " />
+
+        <TextView
+            android:id="@+id/tv_stress_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="스트레스 등급: " />
+
+    </LinearLayout>
+</ScrollView>
