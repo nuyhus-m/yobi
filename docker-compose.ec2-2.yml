@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  ai:
+    image: ai-app
+    container_name: ai-app
+    build:
+      context: ./AI
+    ports:
+      - "6000:6000"
