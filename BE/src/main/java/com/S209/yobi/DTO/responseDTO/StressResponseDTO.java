@@ -1,8 +1,7 @@
 package com.S209.yobi.DTO.responseDTO;
 
-import com.S209.yobi.measures.Enum.StressLevel;
-import com.S209.yobi.measures.Mapper.StressLevelMapper;
-import com.S209.yobi.measures.entity.Stress;
+import com.S209.yobi.domain.measures.Mapper.StressLevelMapper;
+import com.S209.yobi.domain.measures.entity.Stress;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +14,7 @@ public class StressResponseDTO {
 
     public static StressResponseDTO of(Stress stress){
         return StressResponseDTO.builder()
-                .stressId(stress.getId())
+//                .stressId(stress.getId())
                 .stressValue(stress.getStressValue())
                 .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
                 .build();

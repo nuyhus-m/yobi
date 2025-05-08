@@ -1,6 +1,6 @@
 package com.S209.yobi.DTO.requestDTO;
 
-import com.S209.yobi.measures.Enum.StressLevel;
+import com.S209.yobi.domain.measures.Enum.StressLevel;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 

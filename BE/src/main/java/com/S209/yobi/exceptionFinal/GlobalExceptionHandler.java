@@ -1,4 +1,4 @@
-package com.S209.yobi.exception;
+package com.S209.yobi.exceptionFinal;
 
 
 
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.net.BindException;
 import java.nio.file.AccessDeniedException;
 
-//@ControllerAdvice
+@ControllerAdvice
 @Slf4j
 // 전역 예외 처리기
 public class GlobalExceptionHandler {
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class,
             IllegalArgumentException.class
     })
-    public ResponseEntity<ApiResponseDTO<?>> handleBadRequest(Exception ex,  HttpServletRequest request) {
+    public ResponseEntity<ApiResponseDTO<?>> handleBadRequest(Exception ex, HttpServletRequest request) {
 
         log.warn("Bad request at [{}] {}: {}",
                 request.getMethod(), request.getRequestURI(), ex.getMessage());
