@@ -3,11 +3,13 @@ package com.example.myapplication.ui
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseActivity
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.example.myapplication.util.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,12 +24,48 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         navController = navHostFragment.navController
         binding.bnv.setupWithNavController(navController)
 
-        hideBottomNavigationView(navController)
+        updateBottomNavigationView(navController)
+        updateBottomNavCenterBtn(navController)
+
+        val options = NavOptions.Builder()
+            .setLaunchSingleTop(true)
+            .setPopUpTo(navController.graph.startDestinationId, false)
+            .build()
+
+        binding.ivCenter.setOnSingleClickListener {
+            navController.navigate(R.id.dest_measure_target)
+        }
+
+        binding.bnv.setOnItemSelectedListener { item ->
+            if (item.itemId != binding.bnv.selectedItemId) {
+                navController.navigate(item.itemId, null, options)
+            }
+            true
+        }
     }
 
-    private fun hideBottomNavigationView(navController: NavController) {
+    private fun updateBottomNavigationView(navController: NavController) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bnv.visibility = when (destination.id) {
+                R.id.dest_schedule -> View.VISIBLE
+                R.id.dest_care_list -> View.VISIBLE
+                R.id.dest_measure_target -> View.VISIBLE
+                R.id.dest_visit_log_list -> View.VISIBLE
+                R.id.dest_my_page -> View.VISIBLE
+                R.id.dest_schedule_register_dialog -> View.VISIBLE
+                R.id.dest_schedule_delete_dialog -> View.VISIBLE
+                R.id.dest_logout_dialog -> View.VISIBLE
+                R.id.dest_withdrawal_dialog -> View.VISIBLE
+                else -> View.GONE
+            }
+        }
+    }
+
+    private fun updateBottomNavCenterBtn(navController: NavController) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.ivCenter.isSelected = destination.id == R.id.dest_measure_target
+
+            binding.ivCenter.visibility = when (destination.id) {
                 R.id.dest_schedule -> View.VISIBLE
                 R.id.dest_care_list -> View.VISIBLE
                 R.id.dest_measure_target -> View.VISIBLE
