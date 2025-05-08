@@ -8,6 +8,5 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
     FragmentCareDailyBinding::bind,
     R.layout.fragment_care_daily
 ) {
-    // api 받아와야 합니당 지금은 xml에 하드코딩 해놨어요 ㅎ
 
 }

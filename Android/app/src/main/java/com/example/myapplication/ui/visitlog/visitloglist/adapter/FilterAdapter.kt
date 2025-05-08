@@ -32,7 +32,7 @@ class FilterAdapter(
             // 첫 번째만 marginStart
             val context = root.context
             layoutParams.marginStart = if (position == 0) {
-                context.resources.getDimensionPixelSize(R.dimen.space_16dp)
+                context.resources.getDimensionPixelSize(R.dimen.space_24dp)
             } else {
                 0
             }

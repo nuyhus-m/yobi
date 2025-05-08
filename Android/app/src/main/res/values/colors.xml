@@ -10,6 +10,7 @@
     <color name="gray_text">#BF464646</color>
     <color name="gray_text_sub">#BFA3A3A3</color>
     <color name="gray_text_secondary">#FF535862</color>
+    <color name="gray_recording">#EEEEEE</color>
     <color name="red">#FFE63D3D</color>
     <color name="red_sub">#12E63D3D</color>
     <color name="green">#FF4DAF37</color>

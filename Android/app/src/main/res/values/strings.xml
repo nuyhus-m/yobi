@@ -73,4 +73,8 @@
     <string name="measure_forehead_touch_guide">체온 측정을 위해\n이마에 기기를\n대어주세요</string>
     <string name="measure_start">측정 시작</string>
 
+    <!--STT 일지-->
+    <string name="recording">기록중</string>
+    <string name="save">저장하기</string>
+
 </resources>
