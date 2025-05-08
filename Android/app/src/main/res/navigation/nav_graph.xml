@@ -9,7 +9,11 @@
         android:id="@+id/dest_schedule"
         android:name="com.example.myapplication.ui.schedule.schedule.ScheduleFragment"
         android:label="ScheduleFragment"
-        tools:layout="@layout/fragment_schedule" />
+        tools:layout="@layout/fragment_schedule" >
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_manual_schedule"
+            app:destination="@id/dest_manual_schedule" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_photo_schedule"
@@ -23,10 +27,10 @@
         android:label="ManualScheduleFragment"
         tools:layout="@layout/fragment_manual_schedule">
 
-<!--        <argument-->
-<!--            android:name="scheduleItem"-->
-<!--            app:argType="com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleItem"-->
-<!--            app:nullable="true" />-->
+        <argument
+            android:name="scheduleId"
+            app:argType="long"
+            android:defaultValue="-1L" /> <!-- 등록일 경우 -1로 처리 -->
     </fragment>
 
     <fragment

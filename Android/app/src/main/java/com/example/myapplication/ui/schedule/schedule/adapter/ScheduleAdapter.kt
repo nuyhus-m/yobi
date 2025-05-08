@@ -11,7 +11,8 @@ import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewMode
 
 class ScheduleAdapter (
     private var scheduleList: List<ScheduleItem>,
-    private val viewModel: ScheduleViewModel
+    private val viewModel: ScheduleViewModel,
+    private val onEditClick: (Int) -> Unit
 ): RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>(){
 
     inner class ScheduleViewHolder(private val binding: ItemScheduleBinding) :
@@ -35,7 +36,7 @@ class ScheduleAdapter (
                 // 예: 보고서 작성 화면 이동
             }
             binding.btnEditSchedule.setOnClickListener {
-                // 예: 일정 수정 화면 이동
+                onEditClick(item.scheduleId)
             }
         }
     }

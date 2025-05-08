@@ -162,7 +162,11 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     }
 
     private fun setupRecyclerView() {
-        scheduleAdapter = ScheduleAdapter(emptyList<ScheduleItem>(), viewModel)
+        scheduleAdapter = ScheduleAdapter(emptyList<ScheduleItem>(), viewModel) { scheduleId ->
+            val action = ScheduleFragmentDirections
+                .actionScheduleFragmentToDestManualSchedule(scheduleId.toLong())
+            findNavController().navigate(action)
+        }
         binding.scheduleRecyclerView.adapter = scheduleAdapter
     }
 

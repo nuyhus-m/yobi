@@ -86,7 +86,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_schedule"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:paddingBottom="100dp"/>
 
     <!-- Floating 일정 등록 버튼 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
