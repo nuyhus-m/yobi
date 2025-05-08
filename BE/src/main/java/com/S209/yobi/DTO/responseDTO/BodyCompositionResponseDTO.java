@@ -15,20 +15,19 @@ public class BodyCompositionResponseDTO {
     private Float tbw;
     private Float protein;
     private Float mineral;
-    private Float bodyAge;
+    private short bodyAge;
 
     public static BodyCompositionResponseDTO of(BodyComposition body){
 
         // 소수점 첫째자리까지 반올림
         float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
-        float roundedBfm = Math.round(body.getBfp() * 10) / 10.0f;
-        float roundedSmm = Math.round(body.getBfp() * 10) / 10.0f;
-        float roundedTbm = Math.round(body.getBfp() * 10) / 10.0f;
-        float roundedProtein = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
-        float roundedMineral = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
-        float roundedBodyAge = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
+        float roundedBfm = Math.round(body.getBfm() * 10) / 10.0f;
+        float roundedSmm = Math.round(body.getSmm() * 10) / 10.0f;
+        float roundedTbm = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
+        float roundedProtein = Math.round(body.getProtein() * 10) / 10.0f;
+        float roundedMineral = Math.round(body.getMineral() * 10) / 10.0f;
 
-        // 소수점 첫째자리에서 반올림
+        // 정수에서 반올림
         int roundedBmr = Math.round(body.getBmr());
 
         return BodyCompositionResponseDTO.builder()
@@ -40,7 +39,7 @@ public class BodyCompositionResponseDTO {
                 .tbw(roundedTbm)
                 .protein(roundedProtein)
                 .mineral(roundedMineral)
-                .bodyAge(roundedBodyAge)
+                .bodyAge(body.getBodyage())
                 .build();
     }
 

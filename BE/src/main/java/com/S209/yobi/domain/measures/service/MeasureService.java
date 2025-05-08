@@ -202,7 +202,7 @@ public class MeasureService {
      * 오늘 필수 데이터 측정했는지 여부(T/F)
      */
     @Transactional(readOnly = true)
-    public ApiResult checkBase(int userId, CheckBaseRequestDTO requestDTO){
+    public ApiResult checkBase(int userId, ClientRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));

@@ -7,8 +7,9 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -30,6 +31,21 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
             @Param("client") Client client,
             @Param("date") LocalDate date
     );
+
+
+    List<Measure> findByClient( Client client, Pageable pageable);
+
+    @Query("""
+        SELECT  m
+        FROM Measure m
+        WHERE m.client = :client
+        AND m.date < :cursorDate
+        ORDER BY m.date DESC
+""")
+    List<Measure> findByClientBeforeDate(@Param("client") Client client,
+                                         @Param("cursorDate") LocalDate cursorDate,
+                                         Pageable pageable);
+
 
 
 }
