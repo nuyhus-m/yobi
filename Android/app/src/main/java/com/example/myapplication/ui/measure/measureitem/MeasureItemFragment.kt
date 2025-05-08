@@ -29,6 +29,10 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
             findNavController().navigate(R.id.dest_device_connect)
         }
 
+        binding.tvBloodPressure.setOnClickListener {
+            findNavController().navigate(R.id.dest_measure_loading)
+        }
+
         binding.tvBodyTemp.setOnClickListener {
             findNavController().navigate(R.id.dest_measure_result)
         }
