@@ -45,6 +45,7 @@ public class Schedule {
     @Column(name = "end_at", nullable = false)
     private LocalTime endAt;
 
+    @Setter
     @Size(max = 150)
     @Column(name = "log_content", length = 150)
     private String logContent;
@@ -83,14 +84,6 @@ public class Schedule {
         return logContent;
     }
 
-    public Instant getLogCreatedAt() {
-        return logCreatedAt;
-    }
-
-    public Instant getLogUpdatedAt() {
-        return logUpdatedAt;
-    }
-
     public void setClient(@NotNull Client client) {
         this.client = client;
     }
@@ -106,4 +99,5 @@ public class Schedule {
     public void setEndAt(@NotNull LocalTime endAt) {
         this.endAt = endAt;
     }
+
 }
