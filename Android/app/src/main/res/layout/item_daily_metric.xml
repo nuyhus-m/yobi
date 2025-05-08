@@ -8,18 +8,18 @@
     app:cardElevation="2dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="8dp">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:text="제목"
             android:textSize="14sp"
-            android:text="제목"/>
+            android:textStyle="bold" />
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/line_chart"
