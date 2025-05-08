@@ -1,7 +1,15 @@
+import sys
+import os
+from pathlib import Path
+
+# app 디렉토리를 Python 경로에 추가
+app_dir = Path(__file__).parent / "app"
+sys.path.append(str(app_dir))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
+from core.database import engine, Base
 
 # .env 파일 로드
 load_dotenv()
@@ -15,9 +23,12 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # API_DESCRIPTION = os.getenv("API_DESCRIPTION")
 # API_VERSION = os.getenv("API_VERSION")
 
+# 데이터베이스 테이블 생성
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
-    title="여기가 찐 AI입니다 !! OCR 아님",
-    description="여기가 찐 AI입니다 !! OCR 아님",
+    title="여기가 찐 AI입니다 !! 아님",
+    description="여기가 찐 AI입니다 !! 아님",
     version="1.0.0"
 )
 
@@ -42,4 +53,4 @@ async def health_check():
     return {
         "status": "healthy",
         "version": "1.0.0"
-    }
+    } 
