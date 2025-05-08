@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="12dp">
+    android:paddingVertical="@dimen/space_8dp">
 
     <!-- 색상 동그라미 -->
     <View
@@ -55,7 +55,7 @@
             android:text="일지 생성"
             style="@style/ButtonTextStyle"
             android:textColor="@color/purple"
-            android:background="@drawable/bg_puple_sub_radius_8"/>
+            android:background="@drawable/bg_purple_sub_radius_8"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_edit_schedule"

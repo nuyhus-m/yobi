@@ -7,24 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ItemScheduleBinding
 import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleItem
+import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
 
 class ScheduleAdapter (
-    private var scheduleList: List<ScheduleItem>
+    private var scheduleList: List<ScheduleItem>,
+    private val viewModel: ScheduleViewModel
 ): RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>(){
-
-    // 클라이언트 ID별 고정 색상
-    private val clientColorMap = mapOf(
-        1 to "#00B383",
-        2 to "#735BF2",
-        3 to "#0095FF",
-        4 to "#EA9A86",
-        5 to "#FF5E5E",
-        6 to "#FF6AD5",
-        7 to "#946FCF",
-        8 to "#39FF14",
-        9 to "#D2691E",
-        10 to "#FFF200"
-    )
 
     inner class ScheduleViewHolder(private val binding: ItemScheduleBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -37,7 +25,7 @@ class ScheduleAdapter (
             binding.tvNameWithType.text = "${item.clientName}님 방문요양"
 
             // 클라이언트 ID에 따른 색상 도넛 적용
-            val colorHex = clientColorMap[item.clientId] ?: "#000000"
+            val colorHex = viewModel.clientColorMap[item.clientId] ?: "#000000"
             val colorInt = android.graphics.Color.parseColor(colorHex)
             binding.viewColorDot.setBackgroundResource(R.drawable.ic_schedule_dot)
             binding.viewColorDot.background.mutate().setTint(colorInt)

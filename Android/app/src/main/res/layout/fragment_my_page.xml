@@ -10,7 +10,7 @@
         android:id="@+id/cl"
         android:layout_width="match_parent"
         android:layout_height="322dp"
-        android:background="@drawable/bg_puple_sub_radius_corner_24"
+        android:background="@drawable/bg_purple_sub_radius_corner_24"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

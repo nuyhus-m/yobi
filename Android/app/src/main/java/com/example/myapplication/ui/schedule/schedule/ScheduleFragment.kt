@@ -1,9 +1,14 @@
 package com.example.myapplication.ui.schedule.schedule
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
@@ -11,9 +16,12 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentScheduleBinding
 import com.example.myapplication.ui.schedule.schedule.adapter.ScheduleAdapter
 import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
+import android.content.res.Resources
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.format.TextStyle
 import java.util.Locale
+import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleItem
+
 
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
@@ -58,7 +66,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             updateMonthTitle(currentMonth)
         }
 
-        // 날짜 셀 바인더 설정 - typeMatch 오류 수정 (MonthDayBinder로 변경)
+        // 날짜 셀 바인더 설정
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
@@ -90,6 +98,38 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                         oldDate?.let { calendarView.notifyDateChanged(it) }
                     }
                 }
+
+                // 1. 도트 컨테이너 초기화
+                val dotContainer = container.view.findViewById<LinearLayout>(R.id.dot_container)
+                dotContainer.children.forEach { (it as LinearLayout).removeAllViews() }
+
+                // 2. 날짜에 해당하는 클라이언트 ID 리스트 가져오기
+                val clientIds = viewModel.dotMap[data.date] ?: emptyList()
+
+                // 3. 도트 View 추가 (최대 10개, 3개씩 나눠서 row1~4에 배치)
+                clientIds.take(10).forEachIndexed { index, clientId ->
+                    val dot = AppCompatImageView(container.view.context).apply {
+                        setImageResource(R.drawable.ic_schedule_dot)
+                        val color = Color.parseColor(viewModel.clientColorMap[clientId] ?: "#000000")
+                        imageTintList = ColorStateList.valueOf(color)
+                        layoutParams = LinearLayout.LayoutParams(4.dp, 4.dp).apply {
+                            setMargins(1.dp, 0.dp, 1.dp, 0.dp)
+                        }
+                    }
+
+                    val row = container.view.findViewById<LinearLayout>(
+                        when (index / 3) {
+                            0 -> R.id.row1
+                            1 -> R.id.row2
+                            2 -> R.id.row3
+                            else -> R.id.row4
+                        }
+                    )
+                    row.addView(dot)
+                }
+
+
+
             }
         }
 
@@ -122,7 +162,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     }
 
     private fun setupRecyclerView() {
-        scheduleAdapter = ScheduleAdapter(emptyList())
+        scheduleAdapter = ScheduleAdapter(emptyList<ScheduleItem>(), viewModel)
         binding.scheduleRecyclerView.adapter = scheduleAdapter
     }
 
@@ -138,3 +178,8 @@ class DayViewContainer(view: View) : com.kizitonwose.calendar.view.ViewContainer
     val textView: TextView = view.findViewById(R.id.tv_calendar_day)
     lateinit var day: CalendarDay
 }
+
+// utils/DimensionUtils.kt 같은 파일에 추가해도 됨
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+

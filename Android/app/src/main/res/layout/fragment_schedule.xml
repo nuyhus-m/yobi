@@ -63,7 +63,7 @@
     </LinearLayout>
 
 
-    <!-- 캘린더 날짜 표시 (ex. Kizitonwose CalendarView) -->
+    <!-- 캘린더 날짜 표시 (Kizitonwose CalendarView) -->
     <com.kizitonwose.calendar.view.CalendarView
     android:id="@+id/cv"
     android:layout_width="match_parent"
@@ -80,39 +80,29 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="80dp"
-        android:layout_gravity="bottom"
-        android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@+id/cv"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_schedule"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <!-- Floating 일정 등록 버튼 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:id="@+id/btn_FAB"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:foreground="@drawable/btn_add_schedule"/>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/btn_schedule_add"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintWidth_percent="0.2"
         android:textColor="@color/purple"
         android:padding="10dp"
-        android:layout_margin="20dp"
         android:foreground="@drawable/btn_add_schedule"
         app:backgroundTint="@android:color/transparent"
         android:contentDescription="일정 등록"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearanceOverlay="@style/FabShapeAppearance"
+        android:layout_marginBottom="@dimen/space_8dp"/>
 
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
