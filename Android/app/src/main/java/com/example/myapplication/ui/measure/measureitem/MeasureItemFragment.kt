@@ -25,6 +25,10 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
             findNavController().navigate(R.id.dest_measure_guide)
         }
 
+        binding.tvHeartRate.setOnClickListener {
+            findNavController().navigate(R.id.dest_device_connect)
+        }
+
         binding.tvBodyTemp.setOnClickListener {
             findNavController().navigate(R.id.dest_measure_result)
         }

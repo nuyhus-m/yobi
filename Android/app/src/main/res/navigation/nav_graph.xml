@@ -73,6 +73,18 @@
         tools:layout="@layout/fragment_measure_target" />
 
     <fragment
+        android:id="@+id/dest_device_connect"
+        android:name="com.example.myapplication.ui.measure.deviceconnect.DeviceConnectFragment"
+        android:label="fragment_device_connect"
+        tools:layout="@layout/fragment_device_connect" />
+
+    <fragment
+        android:id="@+id/dest_bluetooth_guide"
+        android:name="com.example.myapplication.ui.measure.bluetoothguide.BluetoothGuideFragment"
+        android:label="fragment_bluetooth_guide"
+        tools:layout="@layout/fragment_bluetooth_guide" />
+
+    <fragment
         android:id="@+id/dest_measure_item"
         android:name="com.example.myapplication.ui.measure.measureitem.MeasureItemFragment"
         android:label="fragment_measure_item"
