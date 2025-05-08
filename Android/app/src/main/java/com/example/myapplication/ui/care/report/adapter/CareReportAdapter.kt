@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ItemReportDateBinding
-import com.example.myapplication.ui.care.carelist.data.CareUser
 import com.example.myapplication.ui.care.report.data.ReportDate
 
 class CareReportAdapter(

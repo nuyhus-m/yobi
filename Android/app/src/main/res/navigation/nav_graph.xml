@@ -9,7 +9,7 @@
         android:id="@+id/dest_schedule"
         android:name="com.example.myapplication.ui.schedule.schedule.ScheduleFragment"
         android:label="ScheduleFragment"
-        tools:layout="@layout/fragment_schedule" >
+        tools:layout="@layout/fragment_schedule">
         <action
             android:id="@+id/action_scheduleFragment_to_dest_manual_schedule"
             app:destination="@id/dest_manual_schedule" />
@@ -19,7 +19,7 @@
         android:id="@+id/dest_photo_schedule"
         android:name="com.example.myapplication.ui.schedule.photoschedule.PhotoScheduleFragment"
         android:label="PhotoScheduleFragment"
-        tools:layout="@layout/fragment_photo_schedule"/>
+        tools:layout="@layout/fragment_photo_schedule" />
 
     <fragment
         android:id="@+id/dest_manual_schedule"
@@ -29,8 +29,8 @@
 
         <argument
             android:name="scheduleId"
-            app:argType="long"
-            android:defaultValue="-1L" /> <!-- 등록일 경우 -1로 처리 -->
+            android:defaultValue="-1L"
+            app:argType="long" /> <!-- 등록일 경우 -1로 처리 -->
     </fragment>
 
     <fragment
@@ -153,21 +153,22 @@
         android:id="@+id/dest_care_daily_fragment"
         android:name="com.example.myapplication.ui.care.daily.CareDailyFragment"
         android:label="fragment_care_daily"
-        tools:layout="@layout/fragment_care_daily" />
-
-    <fragment
-        android:id="@+id/dest_care_seven_fragment"
-        android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
-        android:label="fragment_care_seven"
-        tools:layout="@layout/fragment_care_seven" />
+        tools:layout="@layout/fragment_care_daily"/>
 
     <fragment
         android:id="@+id/dest_daily_detail_fragment"
         android:name="com.example.myapplication.ui.care.dailydetail.DailyDetailFragment"
         android:label="fragment_daily_detail"
         tools:layout="@layout/fragment_daily_detail" />
+    <action
+        android:id="@+id/action_global_dailyDetailFragment"
+        app:destination="@id/dest_daily_detail_fragment" />
 
-
+    <fragment
+        android:id="@+id/dest_care_seven_fragment"
+        android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
+        android:label="fragment_care_seven"
+        tools:layout="@layout/fragment_care_seven" />
     <fragment
         android:id="@+id/dest_my_page"
         android:name="com.example.myapplication.ui.mypage.mypage.MyPageFragment"
@@ -178,13 +179,13 @@
         android:id="@+id/dest_change_password"
         android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
         android:label="ChangePasswordFragment"
-        tools:layout="@layout/fragment_change_password"/>
+        tools:layout="@layout/fragment_change_password" />
 
     <fragment
         android:id="@+id/dest_policy"
         android:name="com.example.myapplication.ui.mypage.policy.PolicyFragment"
         android:label="PolicyFragment"
-        tools:layout="@layout/fragment_policy"/>
+        tools:layout="@layout/fragment_policy" />
 
     <dialog
         android:id="@+id/dest_schedule_register_dialog"
