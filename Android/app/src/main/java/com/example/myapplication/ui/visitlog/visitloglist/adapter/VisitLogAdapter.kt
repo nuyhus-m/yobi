@@ -32,7 +32,7 @@ class VisitLogAdapter(
 
     override fun onBindViewHolder(holder: VisitLogViewHolder, position: Int) {
         val item = items[position]
-        holder.binding.tvName.text = item.name
+        holder.binding.tvUsername.text = item.name
         holder.binding.tvDate.text = item.date
         holder.itemView.setOnClickListener{
             onClick(item)

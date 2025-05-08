@@ -36,8 +36,8 @@ class CareListAdapter(
     override fun onBindViewHolder(holder: CareViewHolder, position: Int) {
         val item = items[position]
         val binding = holder.binding
-        binding.imageView.setImageResource(item.image)
-        binding.tvName.text = item.name
+        binding.ivIcon.setImageResource(item.image)
+        binding.tvUsername.text = item.name
         binding.tvGender.text = item.gender
         binding.tvBirth.text = item.birth
 
