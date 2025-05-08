@@ -18,6 +18,8 @@
     <string name="high">높음</string>
     <string name="mid">보통</string>
     <string name="low">낮음</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
 
     <!-- 건강 지표 -->
     <string name="body_composition">체성분</string>
@@ -74,9 +76,9 @@
     <string name="measure_forehead_touch_guide">체온 측정을 위해\n이마에 기기를\n대어주세요</string>
     <string name="measure_start">측정 시작</string>
     <string name="bluetooth_connect_instruction">블루투스를 통해 기기를 연결해주세요</string>
-    <string name="bluetooth_setting_instruction">휴대전화의 설정에서 연결을 선택해\n블루투스를 실행해주세요</string>
+    <string name="bluetooth_setting_instruction">휴대전화의 <b>설정</b>에서 <b>연결</b>을 선택해\n<b>블루투스</b>를 실행해주세요</string>
     <string name="bluetooth_help_needed">블루투스 실행이 어려워요</string>
-    <string name="device_power_instruction">기기의 전원버튼을 꾹 눌러\n연결을 진행해주세요</string>
+    <string name="device_power_instruction">기기의 전원버튼을 꾹 눌러\n<b>연결</b>을 진행해주세요</string>
     <string name="bluetooth_how_to_title">블루투스 실행하는 법</string>
     <string name="bluetooth_method_select">두 방법 중 하나를 선택해주세요</string>
     <string name="bluetooth_method_1_title">방법 1</string>
