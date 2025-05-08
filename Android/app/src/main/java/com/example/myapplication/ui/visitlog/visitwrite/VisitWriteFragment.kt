@@ -3,11 +3,13 @@ package com.example.myapplication.ui.visitlog.visitwrite
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
@@ -38,9 +40,13 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     private val args: VisitWriteFragmentArgs by navArgs()
 
     // NlP
-    private lateinit var nlpFilter: NlpFilter          // ← 추가
-    private val finalBuffer = StringBuilder()          // ← 누적용 버퍼
+    private lateinit var nlpFilter: NlpFilter
+    private val finalBuffer = StringBuilder()
     private var lastFinalChunk = ""
+
+    // 결과 존재
+    private var hasFinalResult = false
+
     // STT
     private lateinit var speechManager: SpeechStreamManager
     private var isRecording = false
@@ -61,7 +67,13 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
 
         val spannable = SpannableString(fullText).apply {
             setSpan(
-                RelativeSizeSpan(1.3f), // 1.3배 크기
+                RelativeSizeSpan(1.2f),
+                0,
+                name.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                StyleSpan(Typeface.BOLD),
                 0,
                 name.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -75,9 +87,7 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         checkCredentialsExist()
         checkAudioPermission()
 
-
-        nlpFilter = NlpFilter(requireContext())        // ← 추가
-
+        nlpFilter = NlpFilter(requireContext())
 
         btnRecord.setOnClickListener {
             if (hasRecordPermission()) startRecording()
@@ -104,12 +114,19 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         if (isRecording) speechManager.stopStreaming()
     }
 
-
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun startRecording() = with(binding) {
         if (isRecording) return@with
         setUiState(UiState.RECORDING)
         isRecording = true
+        hasFinalResult = false
+        setStopButtonEnabled(false) // 녹음 시작 시 중지 버튼 비활성화
+
+        finalBuffer.clear()
+        lastFinalChunk = ""
+
+        // 수집된 최종 결과를 저장하기 위한 집합
+        val processedFinalResults = mutableSetOf<String>()
 
         lifecycleScope.launch {
             speechManager.startStreaming()
@@ -119,21 +136,26 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                     stopRecording()
                 }
                 .collect { result ->
-                    if (result.isFinal) {          // ── FINAL ──
+                    if (result.isFinal) {
                         // NLP 필터를 IO 스레드에서 돌리고, UI 업데이트는 메인으로
                         launch(Dispatchers.IO) {
                             val safe = nlpFilter.isSafe(result.text)
-                            if (safe && result.text != lastFinalChunk) {
+                            // 안전하고 이전에 처리되지 않은 결과인 경우에만 추가
+                            if (safe && !processedFinalResults.contains(result.text)) {
+                                processedFinalResults.add(result.text)
                                 if (finalBuffer.isNotEmpty()) finalBuffer.append(" ")
                                 finalBuffer.append(result.text)
                                 lastFinalChunk = result.text
+
+                                hasFinalResult = true
+
                                 withContext(Dispatchers.Main) {
                                     tvOverlayResult.text = finalBuffer.toString()
+                                    setStopButtonEnabled(true)
                                 }
                             }
                         }
-                    } else {                       // ── INTERIM ──
-                        // 필터 없이 ‘실시간’으로 바로 보여주기만
+                    } else {
                         val preview = if (finalBuffer.isEmpty())
                             result.text
                         else
@@ -144,19 +166,39 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         }
     }
 
-    /* ─────────────────  녹음 중지 ───────────────── */
     private fun stopRecording() = with(binding) {
         if (!isRecording) return
+
+        if (!hasFinalResult) {
+            showToast("음성 인식 결과가 아직 없습니다. 잠시 후 다시 시도해 주세요.")
+            return
+        }
+
         speechManager.stopStreaming()
         isRecording = false
 
-        etContent.setText(finalBuffer.toString().trim())   // 누적본 반영
-
-        finalBuffer.clear()            // 다음 녹음을 위해 리셋
-        lastFinalChunk = ""
+        etContent.setText(finalBuffer.toString().trim())
         setUiState(UiState.RECORDED)
     }
 
+    private fun setStopButtonEnabled(enabled: Boolean) = with(binding.btnStop) {
+        isEnabled = enabled
+        text = if (enabled) {
+            getString(R.string.save)
+        } else {
+            getString(R.string.recording)
+        }
+
+        val bgColor = if (enabled) {
+            R.color.purple
+        } else {
+            R.color.gray_recording
+        }
+        background.setColorFilter(
+            ContextCompat.getColor(requireContext(), bgColor),
+            PorterDuff.Mode.SRC_IN
+        )
+    }
 
     private fun setUiState(state: UiState) = with(binding) {
         when (state) {
@@ -187,6 +229,9 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                 tvOverlayResult.text = ""
                 flOverlay.visibility = View.VISIBLE
                 ivMicBig.visibility = View.VISIBLE
+
+                setStopButtonEnabled(false)
+
             }
 
             UiState.RECORDED -> {
@@ -208,15 +253,8 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
 
     private fun setCompleteButtonEnabled(enabled: Boolean) = with(binding.btnComplete) {
         isEnabled = enabled
-        val color = if (enabled) R.color.purple else R.color.gray_text_secondary
-        background.setColorFilter(
-            ContextCompat.getColor(requireContext(), color),
-            PorterDuff.Mode.SRC_IN
-        )
     }
 
-
-    // 지금은 그냥 dialog 띄우고 뒤로가는걸로 되어있습니다.
     private fun saveVisitLog() {
         val content = binding.etContent.text.toString().trim()
         if (content.isEmpty()) {
