@@ -1,6 +1,6 @@
 package com.S209.yobi.DTO.responseDTO;
 
-import com.S209.yobi.measures.entity.BodyComposition;
+import com.S209.yobi.domain.measures.entity.BodyComposition;
 import lombok.Builder;
 import lombok.Getter;
 

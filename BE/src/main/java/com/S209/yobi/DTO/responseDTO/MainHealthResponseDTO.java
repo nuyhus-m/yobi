@@ -1,12 +1,13 @@
 package com.S209.yobi.DTO.responseDTO;
 
-import com.S209.yobi.measures.entity.Measure;
+import com.S209.yobi.domain.measures.entity.Measure;
+import com.S209.yobi.exceptionFinal.ApiResult;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class MainHealthResponseDTO {
+public class MainHealthResponseDTO implements ApiResult {
 
     private Integer clientId;
     private BodyMainResponseDTO bodyComposition;

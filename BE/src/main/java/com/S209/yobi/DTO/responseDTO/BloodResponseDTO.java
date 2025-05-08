@@ -1,6 +1,6 @@
 package com.S209.yobi.DTO.responseDTO;
 
-import com.S209.yobi.measures.entity.BloodPressure;
+import com.S209.yobi.domain.measures.entity.BloodPressure;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class BloodResponseDTO {
         float roundedDbp = Math.round(blood.getDbp() * 10) / 10.0f;
 
         return BloodResponseDTO.builder()
-                .bloodId(blood.getId())
+//                .bloodId(blood.getId())
                 .sbp(roundedSbp)
                 .dbp(roundedDbp)
                 .build();
