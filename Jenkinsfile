@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Deploy to EC2-1') {
             steps {
-                sshagent (credentials: ['your-ssh-credential-id']) {
+                sshagent (credentials: ['yobi']) {
                     withCredentials([file(credentialsId: 'env-secret', variable: 'ENV_FILE')]) {
                         sh """
                         scp -o StrictHostKeyChecking=no \$ENV_FILE \$EC2_1:\$REMOTE_PATH/.env
@@ -26,7 +26,7 @@ pipeline {
 
         stage('Deploy to EC2-2') {
             steps {
-                sshagent (credentials: ['your-ssh-credential-id']) {
+                sshagent (credentials: ['yobi']) {
                     withCredentials([file(credentialsId: 'env-secret', variable: 'ENV_FILE')]) {
                         sh """
                         scp -o StrictHostKeyChecking=no \$ENV_FILE \$EC2_2:\$REMOTE_PATH/.env
