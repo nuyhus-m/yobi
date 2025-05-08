@@ -2,13 +2,17 @@ package com.S209.yobi.domain.schedules.service;
 
 import com.S209.yobi.DTO.requestDTO.OcrDTO;
 import com.S209.yobi.DTO.requestDTO.OcrDTO.OcrResponseDTO;
-import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO;
+import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleCreateRequestDTO;
+import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleUpdateRequestDTO;
+import com.S209.yobi.DTO.responseDTO.ScheduleResponseDTO;
+import com.S209.yobi.DTO.responseDTO.SimpleResultDTO;
 import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.schedules.entity.Schedule;
 import com.S209.yobi.domain.schedules.repository.ScheduleRepository;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.ApiResult;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +20,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,46 +41,22 @@ public class ScheduleService {
 
     // 단건 일정 조회
     @Transactional(readOnly = true)
-    public Map<String, Object> getSchedule(Integer scheduleId) {
+    public ApiResult getSchedule(Integer scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("scheduleId", schedule.getId());
-        response.put("clientId", schedule.getClient().getId());
-
-        // LocalDate -> Unix timestamp(밀리초)
-        response.put("visitedDate", schedule.getVisitedDate()
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli());
-
-        // LocalTime -> 해당 날짜의 timestamp로
-        LocalDateTime dateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getStartAt());
-
-        response.put("startAt", dateTime
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli());
-
-        dateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getEndAt());
-        response.put("endAt", dateTime
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli());
-
-        return response;
+        return ScheduleResponseDTO.of(schedule);
     }
 
     // 단건 일정 등록
     @Transactional
-    public void createSchedule(ScheduleRequestDTO requestDto) {
+    public ApiResult createSchedule(ScheduleCreateRequestDTO requestDto) {
         Client client = clientRepository.findById(requestDto.getClientId())
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + requestDto.getClientId()));
 
         // JWT에서 userId 추출하여 사용하여야 함.
         // 현재는 임시 하드코딩!!!!
-        Integer userId = 1;
+        Integer userId = 6;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -95,11 +73,13 @@ public class ScheduleService {
                 .build();
 
         scheduleRepository.save(schedule);
+
+        return null;
     }
 
     // 단건 일정 수정
     @Transactional
-    public void updateSchedule(Integer scheduleId, ScheduleRequestDTO requestDto) throws AccessDeniedException {
+    public ApiResult updateSchedule(Integer scheduleId, ScheduleUpdateRequestDTO requestDto) throws AccessDeniedException {
         // 현재 인증된 사용자인지 확인
         // 임시 하드코딩! 추후 JWT에서 추출해야 합니다.
         Integer currentUserId = 1;
@@ -113,26 +93,39 @@ public class ScheduleService {
             throw new AccessDeniedException("해당 일정을 수정할 권한이 없음.");
         }
 
-        // client 존재 여부 확인
-        Client client = clientRepository.findById(requestDto.getClientId())
-                .orElseThrow(() -> new EntityNotFoundException("Client not found"));
-
-        // 시간 유효성 검사
-        if (requestDto.getEndAt().isBefore(requestDto.getStartAt())) {
-            throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
+        if (requestDto.getClientId() != null) {
+            Client client = clientRepository.findById(requestDto.getClientId())
+                    .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+            schedule.setClient(client);
         }
 
-        schedule.setClient(client);
-        schedule.setVisitedDate(requestDto.getVisitedDate());
-        schedule.setStartAt(requestDto.getStartAt());
-        schedule.setEndAt(requestDto.getEndAt());
+        if (requestDto.getVisitedDate() != null) {
+            schedule.setVisitedDate(requestDto.getVisitedDate());
+        }
+
+        if (requestDto.getStartAt() != null) {
+            schedule.setStartAt(requestDto.getStartAt());
+        }
+
+        if (requestDto.getEndAt() != null) {
+            schedule.setEndAt(requestDto.getEndAt());
+        }
+
+        if (requestDto.getStartAt() != null && requestDto.getEndAt() != null) {
+            if (requestDto.getEndAt().isBefore(requestDto.getStartAt())) {
+                throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
+            }
+        }
+
 
 //        scheduleRepository.save(schedule); // 트랜잭션 내에서 변경 감지로 업데이트됨 -> 명시적 저장 불필요
+
+        return null;
     }
 
     // 단건 일정 삭제
     @Transactional
-    public void deleteSchedule(Integer scheduleId) {
+    public ApiResult deleteSchedule(Integer scheduleId) {
         //Schedule 존재 여부 확인
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
@@ -145,14 +138,16 @@ public class ScheduleService {
         }
 
         scheduleRepository.delete(schedule);
+
+        return null;
     }
 
     // 특정 요양보호사의 일정 리스트
     @Transactional
-    public List<Map<String, Object>> getSchedulesByUser(Integer userId) {
+    public ApiResult getSchedulesByUser(Integer userId) {
         List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateAscStartAtAsc(userId);
 
-        return schedules.stream()
+        List<Map<String, Object>> result = schedules.stream()
                 .map(schedule -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("scheduleId", schedule.getId());
@@ -163,11 +158,17 @@ public class ScheduleService {
                     return map;
                 })
                 .collect(Collectors.toList());
+
+        return new SimpleResultDTO<>(result);
     }
 
     // 특정 월의 일정 리스트
     @Transactional
-    public List<Map<String, Object>> getSchedulesByMonth(Integer userId, int year, int month) {
+    public ApiResult getSchedulesByMonth(Integer userId, int year, int month) {
+        if (year < 2000 || year > 2100 || month < 1 || month >12) {
+                throw new IllegalArgumentException("유효하지 않은 년월임.");
+            }
+
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
@@ -175,9 +176,7 @@ public class ScheduleService {
                 userId, startDate, endDate
         );
 
-        log.info("시작: {}, 끝: {}", startDate, endDate);
-
-        return schedules.stream()
+        List<Map<String, Object>> result = schedules.stream()
                 .map(schedule -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("scheduleId", schedule.getId());
@@ -188,16 +187,22 @@ public class ScheduleService {
                     return map;
                 })
                 .collect(Collectors.toList());
+
+        return new SimpleResultDTO<>(result);
     }
 
     // 특정일의 일정 리스트
     @Transactional
-    public List<Map<String, Object>> getSchedulesByDay(Integer userId, LocalDate date) {
+    public ApiResult getSchedulesByDay(Integer userId, LocalDate date) {
+        if (date == null) {
+            throw new IllegalArgumentException("날짜를 입력해주세요.");
+        }
+
         List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateOrderByStartAtAsc(
                 userId, date
         );
 
-        return schedules.stream()
+        List<Map<String, Object>> result = schedules.stream()
                 .map(schedule -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("scheduleId", schedule.getId());
@@ -209,11 +214,23 @@ public class ScheduleService {
                     return map;
                 })
                 .collect(Collectors.toList());
+
+        return new SimpleResultDTO<>(result);
     }
 
     // OCR로 일정 등록
     @Transactional
-    public OcrDTO.OcrResultDTO processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
+    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
+        //이미지 유효성 검사
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 없음.");
+        }
+
+        //년월 유효성 검사
+        if (year < 2000 || year > 2100 || month < 1 || month > 12) {
+            throw new IllegalArgumentException("유효하지 않은 년월입니다.");
+        }
+
         try {
             // 이미지 리사이징 처리
             MultipartFile resizedImage = imageResizeService.resizeImageIfNeeded(image);
@@ -263,7 +280,7 @@ public class ScheduleService {
                 }
             }
 
-            return OcrDTO.OcrResultDTO.builder().count(count).build();
+            return new SimpleResultDTO<>(OcrDTO.OcrResultDTO.builder().count(count).build());
         } catch (IOException e) {
             log.error("이미지 처리 중 오류 발생: {}", e.getMessage());
             throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);
