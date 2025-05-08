@@ -38,6 +38,7 @@ class WithdrawalDialog : DialogFragment() {
 
         binding.btnYes.setOnClickListener {
             // TODO 확인 버튼 기능
+            dismiss()
         }
     }
 
