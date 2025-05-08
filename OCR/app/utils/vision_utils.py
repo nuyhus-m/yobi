@@ -240,16 +240,7 @@ def process_image(image_data):
         response = {
             "schedules": schedules
         }
-        
-        # 결과를 JSON 파일로 저장
-        result_dir = "ocr_results"
-        os.makedirs(result_dir, exist_ok=True)
-        result_file = os.path.join(result_dir, f"ocr_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
-        
-        with open(result_file, 'w', encoding='utf-8') as f:
-            json.dump(response, f, ensure_ascii=False, indent=2)
-        
-        logger.info(f"OCR 결과가 {result_file}에 저장되었습니다.")
+
         
         return response
         
