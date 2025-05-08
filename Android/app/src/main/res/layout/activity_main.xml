@@ -24,12 +24,27 @@
         android:id="@+id/bnv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         app:itemActiveIndicatorStyle="@android:color/transparent"
+        app:itemIconTint="@color/selector_nav"
         app:itemRippleColor="@android:color/transparent"
+        app:itemTextColor="@color/selector_nav"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bnv" />
+
+    <ImageView
+        android:id="@+id/iv_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-50dp"
+        android:contentDescription="@null"
+        android:elevation="8dp"
+        android:src="@drawable/selector_nav_center"
+        app:layout_constraintBottom_toTopOf="@id/bnv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
