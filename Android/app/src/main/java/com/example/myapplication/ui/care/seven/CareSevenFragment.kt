@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentCareSevenBinding
@@ -16,14 +17,31 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
     FragmentCareSevenBinding::bind,
     R.layout.fragment_care_seven
 ) {
-
     private val viewModel: CareSevenViewModel by viewModels()
     private val adapter = DailyMetricAdapter()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        viewModel.metrics.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        binding.recyclerView.apply {
+            adapter = this@CareSevenFragment.adapter
+            layoutManager = LinearLayoutManager(requireContext())
+
+            // 스크롤 충돌 방지
+            setHasFixedSize(true)
+            itemAnimator = null
+
+            // 리사이클러 스크롤 이벤트
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    }
+                }
+            })
+        }
+        viewModel.metrics.observe(viewLifecycleOwner) { metrics ->
+            adapter.submitList(metrics)
+        }
     }
 }
