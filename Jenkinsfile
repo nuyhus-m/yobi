@@ -13,8 +13,8 @@ pipeline {
                 sshagent (credentials: ['yobi']) {
                     withCredentials([file(credentialsId: 'env-secret', variable: 'ENV_FILE')]) {
                         sh """
-                        scp -o StrictHostKeyChecking=no \$ENV_FILE \$EC2_1:\$REMOTE_PATH/.env
-                        ssh -o StrictHostKeyChecking=no \$EC2_1 '
+                        scp -o StrictHostKeyChecking=no \$ENV_FILE ubuntu@\$EC2_1:\$REMOTE_PATH/.env
+                        ssh -o StrictHostKeyChecking=no ubuntu@\$EC2_1 '
                           cd \$REMOTE_PATH &&
                           docker compose -f docker-compose.ec2-1.yml up -d --build
                         '
@@ -29,8 +29,8 @@ pipeline {
                 sshagent (credentials: ['yobi']) {
                     withCredentials([file(credentialsId: 'env-secret', variable: 'ENV_FILE')]) {
                         sh """
-                        scp -o StrictHostKeyChecking=no \$ENV_FILE \$EC2_2:\$REMOTE_PATH/.env
-                        ssh -o StrictHostKeyChecking=no \$EC2_2 '
+                        scp -o StrictHostKeyChecking=no \$ENV_FILE ubuntu@\$EC2_2:\$REMOTE_PATH/.env
+                        ssh -o StrictHostKeyChecking=no ubuntu@\$EC2_2 '
                           cd \$REMOTE_PATH &&
                           docker compose -f docker-compose.ec2-2.yml up -d --build
                         '
