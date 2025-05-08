@@ -1,11 +1,15 @@
 package com.S209.yobi.domain.clients.entity;
 
+import com.S209.yobi.domain.measures.entity.Measure;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,6 +53,11 @@ public class Client {
     @Column(name = "address", nullable = false, length = 100)
     private String address;
 
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
+    private List<Measure> measures = new ArrayList<>();
+
+
     public Integer getId() {
         return id;
     }
@@ -57,27 +66,5 @@ public class Client {
         return name;
     }
 
-    public @NotNull LocalDate getBirth() {
-        return birth;
-    }
 
-    public @NotNull Integer getGender() {
-        return gender;
-    }
-
-    public @NotNull Double getHeight() {
-        return height;
-    }
-
-    public @NotNull Double getWeight() {
-        return weight;
-    }
-
-    public @Size(max = 255) String getImage() {
-        return image;
-    }
-
-    public @Size(max = 100) @NotNull String getAddress() {
-        return address;
-    }
 }

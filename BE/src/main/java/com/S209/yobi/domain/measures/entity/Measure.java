@@ -7,6 +7,7 @@ import com.S209.yobi.domain.users.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 
@@ -38,11 +39,13 @@ public class Measure {
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 10)
     @JoinColumn(name = "composition_id", nullable = false)
     private BodyComposition body;
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 10)
     @JoinColumn(name = "blood_id", nullable = false)
     private BloodPressure blood;
 
@@ -51,6 +54,7 @@ public class Measure {
     private HeartRate heart;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 10)
     @JoinColumn(name = "stress_id")
     private Stress stress;
 

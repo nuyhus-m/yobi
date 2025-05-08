@@ -140,7 +140,7 @@ public class MeasureController {
     public ResponseEntity<?>  checkBase(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int userId,
-            @RequestBody CheckBaseRequestDTO requestDTO
+            @RequestBody ClientRequestDTO requestDTO
     ){
         ApiResult result = measureService.checkBase(userId, requestDTO);
         if(result instanceof ApiResponseDTO<?> errorResult){
