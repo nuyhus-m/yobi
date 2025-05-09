@@ -19,6 +19,13 @@ pipeline {
                 }
             }
         }
+        stage('Load Application Config') {
+            steps {
+                withCredentials([file(credentialsId: 'application-prod-yml', variable: 'APP_CONFIG')]) {
+                    sh 'mkdir -p BE/src/main/resources && cp $APP_CONFIG BE/src/main/resources/application.yml'
+                }
+            }
+        }
         stage('Deploy to EC2-1') {
             steps {
                 sh """
