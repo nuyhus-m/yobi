@@ -69,6 +69,25 @@ public class DailyLogsController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "특정 돌봄 대상에 대한 일지 리스트", description = "사용자의 일지 전체 리스트를 위한 scheduleId, client_name, visited_date를 반환합니다.")
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<?> getDailyLogsByClient(
+            @PathVariable Integer clientId
+    ) {
+        //하드코딩
+        Integer userId = 1;
+
+        ApiResult result = dailyLogService.getDailyLogsByClient(userId, clientId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
 
     @Operation(summary = "일지 단건 조회", description = "scheduleId에 해당하는 일지를 조회합니다.")
     @GetMapping("/{scheduleId}")
