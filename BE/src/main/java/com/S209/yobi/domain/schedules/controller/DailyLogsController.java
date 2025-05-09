@@ -20,12 +20,28 @@ public class DailyLogsController {
     private final DailyLogService dailyLogService;
 
     @Operation(summary = "일지 작성 및 수정", description = "scheduleId에 해당하는 log_content를 기입합니다.")
-    @PatchMapping("/{scheduleId}")
+    @PatchMapping("/{scheduleId}/update")
     public ResponseEntity<?> updateDailyLog(
             @PathVariable Integer scheduleId,
             @Valid @RequestBody String content
     ) {
         ApiResult result = dailyLogService.updateDailyLog(scheduleId, content);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "일지 삭제", description = "scheduleId에 해당하는 log_content를 삭제합니다.")
+    @PatchMapping("/{scheduleId}/delete")
+    public ResponseEntity<?> deleteDailyLog(
+            @PathVariable Integer scheduleId
+    ) {
+        ApiResult result = dailyLogService.deleteDailyLog(scheduleId);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
