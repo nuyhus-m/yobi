@@ -1,6 +1,8 @@
 package com.example.myapplication.ui.schedule.schedule
 
+
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -15,19 +17,16 @@ import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentScheduleBinding
 import com.example.myapplication.ui.schedule.schedule.adapter.ScheduleAdapter
-import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
-import android.content.res.Resources
-import dagger.hilt.android.AndroidEntryPoint
-import java.time.format.TextStyle
-import java.util.Locale
 import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleItem
-
-
+import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 
 @AndroidEntryPoint
@@ -79,13 +78,30 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 when {
                     data.date == selectedDate -> {
                         textView.setBackgroundResource(R.drawable.bg_purple_radius_12)
-                        textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                android.R.color.white
+                            )
+                        )
                     }
+
                     data.position.name == "MonthDate" -> {
-                        textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                android.R.color.black
+                            )
+                        )
                     }
+
                     else -> {
-                        textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                android.R.color.darker_gray
+                            )
+                        )
                     }
                 }
 
@@ -110,7 +126,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 clientIds.take(10).forEachIndexed { index, clientId ->
                     val dot = AppCompatImageView(container.view.context).apply {
                         setImageResource(R.drawable.ic_schedule_dot)
-                        val color = Color.parseColor(viewModel.clientColorMap[clientId] ?: "#000000")
+                        val color =
+                            Color.parseColor(viewModel.clientColorMap[clientId] ?: "#000000")
                         imageTintList = ColorStateList.valueOf(color)
                         layoutParams = LinearLayout.LayoutParams(4.dp, 4.dp).apply {
                             setMargins(1.dp, 0.dp, 1.dp, 0.dp)
@@ -127,7 +144,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                     )
                     row.addView(dot)
                 }
-
 
 
             }
@@ -162,11 +178,19 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     }
 
     private fun setupRecyclerView() {
-        scheduleAdapter = ScheduleAdapter(emptyList<ScheduleItem>(), viewModel) { scheduleId ->
-            val action = ScheduleFragmentDirections
-                .actionScheduleFragmentToDestManualSchedule(scheduleId.toLong())
-            findNavController().navigate(action)
-        }
+        scheduleAdapter = ScheduleAdapter(
+            emptyList<ScheduleItem>(),
+            viewModel,
+            onEditClick = { scheduleId ->
+                val action = ScheduleFragmentDirections
+                    .actionScheduleFragmentToDestManualSchedule(scheduleId.toLong())
+                findNavController().navigate(action)
+            },
+            onLogCreateClick = { scheduleId ->
+                findNavController().navigate(R.id.dest_visit_write_fragment)
+            }
+        )
+
         binding.scheduleRecyclerView.adapter = scheduleAdapter
     }
 
