@@ -14,11 +14,14 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # application-prod.yml 파일을 직접 복사
-COPY src/main/resources/application-prod.yml /app/resources/
+COPY ./src/main/resources/application-prod.yml /app/resources/
 
-# 환경 변수 설정
+# 환경 변수 설정 (docker-compose.yml에서 주입되므로 기본값만 설정)
 ENV SPRING_PROFILES_ACTIVE=prod
 ENV TZ=Asia/Seoul
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
+ENV REDIS_PASSWORD=redis
 
 # 애플리케이션이 사용할 포트 (추후 가릴 예정)
 EXPOSE 8080
