@@ -21,7 +21,10 @@ pipeline {
         }
         stage('Deploy to EC2-1') {
             steps {
-                sh "docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build"
+                sh """
+                    docker-compose -f $COMPOSE_FILE_1 down --remove-orphans
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build
+                """
             }
         }
         stage('Deploy to EC2-2') {
