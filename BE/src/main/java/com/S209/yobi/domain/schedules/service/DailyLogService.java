@@ -30,7 +30,15 @@ public class DailyLogService {
     }
 
     // 일지 삭제
+    @Transactional
+    public ApiResult deleteDailyLog(Integer scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(()-> new EntityNotFoundException("Schedule Not Found."));
 
+        schedule.setLogContent(null);
+
+        return null;
+    }
 
     // 일지 전체 리스트
 
