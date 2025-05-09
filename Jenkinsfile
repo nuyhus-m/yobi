@@ -22,21 +22,19 @@ pipeline {
         stage('Deploy to EC2-1') {
             steps {
                 sh """
+                    # 젠킨스 제외하고 다른 컨테이너만 중지/삭제
                     docker stop redis postgres ocr-app be-spring-container || true
                     docker rm redis postgres ocr-app be-spring-container || true
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build
-                    # Wait for PostgreSQL to be ready
-                    sleep 30
+                    # 젠킨스 서비스 제외하고 docker-compose 실행
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
                 """
             }
         }
         stage('Deploy to EC2-2') {
             steps {
                 sh """
-                    # Stop and remove existing containers
                     docker stop ai-service || true
                     docker rm ai-service || true
-                    # Deploy with updated environment
                     docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
                 """
             }
