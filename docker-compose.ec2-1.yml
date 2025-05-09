@@ -8,7 +8,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - .env # .env 파일을 서비스에서 사용
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
@@ -25,7 +25,8 @@ services:
     ports:
       - "6379:6379"
     env_file:
-      - .env # .env 파일을 서비스에서 사용
+      - .env
+    command: redis-server --requirepass ${REDIS_PASSWORD}
 
   backend:
     image: be-spring-image
@@ -55,24 +56,13 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: ${DATABASE_URL} # ocr에서 사용할 DATABASE_URL 설정
-      REDIS_HOST: ${REDIS_HOST} # ocr에서 사용할 REDIS_HOST 설정
-      REDIS_PORT: ${REDIS_PORT} # ocr에서 사용할 REDIS_PORT 설정
-      REDIS_DB: ${REDIS_DB} # ocr에서 사용할 REDIS_DB 설정
-      API_TITLE: ${API_TITLE} # API 제목 등 FastAPI 관련 설정
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      API_TITLE: ${API_TITLE}
       API_DESCRIPTION: ${API_DESCRIPTION}
       API_VERSION: ${API_VERSION}
 
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-
 volumes:
   postgres_data:
-  jenkins_home:
