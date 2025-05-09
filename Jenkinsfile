@@ -15,7 +15,7 @@ pipeline {
         stage('Load .env File') {
             steps {
                 withCredentials([file(credentialsId: 'env-secret', variable: 'LOADED_ENV')]) {
-                    sh 'cp $LOADED_ENV $ENV_FILE'
+                    sh 'rm -f $ENV_FILE && cp $LOADED_ENV $ENV_FILE'
                 }
             }
         }
