@@ -50,9 +50,11 @@ public class Schedule {
     @Column(name = "log_content", length = 150)
     private String logContent;
 
+    @Setter
     @Column(name = "log_created_at")
     private Instant logCreatedAt;
 
+    @Setter
     @Column(name = "log_updated_at")
     private Instant logUpdatedAt;
 

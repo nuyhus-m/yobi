@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +30,18 @@ public class DailyLogService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(()-> new EntityNotFoundException("Schedule Not Found."));
 
+        ZonedDateTime seoulTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+
         if (content != null) {
-            schedule.setLogContent(content);
+            if (schedule.getLogCreatedAt() == null) {
+                //최초 등록이라면
+                schedule.setLogContent(content);
+                schedule.setLogCreatedAt(seoulTime.toInstant());
+            } else {
+                // 수정이라면
+                schedule.setLogContent(content);
+                schedule.setLogUpdatedAt(seoulTime.toInstant());
+            }
         }
 
         return null;
@@ -49,7 +61,7 @@ public class DailyLogService {
     // 일지 전체 리스트
     @Transactional
     public ApiResult getDailyLogsByUser(Integer userId) {
-        List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateAscStartAtAsc(userId);
+        List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateDescStartAtDesc(userId);
         if (schedules.isEmpty()) {
             return null;
         }
@@ -66,7 +78,21 @@ public class DailyLogService {
     }
 
     // 특정 돌봄 대상에 대한 일지 리스트
+    @Transactional
+    public ApiResult getDailyLogsByClient(Integer userId, Integer clientId) {
+        List<Schedule> schedules = scheduleRepository.findByUserIdAndClientIdOrderByVisitedDateDesc(userId, clientId);
+        if (schedules.isEmpty()) return null;
 
+        List<SimpleDailyLogDTO> dailyLogs = schedules.stream()
+                .map(schedule -> SimpleDailyLogDTO.builder()
+                        .scheduleId(schedule.getId())
+                        .clientName(schedule.getClient().getName())
+                        .visitedDate(schedule.getVisitedDate())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new DailyLogResponseDTO(dailyLogs);
+    }
 
     // 일지 단건 조회
     @Transactional
@@ -77,11 +103,6 @@ public class DailyLogService {
         String logContent = schedule.getLogContent();
         String clientName = schedule.getClient().getName();
         LocalDate visitedDate = schedule.getVisitedDate();
-
-        // logContent가 null인 경우에도 다른 정보는 반환하도록 수정
-//        if (logContent == null) {
-//            logContent = "";
-//        }
 
         DailyLogDetailDTO detailDTO = DailyLogDetailDTO.builder()
                 .logContent(logContent)
