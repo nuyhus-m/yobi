@@ -8,12 +8,12 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - .env # .env 파일을 서비스에서 사용
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_DB: yobi
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: trust
@@ -25,7 +25,7 @@ services:
     ports:
       - "6379:6379"
     env_file:
-      - .env # .env 파일을 서비스에서 사용
+      - .env
 
   backend:
     image: be-spring-image
@@ -40,7 +40,7 @@ services:
       TZ: ${TZ}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     depends_on:
       - postgres
       - redis
@@ -55,13 +55,10 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: ${DATABASE_URL} # ocr에서 사용할 DATABASE_URL 설정
-      REDIS_HOST: ${REDIS_HOST} # ocr에서 사용할 REDIS_HOST 설정
-      REDIS_PORT: ${REDIS_PORT} # ocr에서 사용할 REDIS_PORT 설정
-      REDIS_DB: ${REDIS_DB} # ocr에서 사용할 REDIS_DB 설정
-      API_TITLE: ${API_TITLE} # API 제목 등 FastAPI 관련 설정
-      API_DESCRIPTION: ${API_DESCRIPTION}
-      API_VERSION: ${API_VERSION}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
 
   jenkins:
     image: jenkins/jenkins:lts

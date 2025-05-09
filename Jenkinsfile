@@ -22,10 +22,8 @@ pipeline {
         stage('Deploy to EC2-1') {
             steps {
                 sh """
-                    # 젠킨스 제외하고 다른 컨테이너만 중지/삭제
                     docker stop redis postgres ocr-app be-spring-container || true
                     docker rm redis postgres ocr-app be-spring-container || true
-                    # 젠킨스 서비스 제외하고 docker-compose 실행
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
                 """
             }
