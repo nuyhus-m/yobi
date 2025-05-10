@@ -58,42 +58,38 @@ public class DailyLogService {
         return null;
     }
 
+    private List<SimpleDailyLogDTO> mapToSimpleDailyLogDTOs(List<Schedule> schedules) {
+        return schedules.stream()
+                .map(schedule -> SimpleDailyLogDTO.builder()
+                        .scheduleId(schedule.getId())
+                        .clientName(schedule.getClient().getName())
+                        .visitedDate(schedule.getVisitedDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     // 사용자의 일지 전체 리스트
     @Transactional
     public ApiResult getDailyLogsByUser(Integer userId) {
-        // log_content가 null이 아닌 일정만 조회
         List<Schedule> schedulesWithLogs = scheduleRepository.findByUserIdAndLogContentNotNullOrderByVisitedDateDescStartAtDesc(userId);
 
         if (schedulesWithLogs.isEmpty()) {
             return null;
         }
 
-        List<SimpleDailyLogDTO> dailyLogs = schedulesWithLogs.stream()
-                .map(schedule -> SimpleDailyLogDTO.builder()
-                        .scheduleId(schedule.getId())
-                        .clientName(schedule.getClient().getName())
-                        .visitedDate(schedule.getVisitedDate())
-                        .build())
-                .collect(Collectors.toList());
-
-        return new DailyLogResponseDTO(dailyLogs);
+        return new DailyLogResponseDTO(mapToSimpleDailyLogDTOs(schedulesWithLogs));
     }
 
     // 특정 돌봄 대상에 대한 일지 리스트
     @Transactional
     public ApiResult getDailyLogsByClient(Integer userId, Integer clientId) {
-        List<Schedule> schedules = scheduleRepository.findByUserIdAndClientIdOrderByVisitedDateDesc(userId, clientId);
-        if (schedules.isEmpty()) return null;
+        List<Schedule> schedulesWithLogs = scheduleRepository.findByUserIdAndClientIdAndLogContentNotNullOrderByVisitedDateDesc(userId, clientId);
 
-        List<SimpleDailyLogDTO> dailyLogs = schedules.stream()
-                .map(schedule -> SimpleDailyLogDTO.builder()
-                        .scheduleId(schedule.getId())
-                        .clientName(schedule.getClient().getName())
-                        .visitedDate(schedule.getVisitedDate())
-                        .build())
-                .collect(Collectors.toList());
+        if (schedulesWithLogs.isEmpty()) {
+            return null;
+        }
 
-        return new DailyLogResponseDTO(dailyLogs);
+        return new DailyLogResponseDTO(mapToSimpleDailyLogDTOs(schedulesWithLogs));
     }
 
     // 일지 단건 조회
