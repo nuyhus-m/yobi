@@ -9,5 +9,11 @@
         <item name="android:spinnerStyle">@style/Widget.Spinner</item>
     </style>
 
-    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication">
+        <!--상태바 커스텀-->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Splash" parent="Base.Theme.MyApplication" />
 </resources>
