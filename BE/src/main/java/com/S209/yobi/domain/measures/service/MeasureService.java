@@ -34,6 +34,8 @@ public class MeasureService {
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
 
+    private final HealthRangeAsyncService healthRangeAsyncService;
+
     /**
      * 피트러스 필수 데이터 저장 (체성분/혈압)
      */
@@ -58,6 +60,10 @@ public class MeasureService {
         bodyCompositionRepository.save(measure.getBody());
         bloodPressureRepository.save(measure.getBlood());
         measureRepository.save(measure);
+
+        // 범위 계산 및 저장 로직 : 비동기로 호출
+        log.info("범위 계산 전");
+        healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
 
         return null;
 
@@ -166,6 +172,11 @@ public class MeasureService {
         // Temperature 엔티티 생성 및 저장
         BodyComposition bodyComposition = BodyComposition.fromReDTO(requestDTO);
         measure.setBody(bodyComposition);
+
+        // 범위 계산 및 저장 로직 : 비동기로 호출
+        log.info("범위 계산 전");
+        healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
+
 
         return null;
 
