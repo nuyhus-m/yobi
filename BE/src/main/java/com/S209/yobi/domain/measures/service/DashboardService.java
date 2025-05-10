@@ -54,6 +54,7 @@ public class DashboardService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 측정 데이터 Optional 로 조회
+        // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
         LocalDate today = LocalDate.now();
 //        LocalDate today = LocalDate.parse("2025-05-08");
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
