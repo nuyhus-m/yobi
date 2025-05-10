@@ -171,10 +171,7 @@ public class ScheduleService {
     }
 
     // 시간 중복 확인 헬퍼 메소드
-    private boolean isTimeOverlapping(LocalTime existingStart, LocalTime existingEnd,
-                                      LocalTime newStart, LocalTime newEnd) {
-        // 두 시간 범위가 겹치는지 확인
-        // (newStart < existingEnd) && (newEnd > existingStart)
+    private boolean isTimeOverlapping(LocalTime existingStart, LocalTime existingEnd, LocalTime newStart, LocalTime newEnd) {
         return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
     }
 
