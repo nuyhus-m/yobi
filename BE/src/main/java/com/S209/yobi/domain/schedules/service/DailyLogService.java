@@ -58,15 +58,17 @@ public class DailyLogService {
         return null;
     }
 
-    // 일지 전체 리스트
+    // 사용자의 일지 전체 리스트
     @Transactional
     public ApiResult getDailyLogsByUser(Integer userId) {
-        List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateDescStartAtDesc(userId);
-        if (schedules.isEmpty()) {
+        // log_content가 null이 아닌 일정만 조회
+        List<Schedule> schedulesWithLogs = scheduleRepository.findByUserIdAndLogContentNotNullOrderByVisitedDateDescStartAtDesc(userId);
+
+        if (schedulesWithLogs.isEmpty()) {
             return null;
         }
 
-        List<SimpleDailyLogDTO> dailyLogs = schedules.stream()
+        List<SimpleDailyLogDTO> dailyLogs = schedulesWithLogs.stream()
                 .map(schedule -> SimpleDailyLogDTO.builder()
                         .scheduleId(schedule.getId())
                         .clientName(schedule.getClient().getName())

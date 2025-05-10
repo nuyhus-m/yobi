@@ -37,5 +37,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             @Param("startAt") LocalTime startAt,
             @Param("endAt") LocalTime endAt);
 
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.client WHERE s.user.id = :userId AND s.logContent IS NOT NULL ORDER BY s.visitedDate DESC, s.startAt DESC")
+    List<Schedule> findByUserIdAndLogContentNotNullOrderByVisitedDateDescStartAtDesc(@Param("userId") Integer userId);
 
 }
