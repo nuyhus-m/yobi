@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -20,7 +21,7 @@ public class HealthDetailResponseDTO implements ApiResult {
     private HeartRateResponseDTO heartRate;
     private StressResponseDTO stress;
 
-    public static HealthDetailResponseDTO of (Measure measure, int clientId, LocalDate today){
+    public static HealthDetailResponseDTO of (Measure measure, int clientId, LocalDate today, Map<String, String> redisLevels){
 
         // 오늘 측정 값이 업는 경우
         if(measure == null){
@@ -38,7 +39,7 @@ public class HealthDetailResponseDTO implements ApiResult {
         return HealthDetailResponseDTO.builder()
                 .clientId(measure.getClient().getId())
                 .today(measure.getDate())
-                .bodyComposition(BodyCompositionResponseDTO.of(measure.getBody())) // 필수 값
+                .bodyComposition(BodyCompositionResponseDTO.of(measure.getBody(),redisLevels)) // 필수 값
                 .temperature(measure.getTemperature() != null ? TemperatureResponseDTO.of(measure.getTemperature()): null)
                 .bloodPressure(BloodResponseDTO.of(measure.getBlood())) // 필수 값
                 .heartRate(measure.getHeart() != null ? HeartRateResponseDTO.of(measure.getHeart()): null)

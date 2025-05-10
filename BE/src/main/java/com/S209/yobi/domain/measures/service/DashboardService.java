@@ -1,6 +1,5 @@
 package com.S209.yobi.domain.measures.service;
 
-import com.S209.yobi.DTO.requestDTO.ClientRequestDTO;
 import com.S209.yobi.DTO.responseDTO.HealthDetailResponseDTO;
 import com.S209.yobi.DTO.responseDTO.MainHealthResponseDTO;
 import com.S209.yobi.DTO.responseDTO.TotalHealthResponseDTO;
@@ -8,12 +7,7 @@ import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.measures.Mapper.HealthMapper;
 import com.S209.yobi.domain.measures.Mapper.HealthMapperNative;
-import com.S209.yobi.domain.measures.entity.BloodPressure;
-import com.S209.yobi.domain.measures.entity.BodyComposition;
-import com.S209.yobi.domain.measures.entity.Stress;
 import com.S209.yobi.exceptionFinal.ApiResult;
-import com.S209.yobi.exceptionFinal.ApiResponseCode;
-import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.measures.repository.MeasureRepository;
 import com.S209.yobi.domain.users.entity.User;
@@ -21,14 +15,14 @@ import com.S209.yobi.domain.users.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -41,6 +35,7 @@ public class DashboardService {
     private final ClientRepository clientRepository;
     private final HealthMapper healthMapper;
     private final HealthMapperNative healthMapperNative;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 단건 데이터 조회 (주요 데이터)
@@ -60,7 +55,16 @@ public class DashboardService {
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         Measure measure = optionalMeasure.orElse(null); // null 가능
 
-        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), today);
+        // Redis 값 가져오기 : 체성분 범위
+        String redisKey = "range" + userId + ":" + clientId + ":" + today;
+        Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
+        Map<String, String> redisLevels = redisData.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> (String) e.getKey(),
+                        e -> (String) e.getValue()
+                ));
+
+        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), today, redisLevels);
 
         return result;
     }
@@ -68,6 +72,7 @@ public class DashboardService {
     /**
      * 단건 데이터 조회 (자세히보기)
      */
+
     public ApiResult getHealthDetail (int userId, int clientId) {
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
@@ -81,8 +86,17 @@ public class DashboardService {
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         Measure measure = optionalMeasure.orElse(null); // null 가능
 
+        // Redis 값 가져오기 : 체성분 범위
+        String redisKey = "range" + userId + ":" + clientId + ":" + today;
+        Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
+        Map<String, String> redisLevels = redisData.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> (String) e.getKey(),
+                        e -> (String) e.getValue()
+                ));
+
         // Measure 객체를 가지고 HealthDetailResponseDTO 생성
-        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), today);
+        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), today, redisLevels);
         return result;
     }
 
