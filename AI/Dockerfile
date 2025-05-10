@@ -4,14 +4,16 @@ FROM python:3.9-slim
 # 2. 작업 디렉토리 설정
 WORKDIR /app
 
-# 3. requirements.txt 파일 복사
+# 3. PostgreSQL 개발 라이브러리 설치
+RUN apt-get update && \
+    apt-get install -y postgresql-client libpq-dev gcc && \
+    rm -rf /var/lib/apt/lists/*
+
+# 4. requirements.txt 파일 복사
 COPY requirements.txt /app/
 
-# 4. 의존성 설치
+# 5. 의존성 설치
 RUN pip install --no-cache-dir -r requirements.txt
-
-# 5. .env 파일 복사
-COPY .env /app/
 
 # 6. app 디렉토리 복사
 COPY app /app/app/

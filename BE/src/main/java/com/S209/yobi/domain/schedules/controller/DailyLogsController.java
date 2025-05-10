@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class DailyLogsController {
     private final DailyLogService dailyLogService;
 
-    @Operation(summary = "일지 작성 및 수정", description = "scheduleId에 해당하는 log_content를 기입합니다.")
+    @Operation(summary = "일지 작성 및 수정", description = "scheduleId에 해당하는 log_content를 기입합니다. 성공시 null을 반환합니다.")
     @PatchMapping("/{scheduleId}/update")
     public ResponseEntity<?> updateDailyLog(
             @PathVariable Integer scheduleId,
@@ -36,12 +36,48 @@ public class DailyLogsController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "일지 삭제", description = "scheduleId에 해당하는 log_content를 삭제합니다.")
+    @Operation(summary = "일지 삭제", description = "scheduleId에 해당하는 log_content를 삭제합니다. 성공시 null을 반환합니다.")
     @PatchMapping("/{scheduleId}/delete")
     public ResponseEntity<?> deleteDailyLog(
             @PathVariable Integer scheduleId
     ) {
         ApiResult result = dailyLogService.deleteDailyLog(scheduleId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "사용자의 일지 전체 리스트", description = "사용자의 일지 전체 리스트를 위한 scheduleId, client_name, visited_date를 반환합니다.")
+    @GetMapping
+    public ResponseEntity<?> getDailyLogsByUser() {
+        //하드코딩
+        Integer userId = 1;
+
+        ApiResult result = dailyLogService.getDailyLogsByUser(userId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "특정 돌봄 대상에 대한 일지 리스트", description = "사용자의 일지 전체 리스트를 위한 scheduleId, client_name, visited_date를 반환합니다.")
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<?> getDailyLogsByClient(
+            @PathVariable Integer clientId
+    ) {
+        //하드코딩
+        Integer userId = 1;
+
+        ApiResult result = dailyLogService.getDailyLogsByClient(userId, clientId);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();

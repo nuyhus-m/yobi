@@ -17,8 +17,8 @@ COPY --from=build /app/build/libs/*.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=prod
 ENV TZ=Asia/Seoul
 
-# 애플리케이션이 사용할 포트 (추후 가릴 예정)
+# 애플리케이션이 사용할 포트
 EXPOSE 8080
 
 # 애플리케이션 실행 명령
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+ENTRYPOINT ["java", "-jar", "app.jar"]
