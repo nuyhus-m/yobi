@@ -165,7 +165,10 @@ public class SchedulesController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "OCR을 이용한 일정 등록", description = "이미지, 년, 월을 등록하면 OCR로 분석 후 일정을 자동 등록합니다.")
+    @Operation(summary = "OCR을 이용한 일정 등록", description = "이미지, 년, 월을 등록하면 OCR로 분석 후 일정을 자동 등록합니다. <br/>" +
+            "등록 성공한 일정 수(successCount), <br/>" +
+            "양식 오류, 일치 클라이언트 없음 등으로 등록 실패한 일정 수(failCount), <br/>" +
+            "등록 실패 사유(failureReasons)를 반환합니다.")
     @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> registerScheduleByOcr(
             @RequestParam("image") MultipartFile image,

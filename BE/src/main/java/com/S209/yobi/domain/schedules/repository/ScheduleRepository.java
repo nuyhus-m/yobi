@@ -29,5 +29,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             @Param("userId") Integer userId,
             @Param("date") LocalDate date);
 
+    @Query("SELECT s FROM Schedule s JOIN FETCH s.client WHERE s.user.id = :userId AND s.visitedDate = :date " +
+            "AND ((s.startAt < :endAt AND s.endAt > :startAt))")
+    List<Schedule> findByUserIdAndVisitedDateAndTimeOverlapping(
+            @Param("userId") Integer userId,
+            @Param("date") LocalDate date,
+            @Param("startAt") LocalTime startAt,
+            @Param("endAt") LocalTime endAt);
+
 
 }

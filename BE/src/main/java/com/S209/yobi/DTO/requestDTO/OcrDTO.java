@@ -27,11 +27,15 @@ public class OcrDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OcrResultDTO implements ApiResult {
-        private Integer count;
+        private Integer successCount;
+        private Integer failCount;
+        private List<String> failureReasons;
 
-        public static OcrResultDTO from(int count) {
+        public static OcrResultDTO of(int successCount, int failCount, List<String> failureReasons) {
             return OcrResultDTO.builder()
-                    .count(count)
+                    .successCount(successCount)
+                    .failCount(failCount)
+                    .failureReasons(failureReasons)
                     .build();
         }
     }
