@@ -24,6 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +59,7 @@ public class ScheduleService {
 
         // JWT에서 userId 추출하여 사용하여야 함.
         // 현재는 임시 하드코딩!!!!
-        Integer userId = 6;
+        Integer userId = 1;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -254,24 +257,92 @@ public class ScheduleService {
                     resizedImage.getSize() / 1024);
 
             // FastAPI 서버에 리사이징된 이미지 전송
-            OcrResponseDTO ocrResult = ocrFastApiClient.processImage(resizedImage);
+            OcrResponseDTO ocrResult;
+            try {
+                ocrResult = ocrFastApiClient.processImage(resizedImage);
+            } catch (Exception e) {
+                log.error("OCR 서버 처리 중 오류: {}", e.getMessage());
+                throw new IllegalArgumentException("OCR 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+
+            if (ocrResult == null || ocrResult.getSchedules() == null || ocrResult.getSchedules().isEmpty()) {
+                throw new IllegalArgumentException("인식된 일정이 없습니다. 이미지를 확인해주세요.");
+            }
 
             // 일정 등록
-            int count = 0;
+            int successCount = 0;
+            int failCount = 0;
+            List<String> failureReasons = new ArrayList<>();
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            YearMonth yearMonth = YearMonth.of(year, month);
+            int lastDayOfMonth = yearMonth.lengthOfMonth();
 
             // 결과에서 일정 정보 추출 및 저장
             for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
                 try {
+                    // 날짜 유효성 검사
+                    // 1일 이전인 경우, 혹은 30일/31일을 벗어나는 경우
+                    if (item.getDay() <= 0 || item.getDay() > lastDayOfMonth) {
+                        failCount++;
+                        failureReasons.add(String.format("날짜 오류: %d일은 %d년 %d월에 존재하지 않습니다.", item.getDay(), year, month));
+                        continue;
+                    }
+
                     // 클라이언트 이름으로 클라이언트 찾기
-                    Client client = clientRepository.findByName(item.getClientName())
-                            .orElseThrow(() -> new EntityNotFoundException("Client not found with name: " + item.getClientName()));
+                    // 해당 이름의 클라이언트가 없다면 생략하고, 다음 저장을 진행함.
+                    Client client;
+                    try {
+                        client = clientRepository.findByName(item.getClientName())
+                                .orElse(null);
+                        if (client == null) {
+                            failCount++;
+                            failureReasons.add(String.format("클라이언트 찾기 실패: '%s'", item.getClientName()));
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        failCount++;
+                        failureReasons.add(String.format("클라이언트 조회 오류: '%s'", item.getClientName()));
+                        continue;
+                    }
 
                     // 날짜, 시간 파싱
                     LocalDate visitedDate = LocalDate.of(year, month, item.getDay());
-                    LocalTime startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
-                    LocalTime endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
+                    LocalTime startAt, endAt;
+                    try {
+                        startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
+                        endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
+                    } catch (DateTimeParseException e) {
+                        failCount++;
+                        failureReasons.add(String.format("시간 형식 오류: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
+                        continue;
+                    }
+
+                    // 시간 유효성 검사
+                    if (endAt.isBefore(startAt)) {
+                        failCount++;
+                        failureReasons.add(String.format("시간 유효성 오류: %s일 종료 시간(%s)이 시작 시간(%s)보다 빠릅니다.",
+                                item.getDay(), item.getEndAt(), item.getStartAt()));
+                        continue;
+                    }
+
+                    // 중복 일정 확인
+                    boolean hasOverlap = false;
+                    try {
+                        List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateAndTimeOverlapping(
+                                userId, visitedDate, startAt, endAt);
+                        hasOverlap = !overlappingSchedules.isEmpty();
+                    } catch (Exception e) {
+                        log.warn("중복 일정 확인 중 오류: {}", e.getMessage());
+                        // 중복 확인 실패해도 일정 등록은 진행
+                    }
+
+                    if (hasOverlap) {
+                        failCount++;
+                        failureReasons.add(String.format("중복 일정: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
+                        continue;
+                    }
 
                     // Schedule 생성 및 저장
                     Schedule schedule = Schedule.builder()
@@ -283,19 +354,25 @@ public class ScheduleService {
                             .build();
 
                     scheduleRepository.save(schedule);
-                    count++;
+                    successCount++;
                     log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}",
                             visitedDate, startAt, endAt, client.getName());
-                } catch (EntityNotFoundException e) {
-                    log.error("클라이언트를 찾을 수 없음: {}", item.getClientName());
-                    throw e;
                 } catch (Exception e) {
+                    failCount++;
+                    failureReasons.add(String.format("기타 오류: %s", e.getMessage()));
                     log.error("스케줄 저장 중 오류 발생: {}", e.getMessage());
-                    throw e;
                 }
             }
 
-            return OcrDTO.OcrResultDTO.from(count);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("successCount", successCount);
+            resultMap.put("failCount", failCount);
+
+            if (failCount > 0) {
+                resultMap.put("failureReasons", failureReasons);
+            }
+
+            return OcrDTO.OcrResultDTO.of(successCount, failCount, failCount > 0 ? failureReasons : null);
         } catch (IOException e) {
             log.error("이미지 처리 중 오류 발생: {}", e.getMessage());
             throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);
