@@ -10,13 +10,13 @@ public class BodyMainResponseDTO {
     private Long compositionId;
     private Float bfp;
     private int bmr;
-    private Float tbw;
+    private Float ecf;
 
     public static BodyMainResponseDTO of(BodyComposition body){
 
         // 소수점 첫째자리까지 반올림
         float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
-        float roundedTbw = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
+        float roundedEcf = Math.round(body.getEcf() * 10) / 10.0f;
 
         // 소수점 첫째자리에서 반올림
         int roundedBmr = Math.round(body.getBmr());
@@ -25,7 +25,7 @@ public class BodyMainResponseDTO {
                 .compositionId(body.getId())
                 .bfp(roundedBfp)
                 .bmr(roundedBmr)
-                .tbw(roundedTbw)
+                .ecf(roundedEcf)
                 .build();
     }
 

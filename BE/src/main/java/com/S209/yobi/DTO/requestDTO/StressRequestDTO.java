@@ -9,8 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 public class StressRequestDTO {
 
-    @NotNull(message = "clientId 은 필수값입니다.")
-    private Integer clientId;
 
     @NotNull(message = "stressValue 은 필수값입니다.")
     private Short stressValue;
