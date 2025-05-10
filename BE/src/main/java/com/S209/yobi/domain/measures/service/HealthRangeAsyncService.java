@@ -40,6 +40,7 @@ public class HealthRangeAsyncService {
 
         Map<String, String> result = new HashMap<>();
         result.put("bfp", levelFromScore(vo.getGenBfp()));
+        result.put("bfm", levelFromScore(vo.getGenBfm()));
         result.put("bmr", levelFromScore(vo.getGenBmr()));
         result.put("smm", levelFromScore(vo.getGenSmm()));
         result.put("ecf", levelFromScore(vo.getGenEcf()));

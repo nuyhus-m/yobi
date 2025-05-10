@@ -4,15 +4,17 @@ import com.S209.yobi.domain.measures.entity.BodyComposition;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @Builder
 public class BodyMainResponseDTO {
     private Long compositionId;
-    private Float bfp;
-    private int bmr;
-    private Float ecf;
+    private MeasureWithLevel bfp;
+    private MeasureWithLevel bmr;
+    private MeasureWithLevel ecf;
 
-    public static BodyMainResponseDTO of(BodyComposition body){
+    public static BodyMainResponseDTO of(BodyComposition body, Map<String, String> redisLevels){
 
         // 소수점 첫째자리까지 반올림
         float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
@@ -23,9 +25,9 @@ public class BodyMainResponseDTO {
 
         return BodyMainResponseDTO.builder()
                 .compositionId(body.getId())
-                .bfp(roundedBfp)
-                .bmr(roundedBmr)
-                .ecf(roundedEcf)
+                .bfp(new MeasureWithLevel(roundedBfp, redisLevels.get("bfp")))
+                .bmr(new MeasureWithLevel(roundedBmr, redisLevels.get("bmr")))
+                .ecf(new MeasureWithLevel(roundedEcf,redisLevels.get("ecf")))
                 .build();
     }
 

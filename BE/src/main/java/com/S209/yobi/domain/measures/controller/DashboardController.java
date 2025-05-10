@@ -1,6 +1,5 @@
 package com.S209.yobi.domain.measures.controller;
 
-import com.S209.yobi.DTO.requestDTO.ClientRequestDTO;
 import com.S209.yobi.domain.measures.service.DashboardService;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
@@ -47,8 +46,7 @@ public class DashboardController {
     public ResponseEntity<?> getHealthDetail(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable int clientId,
-            @PathVariable int userId,
-            @RequestBody ClientRequestDTO requestDTO
+            @PathVariable int userId
     ){
         ApiResult result = dashboardService.getHealthDetail(userId, clientId);
 

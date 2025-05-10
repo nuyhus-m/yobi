@@ -4,20 +4,22 @@ import com.S209.yobi.domain.measures.entity.BodyComposition;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @Builder
 public class BodyCompositionResponseDTO {
     private Long compositionId;
-    private Float bfp;
-    private Float bfm;
-    private Float smm;
-    private int bmr;
-    private Float ecf;
-    private Float protein;
-    private Float mineral;
-    private short bodyAge;
+    private MeasureWithLevel bfp;
+    private MeasureWithLevel  bfm;
+    private MeasureWithLevel  smm;
+    private MeasureWithLevel  bmr;
+    private MeasureWithLevel  ecf;
+    private MeasureWithLevel  protein;
+    private MeasureWithLevel  mineral;
+    private short  bodyAge;
 
-    public static BodyCompositionResponseDTO of(BodyComposition body){
+    public static BodyCompositionResponseDTO of(BodyComposition body, Map<String, String> redisLevels){
 
         // 소수점 첫째자리까지 반올림
         float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
@@ -32,15 +34,17 @@ public class BodyCompositionResponseDTO {
 
         return BodyCompositionResponseDTO.builder()
                 .compositionId(body.getId())
-                .bfp(roundedBfp)
-                .bfm(roundedBfm)
-                .smm(roundedSmm)
-                .bmr(roundedBmr)
-                .ecf(roundedEcf)
-                .protein(roundedProtein)
-                .mineral(roundedMineral)
+                .bfp(new MeasureWithLevel(roundedBfp, redisLevels.get("bfp")))
+                .bfm(new MeasureWithLevel(roundedBfm, redisLevels.get("bfm")))
+                .smm(new MeasureWithLevel(roundedSmm, redisLevels.get("smm")))
+                .bmr(new MeasureWithLevel((float) roundedBmr, redisLevels.get("bmr")))
+                .ecf(new MeasureWithLevel(roundedEcf, redisLevels.get("ecf")))
+                .protein(new MeasureWithLevel(roundedProtein, redisLevels.get("protein")))
+                .mineral(new MeasureWithLevel(roundedMineral, redisLevels.get("mineral")))
                 .bodyAge(body.getBodyAge())
                 .build();
     }
+
+
 
 }
