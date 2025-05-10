@@ -45,7 +45,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));
 
-        return ScheduleResponseDTO.of(schedule);
+        return ScheduleResponseDTO.fromSchedule(schedule);
     }
 
     // 단건 일정 등록
@@ -117,9 +117,6 @@ public class ScheduleService {
             }
         }
 
-
-//        scheduleRepository.save(schedule); // 트랜잭션 내에서 변경 감지로 업데이트됨 -> 명시적 저장 불필요
-
         return null;
     }
 
@@ -143,32 +140,16 @@ public class ScheduleService {
     }
 
     // 특정 요양보호사의 일정 리스트
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResult getSchedulesByUser(Integer userId) {
         List<Schedule> schedules = scheduleRepository.findByUserIdOrderByVisitedDateAscStartAtAsc(userId);
 
-        List<Map<String, Object>> result = schedules.stream()
-                .map(schedule -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("scheduleId", schedule.getId());
-                    map.put("clientId", schedule.getClient().getId());
-                    map.put("visitedDate", schedule.getVisitedDate());
-                    map.put("startAt", schedule.getStartAt());
-                    map.put("endAt", schedule.getEndAt());
-                    return map;
-                })
-                .collect(Collectors.toList());
-
-        return new SimpleResultDTO<>(result);
+        return ScheduleResponseDTO.fromList(schedules);
     }
 
     // 특정 월의 일정 리스트
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResult getSchedulesByMonth(Integer userId, int year, int month) {
-        if (year < 2000 || year > 2100 || month < 1 || month >12) {
-                throw new IllegalArgumentException("유효하지 않은 년월임.");
-            }
-
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
 
@@ -176,23 +157,11 @@ public class ScheduleService {
                 userId, startDate, endDate
         );
 
-        List<Map<String, Object>> result = schedules.stream()
-                .map(schedule -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("scheduleId", schedule.getId());
-                    map.put("clientId", schedule.getClient().getId());
-                    map.put("visitedDate", schedule.getVisitedDate());
-                    map.put("startAt", schedule.getStartAt());
-                    map.put("endAt", schedule.getEndAt());
-                    return map;
-                })
-                .collect(Collectors.toList());
-
-        return new SimpleResultDTO<>(result);
+        return ScheduleResponseDTO.fromList(schedules);
     }
 
     // 특정일의 일정 리스트
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResult getSchedulesByDay(Integer userId, LocalDate date) {
         if (date == null) {
             throw new IllegalArgumentException("날짜를 입력해주세요.");
@@ -202,17 +171,8 @@ public class ScheduleService {
                 userId, date
         );
 
-        List<Map<String, Object>> result = schedules.stream()
-                .map(schedule -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("scheduleId", schedule.getId());
-                    map.put("clientId", schedule.getClient().getId());
-                    map.put("clientName", schedule.getClient().getName());
-                    map.put("visitedDate", schedule.getVisitedDate());
-                    map.put("startAt", schedule.getStartAt());
-                    map.put("endAt", schedule.getEndAt());
-                    return map;
-                })
+        List<ScheduleResponseDTO.ScheduleDTO> result = schedules.stream()
+                .map(schedule -> ScheduleResponseDTO.fromSchedule(schedule))
                 .collect(Collectors.toList());
 
         return new SimpleResultDTO<>(result);
@@ -280,7 +240,8 @@ public class ScheduleService {
                 }
             }
 
-            return new SimpleResultDTO<>(OcrDTO.OcrResultDTO.builder().count(count).build());
+//            return new SimpleResultDTO<>(OcrDTO.OcrResultDTO.builder().count(count).build());
+            return OcrDTO.OcrResultDTO.from(count);
         } catch (IOException e) {
             log.error("이미지 처리 중 오류 발생: {}", e.getMessage());
             throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);

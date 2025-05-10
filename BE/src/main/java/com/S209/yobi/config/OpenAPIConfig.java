@@ -24,7 +24,8 @@ public class OpenAPIConfig {
                         .version("v1.0.0"))
                 .servers(List.of(
 //                        new Server().url("https://j12d107.p.ssafy.io/api").description("EC2 Server"),
-                        new Server().url("http://192.168.100.162:8080/api").description("서현 Server"),
+//                        new Server().url("http://192.168.100.162:8080/api").description("서현 Server"),
+                        new Server().url("http://192.168.35.58:8080/api").description("서현 집"),
                         new Server().url("http://192.168.100.201:8080/api").description("문경 Server"),
                         new Server().url("http://192.168.0.115:8080/api").description("문경 집 Server")
                 ))
