@@ -2,6 +2,7 @@ package com.S209.yobi.domain.schedules.controller;
 
 import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleCreateRequestDTO;
 import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleUpdateRequestDTO;
+import com.S209.yobi.DTO.responseDTO.SimpleResultDTO;
 import com.S209.yobi.domain.schedules.service.ScheduleService;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
@@ -66,7 +67,7 @@ public class SchedulesController {
     }
 
 
-    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다. <br/>" +
+    @Operation(summary = "(수정중) 단건 일정 수정", description = "일정 정보를 수정합니다. <br/>" +
             "clientId: 112,<br/>" +
             "visitedDate: \"2025-05-03\",<br/>" +
             "startAt: \"14:00:00\",<br/>" +
@@ -154,6 +155,11 @@ public class SchedulesController {
             String code = errorResult.getCode();
             HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
             return ResponseEntity.status(status).body(errorResult);
+        }
+
+        // SimpleResultDTO에서 데이터만 추출해서 반환
+        if (result instanceof SimpleResultDTO<?> simpleResult) {
+            return ResponseEntity.ok(simpleResult.getData());
         }
 
         return ResponseEntity.ok(result);

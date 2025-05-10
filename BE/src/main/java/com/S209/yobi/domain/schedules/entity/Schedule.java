@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.time.LocalTime;
 @Builder
 @Entity
 @Table(name = "schedule")
+@BatchSize(size = 100)
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

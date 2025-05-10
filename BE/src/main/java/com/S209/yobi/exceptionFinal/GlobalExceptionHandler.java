@@ -39,7 +39,8 @@ public class GlobalExceptionHandler {
             BindException.class,
             HttpMessageNotReadableException.class,
             MissingServletRequestParameterException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            IllegalStateException.class
     })
     public ResponseEntity<ApiResponseDTO<?>> handleBadRequest(Exception ex, HttpServletRequest request) {
 

@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "clients")
+@BatchSize(size = 100)
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
