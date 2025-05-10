@@ -35,6 +35,26 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
 
     List<Measure> findByClient( Client client, Pageable pageable);
 
+
+    @Query(value = """
+        SELECT  m.date, b.bfp, b.bmr, b.ecf, b.protein,
+                bp.sbp, bp.dbp,
+                s.stress_value
+        FROM measure m
+        JOIN body_composition b on m.composition_id = b.composition_id
+        JOIN blood_pressure bp on m.blood_id = bp.blood_id
+        Left JOIN stress s on m.stress_id = s.stress_id
+        WHERE m.client_id = :clientId
+        AND (:cursorDate IS NULL OR m.date < :cursorDate)
+        ORDER BY m.date DESC 
+        LIMIT :size
+    """, nativeQuery = true)
+    List<Object[]> findHealthTrendsNative(@Param("clientId") int clientId,
+                                          @Param("cursorDate") LocalDate cursorDate,
+                                          @Param("size") int size);
+
+
+
     @Query("""
         SELECT  m
         FROM Measure m
@@ -45,6 +65,8 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
     List<Measure> findByClientBeforeDate(@Param("client") Client client,
                                          @Param("cursorDate") LocalDate cursorDate,
                                          Pageable pageable);
+
+
 
 
 

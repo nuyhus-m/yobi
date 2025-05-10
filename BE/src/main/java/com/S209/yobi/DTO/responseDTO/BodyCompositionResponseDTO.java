@@ -12,7 +12,7 @@ public class BodyCompositionResponseDTO {
     private Float bfm;
     private Float smm;
     private int bmr;
-    private Float tbw;
+    private Float ecf;
     private Float protein;
     private Float mineral;
     private short bodyAge;
@@ -23,7 +23,7 @@ public class BodyCompositionResponseDTO {
         float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
         float roundedBfm = Math.round(body.getBfm() * 10) / 10.0f;
         float roundedSmm = Math.round(body.getSmm() * 10) / 10.0f;
-        float roundedTbm = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
+        float roundedEcf = Math.round(body.getEcf() * 10) / 10.0f;
         float roundedProtein = Math.round(body.getProtein() * 10) / 10.0f;
         float roundedMineral = Math.round(body.getMineral() * 10) / 10.0f;
 
@@ -31,15 +31,15 @@ public class BodyCompositionResponseDTO {
         int roundedBmr = Math.round(body.getBmr());
 
         return BodyCompositionResponseDTO.builder()
-//                .compositionId(body.getId())
+                .compositionId(body.getId())
                 .bfp(roundedBfp)
                 .bfm(roundedBfm)
                 .smm(roundedSmm)
                 .bmr(roundedBmr)
-                .tbw(roundedTbm)
+                .ecf(roundedEcf)
                 .protein(roundedProtein)
                 .mineral(roundedMineral)
-                .bodyAge(body.getBodyage())
+                .bodyAge(body.getBodyAge())
                 .build();
     }
 

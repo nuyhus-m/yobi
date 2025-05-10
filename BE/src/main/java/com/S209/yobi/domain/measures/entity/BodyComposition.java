@@ -37,6 +37,9 @@ public class BodyComposition {
     @Column(name = "ecw")
     private Float  ecw;
 
+    @Column(name = "ecf")
+    private Float  ecf;
+
     @Column(name = "protein")
     private Float  protein;
 
@@ -44,7 +47,7 @@ public class BodyComposition {
     private Float  mineral;
 
     @Column(name = "bodyage")
-    private Short bodyage;
+    private Short bodyAge;
 
     @Column(name = "created_at")
     private Instant createdAt;
@@ -64,9 +67,10 @@ public class BodyComposition {
                 .bmr(dto.getBmr())
                 .icw(dto.getIcw())
                 .ecw(dto.getEcw())
+                .ecf(dto.getEcf())
                 .protein(dto.getProtein())
                 .mineral(dto.getMineral())
-                .bodyage(dto.getBodyage())
+                .bodyAge(dto.getBodyAge())
                 .build();
     }
 
@@ -78,9 +82,10 @@ public class BodyComposition {
                 .bmr(dto.getBmr())
                 .icw(dto.getIcw())
                 .ecw(dto.getEcw())
+                .ecf(dto.getEcf())
                 .protein(dto.getProtein())
                 .mineral(dto.getMineral())
-                .bodyage(dto.getBodyage())
+                .bodyAge(dto.getBodyAge())
                 .build();
     }
 

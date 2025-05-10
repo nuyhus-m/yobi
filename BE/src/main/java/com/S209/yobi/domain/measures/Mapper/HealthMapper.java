@@ -27,7 +27,7 @@ public class HealthMapper {
         // 각 항목별 시리즈 초기화
         bodyCompositionMap.put("bfp", new ArrayList<>());
         bodyCompositionMap.put("bmr", new ArrayList<>());
-        bodyCompositionMap.put("tbw", new ArrayList<>());
+        bodyCompositionMap.put("ecf", new ArrayList<>());
         bodyCompositionMap.put("protein", new ArrayList<>());
 
         bloodPressureMap.put("sbp", new ArrayList<>());
@@ -45,12 +45,12 @@ public class HealthMapper {
             if(body != null){
                 float roundedBfp = Math.round(body.getBfp() * 10) / 10.0f;
                 int roundedBmr = Math.round(body.getBmr());
-                float roundedTbm = Math.round((body.getIcw() + body.getEcw()) * 10) / 10.0f;
+                float roundedEcf = Math.round(body.getEcf() * 10) / 10.0f;
                 float roundedProtein = Math.round(body.getProtein() * 10) / 10.0f;
 
                 bodyCompositionMap.get("bfp").add(GraphPointDTO.builder().date(date).value(roundedBfp).build());
                 bodyCompositionMap.get("bmr").add(GraphPointDTO.builder().date(date).value(roundedBmr).build());
-                bodyCompositionMap.get("tbw").add(GraphPointDTO.builder().date(date).value(roundedTbm).build());
+                bodyCompositionMap.get("ecf").add(GraphPointDTO.builder().date(date).value(roundedEcf).build());
                 bodyCompositionMap.get("protein").add(GraphPointDTO.builder().date(date).value(roundedProtein).build());
             }
 

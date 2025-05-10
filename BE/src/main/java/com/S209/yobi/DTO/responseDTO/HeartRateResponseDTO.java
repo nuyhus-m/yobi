@@ -13,6 +13,7 @@ public class HeartRateResponseDTO {
 
     public static HeartRateResponseDTO of(HeartRate heartRate){
         return HeartRateResponseDTO.builder()
+                .heartId(heartRate.getId())
                 .bpm(heartRate.getBpm())
                 .oxygen(heartRate.getOxygen())
                 .build();

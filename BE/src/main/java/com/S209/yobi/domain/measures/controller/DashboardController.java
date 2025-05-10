@@ -25,13 +25,13 @@ public class DashboardController {
 
     @Operation(summary = "단건 데이터 조회 (주요 데이터)",
             description = "건강 주요 데이터를 조회합니다(체지방률/기초대사량/체내수분/스트레스/심박/혈압)")
-    @PostMapping(value = "/main/{userId}")
+    @GetMapping(value = "/main/{clientId}/{userId}")
     public ResponseEntity<?> getMainHealth(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
-            @PathVariable int userId,
-            @RequestBody ClientRequestDTO requestDTO
+            @PathVariable int clientId,
+            @PathVariable int userId
     ){
-        ApiResult result = dashboardService.getMainHealth(userId, requestDTO);
+        ApiResult result = dashboardService.getMainHealth(userId, clientId);
 
         if(result instanceof  ApiResponseDTO<?> errorResult){
             String code = errorResult.getCode();
@@ -43,13 +43,14 @@ public class DashboardController {
     }
 
     @Operation(summary = "단건 데이터 조회 (자세히보기)", description = "건강 데이터를 전체를 조회합니다")
-    @PostMapping(value = "/detail/{userId}")
+    @GetMapping(value = "/detail/{clientId}/{userId}")
     public ResponseEntity<?> getHealthDetail(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int clientId,
             @PathVariable int userId,
             @RequestBody ClientRequestDTO requestDTO
     ){
-        ApiResult result = dashboardService.getHealthDetail(userId, requestDTO);
+        ApiResult result = dashboardService.getHealthDetail(userId, clientId);
 
         if(result instanceof  ApiResponseDTO<?> errorResult){
             String code = errorResult.getCode();
@@ -61,7 +62,7 @@ public class DashboardController {
     }
 
     @Operation(summary = "건강 추이 전체 조회", description = "건강 추이 전체를 조회합니다.")
-    @PostMapping(value = "/{clientId}/{userId}/total-health")
+    @GetMapping(value = "/{clientId}/{userId}/total-health")
     public ResponseEntity<?> getTotalHealth(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable Integer clientId,

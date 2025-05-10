@@ -14,6 +14,7 @@ public class TemperatureResponseDTO {
 
     public static TemperatureResponseDTO of(Temperature temperature){
         return TemperatureResponseDTO.builder()
+                .temperatureId(temperature.getId())
                 .temperature(temperature.getTemperature())
                 .build();
     }

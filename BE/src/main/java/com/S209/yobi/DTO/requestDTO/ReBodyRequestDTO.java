@@ -8,9 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ReBodyRequestDTO {
 
-    @NotNull(message = "clientId 은 필수값입니다.")
-    private Integer clientId;
-
     @NotNull(message = "bfp 은 필수값입니다.")
     private Float bfp;
 
@@ -29,6 +26,9 @@ public class ReBodyRequestDTO {
     @NotNull(message = "ecw 은 필수값입니다.")
     private Float ecw;
 
+    @NotNull(message = "ecf 은 필수값입니다.")
+    private Float ecf;
+
     @NotNull(message = "protein 은 필수값입니다.")
     private Float protein;
 
@@ -36,5 +36,5 @@ public class ReBodyRequestDTO {
     private Float mineral;
 
     @NotNull(message = "bodyage 은 필수값입니다.")
-    private Short bodyage;
+    private Short bodyAge;
 }

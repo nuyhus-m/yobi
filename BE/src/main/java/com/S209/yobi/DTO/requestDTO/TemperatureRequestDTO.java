@@ -9,9 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 public class TemperatureRequestDTO {
 
-    @NotNull(message = "clientId 은 필수값입니다.")
-    private Integer clientId;
-
     @NotNull(message = "temperature 은 필수값입니다.")
     private Float temperature;
 

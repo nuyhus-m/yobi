@@ -26,13 +26,16 @@ public class BodyRequestDTO {
     @NotNull(message = "ecw 은 필수값입니다.")
     private Float ecw;
 
+    @NotNull(message = "ecf 은 필수값입니다.")
+    private Float ecf;
+
     @NotNull(message = "protein 은 필수값입니다.")
     private Float protein;
 
     @NotNull(message = "mineral 은 필수값입니다.")
     private Float mineral;
 
-    @NotNull(message = "bodyage 은 필수값입니다.")
-    private Short bodyage;
+    @NotNull(message = "bodyAge 은 필수값입니다.")
+    private Short bodyAge;
 
 }
