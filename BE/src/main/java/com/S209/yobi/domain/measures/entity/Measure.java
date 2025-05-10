@@ -62,11 +62,11 @@ public class Measure {
     @JoinColumn(name = "temperature_id")
     private Temperature temperature;
 
-    @PrePersist
-    protected void onCreate(){
-        LocalDate now = LocalDate.now();
-        this.date = now;
-    }
+//    @PrePersist
+//    protected void onCreate(){
+//        LocalDate now = LocalDate.now();
+//        this.date = now;
+//    }
 
 
     public static Measure fromBase(User user, Client client, BodyRequestDTO bodyDTO, BloodRequestDTO bloodDTO){

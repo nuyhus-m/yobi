@@ -37,11 +37,11 @@ public class MeasureService {
     /**
      * 피트러스 필수 데이터 저장 (체성분/혈압)
      */
-    public ApiResult saveBaseElement(int userId, BaseRequestDTO requestDTO){
+    public ApiResult saveBaseElement(int userId, int clientId, BaseRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 오늘 날짜 기준으로 측정 여부 확인
@@ -66,18 +66,18 @@ public class MeasureService {
     /**
      * 피트러스 심박 측정
      */
-    public ApiResult saveHeartRate(int userId, HeartRateRequestDTO requestDTO){
+    public ApiResult saveHeartRate(int userId, int clientId, HeartRateRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
         }
         Measure measure = optionalMeasure.get();
@@ -92,18 +92,18 @@ public class MeasureService {
     /**
      * 피트러스 스트레스 측정
      */
-    public ApiResult saveStress(int userId, StressRequestDTO requestDTO){
+    public ApiResult saveStress(int userId, int clientId, StressRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
         }
         Measure measure = optionalMeasure.get();
@@ -120,18 +120,18 @@ public class MeasureService {
     /**
      * 피트러스 체온 측정
      */
-    public ApiResult saveTemperature(int userId, TemperatureRequestDTO requestDTO){
+    public ApiResult saveTemperature(int userId, int clientId, TemperatureRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
         }
         Measure measure = optionalMeasure.get();
@@ -147,18 +147,18 @@ public class MeasureService {
     /**
      * 피트러스 체성분 데이터 저장(재측정)
      */
-    public ApiResult saveBodyComposition(int userId, ReBodyRequestDTO requestDTO){
+    public ApiResult saveBodyComposition(int userId, int clientId, ReBodyRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
         }
         Measure measure = optionalMeasure.get();
@@ -174,18 +174,18 @@ public class MeasureService {
     /**
      * 피트러스 혈압 데이터 저장(재측정)
      */
-    public ApiResult saveBloodPressure(int userId, ReBloodRequestDTO requestDTO){
+    public ApiResult saveBloodPressure(int userId, int clientId, ReBloodRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, requestDTO.getClientId());
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
         }
         Measure measure = optionalMeasure.get();
@@ -202,11 +202,11 @@ public class MeasureService {
      * 오늘 필수 데이터 측정했는지 여부(T/F)
      */
     @Transactional(readOnly = true)
-    public ApiResult checkBase(int userId, ClientRequestDTO requestDTO){
+    public ApiResult checkBase(int userId, int clientId){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(requestDTO.getClientId())
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인

@@ -14,7 +14,7 @@ public class StressResponseDTO {
 
     public static StressResponseDTO of(Stress stress){
         return StressResponseDTO.builder()
-//                .stressId(stress.getId())
+                .stressId(stress.getId())
                 .stressValue(stress.getStressValue())
                 .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
                 .build();

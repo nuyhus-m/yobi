@@ -18,7 +18,7 @@ public class BloodResponseDTO {
         float roundedDbp = Math.round(blood.getDbp() * 10) / 10.0f;
 
         return BloodResponseDTO.builder()
-//                .bloodId(blood.getId())
+                .bloodId(blood.getId())
                 .sbp(roundedSbp)
                 .dbp(roundedDbp)
                 .build();
