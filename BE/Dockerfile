@@ -13,8 +13,8 @@ WORKDIR /app
 # 빌드 단계에서 생성된 JAR 파일을 복사
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# [추가] Jenkins에서 복사한 application.yml을 이미지에 포함
-COPY --from=build /app/BE/src/main/resources/application.yml ./application.yml
+# Jenkins에서 복사한 application.yml을 이미지에 포함
+COPY --from=build /app/src/main/resources/application.yml ./application.yml
 
 # 환경 변수 설정
 ENV SPRING_PROFILES_ACTIVE=prod
