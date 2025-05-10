@@ -84,8 +84,8 @@ public class ScheduleService {
         // 임시 하드코딩! 추후 JWT에서 추출해야 합니다.
         Integer currentUserId = 1;
 
-        // 기존 일정 존재 여부 확인
-        Schedule schedule = scheduleRepository.findById(scheduleId)
+        // 기존 일정 존재 여부 확인 - Join Fetch를 사용하여 한 번에 관련 엔티티 로드
+        Schedule schedule = scheduleRepository.findByIdWithClientAndUser(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
 
         // 수정 권한 확인
@@ -93,31 +93,89 @@ public class ScheduleService {
             throw new AccessDeniedException("해당 일정을 수정할 권한이 없음.");
         }
 
+        Client client = schedule.getClient();
         if (requestDto.getClientId() != null) {
-            Client client = clientRepository.findById(requestDto.getClientId())
+            client = clientRepository.findById(requestDto.getClientId())
                     .orElseThrow(() -> new EntityNotFoundException("Client not found"));
             schedule.setClient(client);
         }
 
+        LocalDate visitedDate = schedule.getVisitedDate();
         if (requestDto.getVisitedDate() != null) {
-            schedule.setVisitedDate(requestDto.getVisitedDate());
+            visitedDate = requestDto.getVisitedDate();
+            schedule.setVisitedDate(visitedDate);
         }
 
+        LocalTime startAt = schedule.getStartAt();
         if (requestDto.getStartAt() != null) {
-            schedule.setStartAt(requestDto.getStartAt());
+            startAt = requestDto.getStartAt();
+            schedule.setStartAt(startAt);
         }
 
+        LocalTime endAt = schedule.getEndAt();
         if (requestDto.getEndAt() != null) {
-            schedule.setEndAt(requestDto.getEndAt());
+            endAt = requestDto.getEndAt();
+            schedule.setEndAt(endAt);
         }
 
-        if (requestDto.getStartAt() != null && requestDto.getEndAt() != null) {
-            if (requestDto.getEndAt().isBefore(requestDto.getStartAt())) {
-                throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
-            }
+        // 1. 필수 필드 유효성 검사
+        validateRequiredFields(schedule);
+
+        // 2. 시간 유효성 검사
+        if (endAt.isBefore(startAt)) {
+            throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없습니다.");
         }
 
-        return null;
+        // 3. 일정 중복 검사
+        checkScheduleOverlap(currentUserId, scheduleId, visitedDate, startAt, endAt);
+
+        return ScheduleResponseDTO.fromSchedule(schedule);
+    }
+
+    // 필수 필드 유효성 검사
+    private void validateRequiredFields(Schedule schedule) {
+        if (schedule.getClient() == null) {
+            throw new IllegalArgumentException("클라이언트 정보는 필수입니다.");
+        }
+
+        if (schedule.getVisitedDate() == null) {
+            throw new IllegalArgumentException("방문 날짜는 필수입니다.");
+        }
+
+        if (schedule.getStartAt() == null) {
+            throw new IllegalArgumentException("시작 시간은 필수입니다.");
+        }
+
+        if (schedule.getEndAt() == null) {
+            throw new IllegalArgumentException("종료 시간은 필수입니다.");
+        }
+    }
+
+    // 일정 중복 검사 메소드
+    private void checkScheduleOverlap(Integer userId, Integer scheduleId, LocalDate visitedDate, LocalTime startAt, LocalTime endAt) {
+        // 같은 날짜에 시간이 겹치는 일정 조회 - Join Fetch 사용
+        List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateWithClient(userId, visitedDate);
+
+        List<Schedule> conflicts = overlappingSchedules.stream()
+                .filter(s -> !s.getId().equals(scheduleId)) // 해당 스케줄 자기 자신 제외
+                .filter(s -> isTimeOverlapping(s.getStartAt(), s.getEndAt(), startAt, endAt)) // 시간 중복 확인
+                .collect(Collectors.toList());
+
+        if (!conflicts.isEmpty()) {
+            Schedule conflict = conflicts.get(0);
+            String errorMessage = String.format("해당 시간(%s~%s)에 이미 다른 일정(%s~%s, %s님)이 있습니다.",
+                    startAt, endAt, conflict.getStartAt(), conflict.getEndAt(),
+                    conflict.getClient().getName());
+            throw new IllegalArgumentException(errorMessage);
+        }
+    }
+
+    // 시간 중복 확인 헬퍼 메소드
+    private boolean isTimeOverlapping(LocalTime existingStart, LocalTime existingEnd,
+                                      LocalTime newStart, LocalTime newEnd) {
+        // 두 시간 범위가 겹치는지 확인
+        // (newStart < existingEnd) && (newEnd > existingStart)
+        return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
     }
 
     // 단건 일정 삭제
@@ -240,7 +298,6 @@ public class ScheduleService {
                 }
             }
 
-//            return new SimpleResultDTO<>(OcrDTO.OcrResultDTO.builder().count(count).build());
             return OcrDTO.OcrResultDTO.from(count);
         } catch (IOException e) {
             log.error("이미지 처리 중 오류 발생: {}", e.getMessage());

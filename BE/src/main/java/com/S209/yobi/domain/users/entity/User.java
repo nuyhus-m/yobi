@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -11,6 +12,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "users")
+@BatchSize(size = 100)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
