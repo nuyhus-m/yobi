@@ -26,6 +26,18 @@ pipeline {
                 }
             }
         }
+        
+
+        stage('Build backend jar')   {
+            steps {
+                sh '''
+                  cd BE
+                  ./gradlew clean bootJar -x test   # 선택: test 제외
+                '''
+            }
+        }
+
+
         stage('Deploy to EC2-1') {
             steps {
                 sh """
