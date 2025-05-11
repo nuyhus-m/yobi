@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment
 import com.example.myapplication.databinding.DialogTimePickerBinding
 import java.time.LocalTime
 import android.view.View
+import android.view.WindowManager
 import android.widget.NumberPicker
 import com.example.myapplication.R
 
@@ -28,6 +29,8 @@ class TimePickerDialog: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setDialogSize()
 
         val hourPicker = binding.npStartPicker
         val minutePicker = binding.npMinutePicker
@@ -62,16 +65,18 @@ class TimePickerDialog: DialogFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setDialogSize() {
+        val displayMetrics = resources.displayMetrics
+        val widthPixels = displayMetrics.widthPixels
+
+        val params = dialog?.window?.attributes
+        params?.width = (widthPixels * 0.9).toInt()
+        dialog?.window?.attributes = params as WindowManager.LayoutParams
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_white_radius_15)
     }
 }
