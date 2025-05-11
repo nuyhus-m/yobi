@@ -118,10 +118,6 @@ class YearMonthPickerDialog: DialogFragment() {
         binding.btnNo.setOnClickListener {
             dismiss()
         }
-
-        binding.ivClose.setOnClickListener {
-            dismiss()
-        }
     }
 
     fun setListener(listener: (Int, Int) -> Unit) {

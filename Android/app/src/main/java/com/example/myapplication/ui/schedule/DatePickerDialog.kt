@@ -95,10 +95,6 @@ class DatePickerDialog: DialogFragment() {
             dismiss()
         }
 
-        binding.ivClose.setOnClickListener {
-            dismiss()
-        }
-
         binding.btnPrevious.setOnClickListener {
             currentMonth = currentMonth.minusMonths(1)
             binding.cv.scrollToMonth(currentMonth)

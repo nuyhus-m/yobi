@@ -59,10 +59,6 @@ class TimePickerDialog: DialogFragment() {
         binding.btnNo.setOnClickListener {
             dismiss()
         }
-
-        binding.ivClose.setOnClickListener {
-            dismiss()
-        }
     }
 
     override fun onDestroyView() {
