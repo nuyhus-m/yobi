@@ -161,6 +161,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
+
+        // 해외 확장 가능성 고려
+//        ZoneId userZone = ZoneId.of(user.getTimezone()); // 예: "Asia/Seoul", "America/New_York"
+//        LocalDate today = LocalDate.now(userZone);
+
         LocalDate today = LocalDate.now();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
         if (optionalMeasure.isEmpty()) {
