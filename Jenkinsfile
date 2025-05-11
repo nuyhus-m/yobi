@@ -32,6 +32,7 @@ pipeline {
             steps {
                 sh '''
                   cd BE
+                  chmod +x gradlew 
                   ./gradlew clean bootJar -x test   # 선택: test 제외
                 '''
             }
