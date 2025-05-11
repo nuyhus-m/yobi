@@ -119,6 +119,8 @@ public class DashboardService {
 
 
 
+
+
 //
 //    public ApiResult getTotalHealth (int userId, int clientId, int size, LocalDate cursorDate){
 //        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인

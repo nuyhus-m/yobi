@@ -11,6 +11,6 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 public class GraphPointDTO {
-    private LocalDate date;
+    private long date;
     private Number value;
 }
