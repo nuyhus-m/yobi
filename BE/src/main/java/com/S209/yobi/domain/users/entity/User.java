@@ -17,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Size(max = 10)
     @NotNull
@@ -25,7 +25,7 @@ public class User {
     private String name;
 
     @NotNull
-    @Column(name = "employee_number", nullable = false)
+    @Column(name = "employee_number", nullable = false, unique = true)
     private Integer employeeNumber;
 
     @Size(max = 255)
