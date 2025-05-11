@@ -17,11 +17,10 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val ivYobi = findViewById<ImageView>(R.id.iv_character)
-        val animationDrawable = ivYobi.background as AnimationDrawable
-        animationDrawable.start()
-
-
+        binding.ivCharacter.post {
+            val animationDrawable = binding.ivCharacter.background as AnimationDrawable
+            animationDrawable.start()
+        }
 
     }
 }

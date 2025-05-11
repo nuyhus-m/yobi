@@ -63,6 +63,17 @@
         app:layout_constraintStart_toEndOf="@+id/tv_bi"
         android:textColor="@color/white"/>
 
+    <!-- 캐릭터 영역 (이미지 자리만 잡음) -->
+    <ImageView
+        android:id="@+id/iv_character"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/anim_splash_frame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="@dimen/space_40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
 
 
