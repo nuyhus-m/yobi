@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingTop="@dimen/space_40dp"
     android:paddingHorizontal="@dimen/space_24dp"
     android:paddingBottom="@dimen/space_40dp">
 
@@ -13,7 +12,8 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/space_40dp"/>
 
     <TextView
         android:id="@+id/tv_title"
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="일정 등록"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/space_70dp"
+        android:layout_marginTop="70dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         style="@style/TitleTextStyle"/>
