@@ -65,7 +65,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             updateMonthTitle(currentMonth)
         }
 
-        // 날짜 셀 바인더 설정
+        // 날짜 셀 바인더 설정F
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
@@ -107,6 +107,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
                 // 날짜 클릭 리스너 설정
                 container.view.setOnClickListener {
+
                     if (data.position.name == "MonthDate") {
                         val oldDate = selectedDate
                         selectedDate = data.date
@@ -158,7 +159,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         // 캘린더 설정
         calendarView.setup(
             YearMonth.of(2024, 1),                      // 시작 월
-            YearMonth.now().plusMonths(10),             // 종료 월
+            YearMonth.now().plusMonths(1),             // 종료 월
             daysOfWeek().first()                        // 주 시작 요일 (일요일)
         )
 
