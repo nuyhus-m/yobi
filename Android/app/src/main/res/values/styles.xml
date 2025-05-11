@@ -47,6 +47,12 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="CardTitleBoldTextStyle">
+        <item name="android:fontFamily">@font/pretendard_semibold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <style name="BodyTextStyle">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textSize">18sp</item>

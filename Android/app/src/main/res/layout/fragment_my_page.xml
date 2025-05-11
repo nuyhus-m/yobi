@@ -66,68 +66,69 @@
         android:layout_marginTop="282dp"
         android:paddingHorizontal="@dimen/space_24dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_change_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/space_8dp"
-            android:background="@drawable/bg_white_stroke_gray_radius_20"
-            android:backgroundTint="@color/white">
-
+            android:background="@drawable/bg_white_stroke_purple_radius_8">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="비밀번호 변경"
                 android:padding="@dimen/space_24dp"
-                style="@style/CardTitleTextStyle"/>
-        </com.google.android.material.card.MaterialCardView>
+                style="@style/CardTitleBoldTextStyle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_policy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/space_8dp"
-            android:background="@drawable/bg_white_stroke_gray_radius_20"
-            android:backgroundTint="@color/white">
-
+            android:background="@drawable/bg_white_stroke_purple_radius_8">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="약관 보기"
                 android:padding="@dimen/space_24dp"
-                style="@style/CardTitleTextStyle"/>
-        </com.google.android.material.card.MaterialCardView>
+                style="@style/CardTitleBoldTextStyle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/space_8dp"
-            android:background="@drawable/bg_white_stroke_gray_radius_20"
-            android:backgroundTint="@color/white">
-
+            android:background="@drawable/bg_white_stroke_purple_radius_8">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="로그아웃"
                 android:padding="@dimen/space_24dp"
-                style="@style/CardTitleTextStyle"/>
-        </com.google.android.material.card.MaterialCardView>
+                style="@style/CardTitleBoldTextStyle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/btn_signout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_white_stroke_gray_radius_20"
-            android:backgroundTint="@color/white">
-
+            android:layout_marginBottom="@dimen/space_8dp"
+            android:background="@drawable/bg_white_stroke_purple_radius_8">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="탈퇴하기"
                 android:padding="@dimen/space_24dp"
-                style="@style/CardTitleTextStyle"/>
-        </com.google.android.material.card.MaterialCardView>
+                style="@style/CardTitleBoldTextStyle"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
 
