@@ -65,7 +65,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             updateMonthTitle(currentMonth)
         }
 
-        // 날짜 셀 바인더 설정F
+        // 날짜 셀 바인더 설정
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
@@ -76,7 +76,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 textView.background = null
 
                 when {
-                    data.date == selectedDate -> {
+                    data.date.equals(selectedDate) -> {
                         textView.setBackgroundResource(R.drawable.bg_purple_radius_12)
                         textView.setTextColor(
                             ContextCompat.getColor(
@@ -107,12 +107,32 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
                 // 날짜 클릭 리스너 설정
                 container.view.setOnClickListener {
+                    // 날짜 클릭 시 어떤 position이든 선택 가능하도록 수정
+                    val oldDate = selectedDate
+                    selectedDate = data.date
 
-                    if (data.position.name == "MonthDate") {
-                        val oldDate = selectedDate
-                        selectedDate = data.date
-                        calendarView.notifyDateChanged(data.date)
-                        oldDate?.let { calendarView.notifyDateChanged(it) }
+                    // 새로 선택된 날짜 갱신
+                    calendarView.notifyDateChanged(data.date)
+
+                    // 이전에 선택된 날짜 갱신
+                    oldDate?.let { calendarView.notifyDateChanged(it) }
+
+                    // 날짜가 변경될 때 현재 표시된 모든 달력에 대해 다시 갱신
+                    val currentMonth = calendarView.findFirstVisibleMonth()?.yearMonth
+                    val nextMonth = currentMonth?.plusMonths(1)
+                    val prevMonth = currentMonth?.minusMonths(1)
+
+                    // 현재 달, 다음 달, 이전 달에 속한 날짜들을 모두 체크하여 갱신 (겹치는 날짜 표시를 위해)
+                    if (currentMonth != null) {
+                        calendarView.notifyMonthChanged(currentMonth)
+                    }
+                    if (nextMonth != null && (selectedDate?.let { it.month == nextMonth.month } == true ||
+                                oldDate?.let { it.month == nextMonth.month } == true)) {
+                        calendarView.notifyMonthChanged(nextMonth)
+                    }
+                    if (prevMonth != null && (selectedDate?.let { it.month == prevMonth.month } == true ||
+                                oldDate?.let { it.month == prevMonth.month } == true)) {
+                        calendarView.notifyMonthChanged(prevMonth)
                     }
                 }
 
