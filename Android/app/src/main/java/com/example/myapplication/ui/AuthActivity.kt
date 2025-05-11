@@ -1,6 +1,8 @@
 package com.example.myapplication.ui
 
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,6 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::inflate) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val ivYobi = findViewById<ImageView>(R.id.iv_character)
+        val animationDrawable = ivYobi.background as AnimationDrawable
+        animationDrawable.start()
+
 
 
     }
