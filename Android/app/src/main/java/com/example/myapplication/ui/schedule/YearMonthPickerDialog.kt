@@ -13,9 +13,11 @@ import com.example.myapplication.R
 import com.example.myapplication.databinding.DialogYearMonthPickerBinding
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import java.util.Calendar
+
 
 class YearMonthPickerDialog: DialogFragment() {
 
@@ -38,22 +40,78 @@ class YearMonthPickerDialog: DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDialogSize()
 
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH) + 1
 
-        binding.npYearPicker.apply {
-            minValue = currentYear - 10
-            maxValue = currentYear + 10
+        // 미래 제한: 한 달 후
+        calendar.add(Calendar.MONTH, 1)
+        val maxYear = calendar.get(Calendar.YEAR)
+        val maxMonth = calendar.get(Calendar.MONTH) + 1
+
+        val minYear = 2024
+        val minMonth = 1
+
+        // 설정
+        with(binding.npYearPicker) {
+            minValue = minYear
+            maxValue = maxYear
             value = currentYear
         }
 
-        binding.npMonthPicker.apply {
+        with(binding.npMonthPicker) {
             minValue = 1
             maxValue = 12
-            value = Calendar.getInstance().get(Calendar.MONTH) + 1
+            value = currentMonth
         }
 
+        // 연도 변경 시 월 제한 동기화
+        binding.npYearPicker.setOnValueChangedListener { _, _, newYear ->
+            binding.npMonthPicker.apply {
+                when (newYear) {
+                    minYear -> {
+                        minValue = minMonth
+                        maxValue = if (maxYear == minYear) maxMonth else 12
+                    }
+                    maxYear -> {
+                        minValue = 1
+                        maxValue = maxMonth
+                    }
+                    else -> {
+                        minValue = 1
+                        maxValue = 12
+                    }
+                }
+
+                // 현재 선택된 월이 범위 밖이면 조정
+                if (value < minValue) value = minValue
+                if (value > maxValue) value = maxValue
+            }
+        }
+
+
         binding.btnYes.setOnClickListener {
-            listener?.invoke(binding.npYearPicker.value, binding.npMonthPicker.value)
+            val selectedYear = binding.npYearPicker.value
+            val selectedMonth = binding.npMonthPicker.value
+
+            val selectedCal = Calendar.getInstance().apply {
+                set(Calendar.YEAR, selectedYear)
+                set(Calendar.MONTH, selectedMonth - 1)
+                set(Calendar.DAY_OF_MONTH, 1)
+            }
+
+            val maxCal = Calendar.getInstance().apply {
+                add(Calendar.MONTH, 1)
+                set(Calendar.DAY_OF_MONTH, 1)
+            }
+
+            if (selectedCal.after(maxCal)) {
+                Toast.makeText(requireContext(), "한 달 이후의 날짜는 선택할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // ✅ 유효한 날짜면 전달
+            listener?.invoke(selectedYear, selectedMonth)
             dismiss()
         }
 
@@ -66,6 +124,10 @@ class YearMonthPickerDialog: DialogFragment() {
         }
     }
 
+    fun setListener(listener: (Int, Int) -> Unit) {
+        this.listener = listener
+    }
+
     private fun setDialogSize() {
         val displayMetrics = resources.displayMetrics
         val widthPixels = displayMetrics.widthPixels
@@ -76,13 +138,8 @@ class YearMonthPickerDialog: DialogFragment() {
         dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_white_radius_15)
     }
 
-    fun setListener(listener: (Int, Int) -> Unit) {
-        this.listener = listener
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
 }

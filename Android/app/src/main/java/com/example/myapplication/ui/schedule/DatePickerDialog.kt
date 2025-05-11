@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.myapplication.R
@@ -41,6 +42,8 @@ class DatePickerDialog: DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setDialogSize()
 
         val calendarView = binding.cv
         val tvDate = binding.tvDate
@@ -129,17 +132,18 @@ class DatePickerDialog: DialogFragment() {
         return "${yearMonth.year}년 ${yearMonth.monthValue}월"
     }
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-    }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setDialogSize() {
+        val displayMetrics = resources.displayMetrics
+        val widthPixels = displayMetrics.widthPixels
+
+        val params = dialog?.window?.attributes
+        params?.width = (widthPixels * 0.9).toInt()
+        dialog?.window?.attributes = params as WindowManager.LayoutParams
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_white_radius_15)
     }
 }
