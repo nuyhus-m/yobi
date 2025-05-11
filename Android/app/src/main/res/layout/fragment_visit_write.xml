@@ -51,9 +51,9 @@
                     <View
                         android:layout_width="4dp"
                         android:layout_height="match_parent"
-                        android:layout_marginVertical="8dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@color/purple" />
+                        android:layout_marginVertical="@dimen/space_16dp"
+                        android:layout_marginStart="@dimen/space_16dp"
+                        android:background="@drawable/bg_purple_radius_5" />
 
                     <TextView
                         android:id="@+id/tv_date"
@@ -148,7 +148,7 @@
 
                 <Button
                     android:id="@+id/btn_record"
-                    style="@style/Widget.Button"
+                    style="@style/Widget.Button.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
@@ -164,8 +164,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="@dimen/space_24dp"
-        android:text="작성 완료"
         android:enabled="false"
+        android:text="작성 완료"
         android:textColor="@android:color/white" />
 
     <FrameLayout
@@ -197,13 +197,15 @@
                 android:layout_marginBottom="@dimen/space_16dp"
                 android:src="@drawable/ic_mic" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_16dp"
-                android:foreground="@drawable/bg_parent_stroke_purple_radius_8"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeColor="@color/purple"
+                app:strokeWidth="1.5dp">
+
 
                 <TextView
                     android:id="@+id/tv_stt_status"
@@ -214,18 +216,19 @@
                     android:padding="@dimen/space_4dp"
                     android:text="음성으로 일지 내용 생성 중"
                     android:textColor="@android:color/black" />
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/space_24dp"
                 android:layout_marginTop="63dp"
                 android:layout_marginEnd="@dimen/space_24dp"
-                android:foreground="@drawable/bg_parent_stroke_purple_radius_8"
                 app:cardCornerRadius="@dimen/space_8dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeColor="@color/purple"
+                app:strokeWidth="1.5dp">
 
 
                 <TextView
@@ -236,16 +239,16 @@
                     android:gravity="top"
                     android:hint="기침이 잦음. 약 복용 필요."
                     android:padding="@dimen/space_16dp" />
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <Button
                 android:id="@+id/btn_stop"
-                style="@style/Widget.Button"
+                style="@style/Widget.Button.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="100dp"
-                android:text="중지하기"
                 android:enabled="false"
+                android:text="중지하기"
                 android:textColor="@android:color/white" />
         </LinearLayout>
     </FrameLayout>

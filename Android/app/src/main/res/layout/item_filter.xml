@@ -9,7 +9,7 @@
         style="@style/SubTitleTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_70dp"
+        android:layout_marginTop="@dimen/space_40dp"
         android:layout_marginEnd="@dimen/space_8dp"
         android:layout_marginBottom="@dimen/space_8dp"
         android:background="@drawable/bg_filter_button_selector"

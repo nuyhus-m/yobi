@@ -126,6 +126,8 @@ class DailyMetricAdapter : RecyclerView.Adapter<DailyMetricAdapter.MetricViewHol
 
                 description.isEnabled = false
                 legend.isEnabled = false
+                isHighlightPerTapEnabled = false
+                isHighlightPerDragEnabled = false
 
                 // X축 설정
                 xAxis.apply {

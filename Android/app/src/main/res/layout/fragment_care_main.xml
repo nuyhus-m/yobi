@@ -31,18 +31,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/space_16dp">
+            android:padding="@dimen/space_16dp">
 
             <ImageView
                 android:id="@+id/iv_profile"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="@dimen/space_16dp"
                 android:src="@drawable/ic_profile"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_label_weight"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.275" />
+                app:layout_constraintTop_toTopOf="@+id/tv_name"
+                app:layout_constraintWidth_percent="0.4" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -170,7 +170,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_8dp"
+                android:layout_marginBottom="32dp"
                 android:text="대구 동구 싸피로 12길 12동 12호"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tv_label_address"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_address" />
@@ -178,11 +180,23 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="64dp"
+        android:layout_height="8dp"
+        android:layout_marginTop="@dimen/space_8dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bg_gray_radius_50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cv_card_user_info"
+        />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_20dp"
+        android:layout_marginTop="@dimen/space_40dp"
         android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -195,6 +209,7 @@
         app:tabRippleColor="@android:color/transparent"
         app:tabTextAppearance="@style/TabTextAppearance"
         app:tabTextColor="@drawable/tab_text_selector" />
+
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

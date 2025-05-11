@@ -17,7 +17,7 @@ class CareListViewModel @Inject constructor() : ViewModel() {
 
     init {
         _careUserList.value = listOf(
-            CareUser(R.drawable.ic_profile, "박진현", "여성", "2000/12/20"),
+            CareUser(R.drawable.ic_test_icon, "박진현", "여성", "2000/12/20"),
             CareUser(R.drawable.ic_profile, "이서현", "여성", "2000/12/20"),
             CareUser(R.drawable.ic_profile, "이문경", "여성", "2000/12/20"),
             CareUser(R.drawable.ic_profile, "차현우", "여성", "2000/12/20"),
