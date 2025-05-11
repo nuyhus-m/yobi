@@ -3,6 +3,10 @@ package com.example.myapplication.ui.care.carelist.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.myapplication.R
 import com.example.myapplication.databinding.ItemCareUserBinding
 import com.example.myapplication.ui.care.carelist.data.CareUser
 
@@ -36,7 +40,14 @@ class CareListAdapter(
     override fun onBindViewHolder(holder: CareViewHolder, position: Int) {
         val item = items[position]
         val binding = holder.binding
-        binding.ivIcon.setImageResource(item.image)
+
+        Glide.with(holder.itemView.context)
+            .load(item.image)
+            .transform(
+                CenterCrop(),
+                RoundedCorners(dpToPx(12, holder.itemView.context)))
+            .into(binding.ivIcon)
+
         binding.tvUsername.text = item.name
         binding.tvGender.text = item.gender
         binding.tvBirth.text = item.birth
@@ -49,5 +60,9 @@ class CareListAdapter(
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    private fun dpToPx(dp: Int, context: android.content.Context): Int {
+        return (dp * context.resources.displayMetrics.density).toInt()
     }
 }

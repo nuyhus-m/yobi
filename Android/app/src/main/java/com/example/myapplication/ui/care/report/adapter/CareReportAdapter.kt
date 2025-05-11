@@ -40,15 +40,16 @@ class CareReportAdapter(
         binding.tvDateRange.text = item.rangeText
 
         val context = binding.root.context
-        val color = if (position == 0) {
-            R.color.purple
-        } else {
-            R.color.purple_sub
-        }
-        binding.viewIndicator.setBackgroundColor(
-            ContextCompat.getColor(context, color)
-        )
 
+        val drawable = ContextCompat.getDrawable(context, R.drawable.bg_purple_sub_radius_5)
+        if (position == 0) {
+            // 첫 번째 아이템은 진한 보라색
+            drawable?.setTint(ContextCompat.getColor(context, R.color.purple))
+        } else {
+            // 나머지는 연한 보라색
+            drawable?.setTint(ContextCompat.getColor(context, R.color.purple_sub))
+        }
+        binding.viewIndicator.background = drawable
 
         holder.itemView.setOnClickListener {
             onClick(item)
