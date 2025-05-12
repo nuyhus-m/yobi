@@ -3,6 +3,7 @@ package com.S209.yobi.domain.schedules.service;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO.DailyLogDetailDTO;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO.SimpleDailyLogDTO;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO;
+import com.S209.yobi.Mapper.DateTimeUtils;
 import com.S209.yobi.domain.schedules.entity.Schedule;
 import com.S209.yobi.domain.schedules.repository.ScheduleRepository;
 import com.S209.yobi.exceptionFinal.ApiResult;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -64,7 +66,7 @@ public class DailyLogService {
                 .map(schedule -> SimpleDailyLogDTO.builder()
                         .scheduleId(schedule.getId())
                         .clientName(schedule.getClient().getName())
-                        .visitedDate(schedule.getVisitedDate())
+                        .visitedDate(DateTimeUtils.toEpochMilli(schedule.getVisitedDate()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -102,7 +104,8 @@ public class DailyLogService {
 
         String logContent = schedule.getLogContent();
         String clientName = schedule.getClient().getName();
-        LocalDate visitedDate = schedule.getVisitedDate();
+
+        long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
 
         DailyLogDetailDTO detailDTO = DailyLogDetailDTO.builder()
                 .logContent(logContent)

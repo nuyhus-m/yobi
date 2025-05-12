@@ -1,5 +1,6 @@
 package com.S209.yobi.domain.schedules.controller;
 
+import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO;
 import com.S209.yobi.domain.schedules.service.DailyLogService;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
@@ -71,7 +72,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 일지 리스트 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"dailyLogs\":[{\"scheduleId\":95,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\"},{\"scheduleId\":117,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-03\"}]}")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735660800000},{\"scheduleId\":117,\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735833600000}]")))
     })
     public ResponseEntity<?> getDailyLogsByUser() {
         //하드코딩
@@ -85,6 +86,10 @@ public class DailyLogsController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
+        if (result instanceof DailyLogResponseDTO responseDTO) {
+            return ResponseEntity.ok(responseDTO.getDailyLogs());
+        }
+
         return ResponseEntity.ok(result);
     }
 
@@ -93,7 +98,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "클라이언트별 일지 리스트 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"dailyLogs\":[{\"scheduleId\":95,\"clientName\":\"김철수\",\"visitedDate\":\"2025-01-01\"},{\"scheduleId\":117,\"clientName\":\"김철수\",\"visitedDate\":\"2025-01-03\"}]}")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"김철수\",\"visitedDateTimestamp\":1735660800000},{\"scheduleId\":117,\"clientName\":\"김철수\",\"visitedDateTimestamp\":1735833600000}]")))
     })
     public ResponseEntity<?> getDailyLogsByClient(
             @PathVariable Integer clientId
@@ -109,6 +114,10 @@ public class DailyLogsController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
+        if (result instanceof DailyLogResponseDTO responseDTO) {
+            return ResponseEntity.ok(responseDTO.getDailyLogs());
+        }
+
         return ResponseEntity.ok(result);
     }
 
@@ -118,7 +127,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일지 상세 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"logContent\":\"오늘 홍길동 어르신은 혈압이 안정적이었습니다. 식사도 잘 하셨고 산책도 다녀왔습니다.\",\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\"}")))
+                            examples = @ExampleObject(value = "{\"logContent\":\"오늘 홍길동 어르신은 혈압이 안정적이었습니다. 식사도 잘 하셨고 산책도 다녀왔습니다.\",\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735660800000}")))
     })
     public ResponseEntity<?> getDailyLog(
             @PathVariable Integer scheduleId
