@@ -175,8 +175,7 @@ public class SchedulesController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "특정일 일정 목록 조회", description = "현재 로그인한 사용자에 대해 특정일의 일정을 조회합니다.<br/>"
-    + "2025-05-04 형태로 입력하면 결과를 반환합니다.")
+    @Operation(summary = "특정일 일정 목록 조회", description = "현재 로그인한 사용자에 대해 특정일의 일정을 조회합니다.")
     @GetMapping("/day")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일별 일정 목록 조회 성공",
