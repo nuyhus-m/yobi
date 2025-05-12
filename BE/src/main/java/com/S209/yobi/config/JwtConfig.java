@@ -1,12 +1,12 @@
 package com.S209.yobi.config;
 
-import com.S209.yobi.domain.users.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +14,14 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
 public class JwtConfig {
-
-    private final UserService userService;
+    private final RedisTemplate<String, String> redisTemplate;
+    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
     @Value("${jwt.expiration}")
     private Long expiration;
@@ -67,7 +68,7 @@ public class JwtConfig {
         Map<String, Object> claims = new HashMap<>();
         String refreshToken = createToken(claims, userDetails.getUsername(), refreshExpiration);
         // Redis에 Refresh Token 저장
-        userService.saveRefreshToken(userDetails.getUsername(), refreshToken, refreshExpiration);
+        saveRefreshToken(userDetails.getUsername(), refreshToken, refreshExpiration);
         return refreshToken;
     }
 
@@ -90,6 +91,27 @@ public class JwtConfig {
         final String employeeId = extractEmployeeId(refreshToken);
         return (employeeId.equals(userDetails.getUsername()) && 
                 !isTokenExpired(refreshToken) && 
-                userService.validateRefreshToken(employeeId, refreshToken));
+                validateRefreshTokenInRedis(employeeId, refreshToken));
+    }
+
+    // Redis 관련 메서드들
+    private void saveRefreshToken(String employeeNumber, String refreshToken, long expirationTime) {
+        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+        redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
+    }
+
+    private String getRefreshToken(String employeeNumber) {
+        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    private void deleteRefreshToken(String employeeNumber) {
+        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+        redisTemplate.delete(key);
+    }
+
+    private Boolean validateRefreshTokenInRedis(String employeeNumber, String refreshToken) {
+        String storedToken = getRefreshToken(employeeNumber);
+        return storedToken != null && storedToken.equals(refreshToken);
     }
 } 

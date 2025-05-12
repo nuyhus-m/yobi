@@ -7,7 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
@@ -17,7 +18,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Size(max = 10)
     @NotNull
@@ -26,21 +27,18 @@ public class User {
 
     @NotNull
     @Column(name = "employee_number", nullable = false, unique = true)
-    private Integer employeeNumber;
+    private String employeeNumber;
 
     @Size(max = 255)
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull
-    @Column(name = "consent", nullable = false)
+    @Column(name = "consent", nullable = true)
     @Builder.Default
     private Boolean consent = false;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = true)
     private String image;
-
 }

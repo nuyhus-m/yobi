@@ -1,28 +1,43 @@
 package com.S209.yobi.domain.users.service;
 
-import com.S209.yobi.domain.users.dto.SignUpRequest;
+import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
+import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
+import com.S209.yobi.DTO.requestDTO.SignUpRequest;
+import com.S209.yobi.config.JwtConfig;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.concurrent.TimeUnit;
+import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
-    private final RedisTemplate<String, String> redisTemplate;
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private final JwtConfig jwtConfig;
+
+    @Override
+    public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
+        User user = userRepository.findByEmployeeNumber(employeeNumber)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(employeeNumber)
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+    }
 
     @Transactional
     public void signUp(SignUpRequest request) {
         // 사번 중복 체크
-        if (userRepository.existsByEmployeeId(request.getEmployeeId())) {
+        if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
             throw new IllegalArgumentException("이미 존재하는 사번입니다.");
         }
 
@@ -32,34 +47,49 @@ public class UserService {
         // User 엔티티 생성
         User user = new User();
         user.setName(request.getName());
-        user.setEmployeeId(request.getEmployeeId());
+        user.setEmployeeNumber(request.getEmployeeNumber());
         user.setPassword(encodedPassword);
 
         // DB에 저장
         userRepository.save(user);
     }
 
-    // Refresh Token을 Redis에 저장
-    public void saveRefreshToken(String employeeId, String refreshToken, long expirationTime) {
-        String key = REFRESH_TOKEN_PREFIX + employeeId;
-        redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
+    @Transactional
+    public LoginResponseDTO login(LoginRequestDTO request) {
+        // 사용자 조회
+        User user = userRepository.findByEmployeeNumber(request.getEmployeeNumber())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // UserDetails 생성
+        UserDetails userDetails = loadUserByUsername(request.getEmployeeNumber());
+
+        // 토큰 생성
+        String accessToken = jwtConfig.generateToken(userDetails);
+        String refreshToken = jwtConfig.generateRefreshToken(userDetails);
+
+        return LoginResponseDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(user.getId())
+                .name(user.getName())
+                .employeeId(String.valueOf(user.getEmployeeNumber()))
+                .build();
     }
 
-    // Refresh Token 조회
-    public String getRefreshToken(String employeeId) {
-        String key = REFRESH_TOKEN_PREFIX + employeeId;
-        return redisTemplate.opsForValue().get(key);
-    }
-
-    // Refresh Token 삭제 (로그아웃 시 사용)
-    public void deleteRefreshToken(String employeeId) {
-        String key = REFRESH_TOKEN_PREFIX + employeeId;
-        redisTemplate.delete(key);
-    }
-
-    // Refresh Token 유효성 검증
-    public boolean validateRefreshToken(String employeeId, String refreshToken) {
-        String storedToken = getRefreshToken(employeeId);
-        return storedToken != null && storedToken.equals(refreshToken);
+    public UserInfoDTO getUserInfo(String employeeNumber) {
+        User user = userRepository.findByEmployeeNumber(employeeNumber)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return new UserInfoDTO(
+            user.getId() != null ? user.getId().longValue() : null,
+            user.getName(),
+            user.getEmployeeNumber(),
+            user.getImage(),
+            user.getConsent()
+        );
     }
 } 
