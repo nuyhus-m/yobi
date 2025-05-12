@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +16,7 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.response.ClientResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
+import com.example.myapplication.ui.FitrusViewModel
 import com.example.myapplication.ui.measure.measuretarget.viewmodel.MeasureTargetViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -29,6 +31,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
 ) {
 
     private val viewModel by viewModels<MeasureTargetViewModel>()
+    private val activityViewModel by activityViewModels<FitrusViewModel>()
     private var selectedClientId = -1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,16 +83,13 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isMeasured.collectLatest {
                     Log.d(TAG, "observeMeasureStatus: $it")
+                    activityViewModel.setClientId(selectedClientId)
+                    activityViewModel.setMeasureStatus(it)
                     if (it) {
                         findNavController().navigate(R.id.dest_measure_item)
                     } else {
-                        val action =
-                            MeasureTargetFragmentDirections.actionDestMeasureTargetToDestDeviceConnect(
-                                clientId = selectedClientId,
-                                isMeasured = false,
-                                healthDataType = HealthDataType.BODY_COMPOSITION
-                            )
-                        findNavController().navigate(action)
+                        activityViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
+                        findNavController().navigate(R.id.dest_device_connect)
                     }
                 }
             }
