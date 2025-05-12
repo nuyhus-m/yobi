@@ -37,33 +37,27 @@ public class MeasureService {
 
     private final HealthRangeAsyncService healthRangeAsyncService;
 
+
+
     /**
      * 피트러스 필수 데이터 저장 (체성분/혈압)
      */
     public ApiResult saveBaseElement(int userId, int clientId, BaseRequestDTO requestDTO){
+
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         // 오늘 날짜 기준으로 측정 여부 확인
-        LocalDate today = LocalDate.now();
-        long epochMilli = today
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli();
-        boolean alreadyMeasured = measureRepository.findByUserAndClientAndDate(user, client, epochMilli).isPresent();
-        if (alreadyMeasured) {
-            log.info("이미 측정된 기록 있음 [userId: {}, clientId: {}, date: {}]", userId, client.getId(), today);
+        long todayEpochMilli = getTodayEpochMilli();
+        if (measureRepository.findByUserAndClientAndDate(user, client, todayEpochMilli).isPresent()) {
+            log.info("이미 측정된 기록 있음 [userId: {}, clientId: {}, date: {}]", userId, clientId, LocalDate.now());
             return ApiResponseDTO.fail(ApiResponseCode.DUPLICATE_MEASURE);
         }
 
         // measure 저장
         Measure measure = Measure.fromBase(user, client, requestDTO.getBodyRequestDTO(), requestDTO.getBloodPressureDTO());
-
-//        bodyCompositionRepository.save(measure.getBody());
-//        bloodPressureRepository.save(measure.getBlood());
         measureRepository.save(measure);
 
         // 범위 계산 및 저장 로직 : 비동기로 호출
@@ -78,23 +72,15 @@ public class MeasureService {
      * 피트러스 심박 측정
      */
     public ApiResult saveHeartRate(int userId, int clientId, HeartRateRequestDTO requestDTO){
+
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
-        }
-        Measure measure = optionalMeasure.get();
+        Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
+        if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
         // HeartRate 엔티티 생성 및 저장
         HeartRate heart = HeartRate.fromDTO(requestDTO);
@@ -107,23 +93,15 @@ public class MeasureService {
      * 피트러스 스트레스 측정
      */
     public ApiResult saveStress(int userId, int clientId, StressRequestDTO requestDTO){
-        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
-        // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
-        }
-        Measure measure = optionalMeasure.get();
+        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+
+        /// 당일 필수 측정 데이터 확인
+        Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
+        if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
         // Stress 엔티티 생성 및 저장
         Stress stress = Stress.fromDTO(requestDTO);
@@ -139,22 +117,13 @@ public class MeasureService {
      */
     public ApiResult saveTemperature(int userId, int clientId, TemperatureRequestDTO requestDTO){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
-        // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
-        }
-        Measure measure = optionalMeasure.get();
+        /// 당일 필수 측정 데이터 확인
+        Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
+        if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
         // Temperature 엔티티 생성 및 저장
         Temperature temperature = Temperature.fromDTO(requestDTO);
@@ -168,28 +137,15 @@ public class MeasureService {
      * 피트러스 체성분 데이터 저장(재측정)
      */
     public ApiResult saveBodyComposition(int userId, int clientId, ReBodyRequestDTO requestDTO){
+
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
-        // 당일 필수 측정 데이터 확인
-
-        // 해외 확장 가능성 고려
-//        ZoneId userZone = ZoneId.of(user.getTimezone()); // 예: "Asia/Seoul", "America/New_York"
-//        LocalDate today = LocalDate.now(userZone);
-
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
-        }
-        Measure measure = optionalMeasure.get();
+        /// 당일 필수 측정 데이터 확인
+        Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
+        if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
         // Temperature 엔티티 생성 및 저장
         BodyComposition bodyComposition = BodyComposition.fromReDTO(requestDTO);
@@ -208,23 +164,15 @@ public class MeasureService {
      * 피트러스 혈압 데이터 저장(재측정)
      */
     public ApiResult saveBloodPressure(int userId, int clientId, ReBloodRequestDTO requestDTO){
-        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
-        // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        if (optionalMeasure.isEmpty()) {
-            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
-        }
-        Measure measure = optionalMeasure.get();
+        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+
+        /// 당일 필수 측정 데이터 확인
+        Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
+        if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
         // Temperature 엔티티 생성 및 저장
         BloodPressure bloodPressure = BloodPressure.fromReDTO(requestDTO);
@@ -239,19 +187,64 @@ public class MeasureService {
      */
     @Transactional(readOnly = true)
     public ApiResult checkBase(int userId, int clientId){
+
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if (client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
-        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
-                .toInstant()  // Instant로 변환
-                .toEpochMilli();  // 밀리초 단위로 변환
+        long epochMilli = getTodayEpochMilli();
         boolean exists = measureRepository.findByUserAndClientAndDate(user, client, epochMilli).isPresent();
         return CheckBaseResultDTO.of(exists);
+    }
+
+
+    /**
+     *  공통 메서드
+     */
+
+    // ===== 유저 존재 확인 =====
+    private User getUser(int userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+    }
+
+    // ===== 클라이언트 존재 확인 =====
+    //실패 시 null 반환 → 서비스 로직에서 FAIL 응답 처리
+    // =============================
+    private Client getClientOrReturnFail(int clientId){
+        Optional<Client> optionalClient = clientRepository.findById(clientId);
+        if (optionalClient.isEmpty()) {
+            log.info("해당하는 클라이언트 없음, [clientId:{}]", clientId);
+            return null;
+        }
+        return optionalClient.get();
+    }
+
+    // ===== 오늘 필수 측정 데이터 존재 확인=====
+    // 실패 시 null 반환 → 서비스 로직에서 FAIL 응답 처리
+    // =============================
+    private Measure getTodayMeasureOrReturnFail(int userId, int clientId){
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if(client == null) return null;
+
+        long epochMilli = getTodayEpochMilli();
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
+        if (optionalMeasure.isEmpty()) {
+            log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
+            return null;
+        }
+        return optionalMeasure.get();
+    }
+
+    // ===== 오늘 날짜 Long 으로 반환 =====
+    private long getTodayEpochMilli() {
+        return LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
     }
 
 

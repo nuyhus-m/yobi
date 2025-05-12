@@ -7,6 +7,8 @@ import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.measures.Mapper.HealthMapper;
 import com.S209.yobi.domain.measures.Mapper.HealthMapperNative;
+import com.S209.yobi.exceptionFinal.ApiResponseCode;
+import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.measures.repository.MeasureRepository;
@@ -18,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -34,7 +38,6 @@ public class DashboardService {
     private final MeasureRepository measureRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
-    private final HealthMapper healthMapper;
     private final HealthMapperNative healthMapperNative;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -44,24 +47,26 @@ public class DashboardService {
     public ApiResult getMainHealth (int userId, int clientId){
 
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         // 당일 측정 데이터 Optional 로 조회
         // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
-        LocalDate today = LocalDate.now();
-        long epochMilli = today
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli();
-//        LocalDate today = LocalDate.parse("2025-05-08");
+        long epochMilli = getTodayEpochMilli();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        Measure measure = optionalMeasure.orElse(null); // null 가능
+        Measure measure = optionalMeasure.orElseGet(() ->
+                        measureRepository.findTopByUserAndClientOrderByDateDesc(user, client).orElse(null));
+
+        LocalDate baseDate = null;
+        if(measure != null){
+            baseDate = Instant.ofEpochMilli(measure.getDate())
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
 
         // Redis 값 가져오기 : 체성분 범위
-        String redisKey = "range" + userId + ":" + clientId + ":" + today;
+        String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
         Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
         Map<String, String> redisLevels = redisData.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -69,7 +74,7 @@ public class DashboardService {
                         e -> (String) e.getValue()
                 ));
 
-        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), today, redisLevels);
+        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
 
         return result;
     }
@@ -79,23 +84,28 @@ public class DashboardService {
      */
 
     public ApiResult getHealthDetail (int userId, int clientId) {
+
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         // 당일 측정 데이터 Optional 로 조회
-        LocalDate today = LocalDate.now();
-        long epochMilli = today
-                .atStartOfDay(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli();
+        // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
+        long epochMilli = getTodayEpochMilli();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        Measure measure = optionalMeasure.orElse(null); // null 가능
+        Measure measure = optionalMeasure.orElseGet(() ->
+                measureRepository.findTopByUserAndClientOrderByDateDesc(user, client).orElse(null));
+
+        LocalDate baseDate = null;
+        if(measure != null){
+            baseDate = Instant.ofEpochMilli(measure.getDate())
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
 
         // Redis 값 가져오기 : 체성분 범위
-        String redisKey = "range" + userId + ":" + clientId + ":" + today;
+        String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
         Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
         Map<String, String> redisLevels = redisData.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -104,7 +114,7 @@ public class DashboardService {
                 ));
 
         // Measure 객체를 가지고 HealthDetailResponseDTO 생성
-        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), today, redisLevels);
+        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
         return result;
     }
 
@@ -113,17 +123,49 @@ public class DashboardService {
      */
     public ApiResult getTotalHealth (int userId, int clientId, int size, LocalDate cursorDate){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
-
+        User user = getUser(userId);
+        Client client = getClientOrReturnFail(clientId);
+        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
         List<Object[]> measures = measureRepository.findHealthTrendsNative(clientId, cursorDate, size);
         TotalHealthResponseDTO result = healthMapperNative.totalHealthResponseDTO(clientId, measures);
         return result;
 
     }
+
+
+
+    /**
+     *  공통 메서드
+     */
+
+    // ===== 유저 존재 확인 =====
+    private User getUser(int userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
+    }
+
+    // ===== 클라이언트 존재 확인 =====
+    //실패 시 null 반환 → 서비스 로직에서 FAIL 응답 처리
+    // =============================
+    private Client getClientOrReturnFail(int clientId){
+        Optional<Client> optionalClient = clientRepository.findById(clientId);
+        if (optionalClient.isEmpty()) {
+            log.info("해당하는 클라이언트 없음, [clientId:{}]", clientId);
+            return null;
+        }
+        return optionalClient.get();
+    }
+
+
+    // ===== 오늘 날짜 Long 으로 반환 =====
+    private long getTodayEpochMilli() {
+        return LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+    }
+
 
 
 
