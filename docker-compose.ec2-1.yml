@@ -3,6 +3,7 @@ version: "3.8"
 services:
   postgres:
     image: postgres:17.4
+    container_name: postgres
     restart: always
     ports:
       - "5432:5432"
@@ -19,6 +20,7 @@ services:
 
   redis:
     image: redis:7.2
+    container_name: redis
     restart: always
     ports:
       - "6379:6379"
@@ -28,6 +30,7 @@ services:
 
   backend:
     image: be-spring-image
+    container_name: be-spring-container
     build:
       context: ./BE
       dockerfile: Dockerfile
@@ -46,6 +49,7 @@ services:
 
   ocr:
     image: ocr-app
+    container_name: ocr-app
     build:
       context: ./OCR
     ports:
@@ -60,6 +64,7 @@ services:
 
   jenkins:
     image: jenkins/jenkins:lts
+    container_name: jenkins
     ports:
       - "8080:8080"
       - "50000:50000"
