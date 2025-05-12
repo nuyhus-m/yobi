@@ -20,8 +20,15 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
     private val viewModel: CareSevenViewModel by viewModels()
     private val adapter = DailyMetricAdapter()
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val clientId = 1
+        val userId= 1
+        val size = 30
+
+        viewModel.fetchMetrics(clientId, userId, size)
 
         binding.recyclerView.apply {
             adapter = this@CareSevenFragment.adapter

@@ -7,16 +7,17 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.myapplication.R
+import com.example.myapplication.data.dto.response.ClientResponse
 import com.example.myapplication.databinding.ItemCareUserBinding
 import com.example.myapplication.ui.care.carelist.data.CareUser
 
 class CareListAdapter(
-    private val onClick: (CareUser) -> Unit
+    private val onClick: (ClientResponse) -> Unit
 ) : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
 
-    private val items = mutableListOf<CareUser>()
+    private val items = mutableListOf<ClientResponse>()
 
-    fun submitList(data: List<CareUser>) {
+    fun submitList(data: List<ClientResponse>) {
         items.clear()
         items.addAll(data)
         notifyDataSetChanged()
@@ -49,7 +50,11 @@ class CareListAdapter(
             .into(binding.ivIcon)
 
         binding.tvUsername.text = item.name
-        binding.tvGender.text = item.gender
+        binding.tvGender.text = when (item.gender) {
+            0 -> "남"
+            1 -> "여"
+            else -> "기타"
+        }
         binding.tvBirth.text = item.birth
 
 

@@ -2,6 +2,7 @@ package com.example.myapplication.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     private lateinit var navController: NavController
 
@@ -42,6 +45,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
             true
         }
+        mainViewModel.fetchClients()
+
     }
 
     private fun updateBottomNavigationView(navController: NavController) {

@@ -27,7 +27,7 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvName.text = args.name
-        binding.tvGender.text = args.gender
+        binding.tvGender.text = args.gender.toString()
         binding.tvBirth.text = args.birth
 
         Glide.with(this)
