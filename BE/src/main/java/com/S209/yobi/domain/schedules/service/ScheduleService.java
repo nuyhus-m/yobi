@@ -16,6 +16,7 @@ import com.S209.yobi.exceptionFinal.ApiResult;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.misc.IntegerStack;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -239,14 +240,16 @@ public class ScheduleService {
 
     // 특정일의 일정 리스트
     @Transactional(readOnly = true)
-    public ApiResult getSchedulesByDay(Integer userId, LocalDate date) {
-        if (date == null) {
+    public ApiResult getSchedulesByDay(Integer userId, long date) {
+        if (date <= 0) {
             throw new IllegalArgumentException("날짜를 입력해주세요.");
         }
 
+        LocalDate localDate = Instant.ofEpochMilli(date).atZone(DEFAULT_ZONE).toLocalDate();
+
         // 해당 날짜의 시작과 끝 타임스탬프 계산
-        long dayStart = date.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
-        long dayEnd = date.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+        long dayStart = localDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
+        long dayEnd = localDate.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
 
         // 해당 날짜의 일정 조회
         List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
