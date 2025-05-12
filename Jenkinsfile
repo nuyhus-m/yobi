@@ -43,21 +43,26 @@ pipeline {
             steps {
                 sh """
  #                   docker stop redis postgres ocr-app be-spring-container || true
- #                    docker rm redis postgres ocr-app be-spring-container || true
- #                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
+ #                   docker rm redis postgres ocr-app be-spring-container || true
+ #                   docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
 
- docker stop redis postgres ocr-app be-spring-container || true
-            docker rm -f redis postgres ocr-app be-spring-container || true
-            docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
+                    docker compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
+                          down --remove-orphans
+                    docker compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
+                          up -d --build --force-recreate redis postgres backend ocr
                 """
             }
         }
         stage('Deploy to EC2-2') {
             steps {
                 sh """
-                    docker stop ai-service || true
-                    docker rm ai-service || true
-                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
+                    #docker stop ai-service || true
+                    #docker rm ai-service || true
+                    #docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
+                    docker compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                          down --remove-orphans
+                    docker compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                          up -d --build ai-service
                 """
             }
         }
