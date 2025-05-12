@@ -46,9 +46,10 @@ pipeline {
  #                   docker rm redis postgres ocr-app be-spring-container || true
  #                   docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
 
-                    docker compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
                           down --remove-orphans
-                    docker compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
+
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
                           up -d --build --force-recreate redis postgres backend ocr
                 """
             }
@@ -59,10 +60,12 @@ pipeline {
                     #docker stop ai-service || true
                     #docker rm ai-service || true
                     #docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
-                    docker compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                    
+                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
                           down --remove-orphans
-                    docker compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
-                          up -d --build ai-service
+
+                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                          up -d --build --force-recreate ai-service
                 """
             }
         }
