@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.base.HealthDataType
-import com.example.myapplication.data.model.Client
+import com.example.myapplication.data.dto.response.ClientResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.measure.measuretarget.viewmodel.MeasureTargetViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,8 +41,8 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
 
     private fun initSpinner() {
         val tempClientList = listOf(
-            Client(1, "김할아버지", 0, "", ""),
-            Client(2, "이할머니", 1, "", "")
+            ClientResponse(1, "김할아버지", 0, "", ""),
+            ClientResponse(2, "이할머니", 1, "", "")
         )
 
         val adapter = ArrayAdapter(
@@ -61,7 +61,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
                 position: Int,
                 id: Long
             ) {
-                val selected = parent.getItemAtPosition(position) as Client
+                val selected = parent.getItemAtPosition(position) as ClientResponse
                 selectedClientId = selected.clientId
             }
 
