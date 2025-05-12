@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.data.dto.request.care.HealthResponse
-import com.example.myapplication.data.dto.request.care.MetricData
+import com.example.myapplication.data.dto.response.care.HealthResponse
+import com.example.myapplication.data.dto.response.care.MetricData
 import com.example.myapplication.data.repository.CareRepository
 import com.example.myapplication.ui.care.seven.data.DailyMetric
 import dagger.hilt.android.lifecycle.HiltViewModel

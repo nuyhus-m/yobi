@@ -1,6 +1,7 @@
 package com.example.myapplication.data.remote
 
-import com.example.myapplication.data.dto.request.care.HealthResponse
+import com.example.myapplication.data.dto.response.care.ClientDetailResponse
+import com.example.myapplication.data.dto.response.care.HealthResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,4 +16,8 @@ interface CareService {
         @Query("size") size: Int,
         @Query("cursorDate") cursorDate: String? = null
     ): Response<HealthResponse>
+
+
+    @GET("clients/detail/{clientId}")
+    suspend fun getClientDetail(clientId: Int): Response<ClientDetailResponse>
 }

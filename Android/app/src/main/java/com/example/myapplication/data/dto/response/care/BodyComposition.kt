@@ -1,4 +1,4 @@
-package com.example.myapplication.data.dto.request.care
+package com.example.myapplication.data.dto.response.care
 
 data class BodyComposition(
     val bfp: List<MetricData>,

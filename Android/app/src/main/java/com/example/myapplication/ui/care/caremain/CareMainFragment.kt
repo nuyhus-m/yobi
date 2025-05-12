@@ -11,9 +11,14 @@ import com.example.myapplication.ui.care.caremain.adapter.CarePagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import android.view.LayoutInflater
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.myapplication.ui.care.caremain.viewmodel.CareMainViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
@@ -21,22 +26,37 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
     R.layout.fragment_care_main
 ) {
 
+    private val viewModel: CareMainViewModel by viewModels()
     private val args: CareMainFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvName.text = args.name
-        binding.tvGender.text = args.gender.toString()
-        binding.tvBirth.text = args.birth
+        viewModel.fetchClientDetail(args.clientId)
 
-        Glide.with(this)
-            .load(args.image)
-            .transform(
-                CenterCrop(),
-                RoundedCorners(dpToPx(12)))
-            .into(binding.ivProfile)
+        viewModel.clientDetail.observe(viewLifecycleOwner) { detail ->
+            binding.tvName.text = detail.name
+            binding.tvGender.text = when (detail.gender) {
+                0 -> "남자"
+                1 -> "여자"
+                else -> "기타"
+            }
 
+            binding.tvBirth.text = detail.birth
+            binding.tvHeight.text = "${detail.height}cm"
+            binding.tvWeight.text = "${detail.weight}kg"
+            binding.tvAddress.text = detail.address
+
+            Glide.with(this)
+                .load(detail.image)
+                .transform(CenterCrop(), RoundedCorners(dpToPx(12)))
+                .into(binding.ivProfile)
+        }
+        setupTabLayout()
+
+    }
+
+    private fun setupTabLayout() {
         val pagerAdapter = CarePagerAdapter(this)
         binding.viewPager.adapter = pagerAdapter
 
@@ -54,6 +74,5 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         val density = resources.displayMetrics.density
         return (dp * density).toInt()
     }
-
 
 }
