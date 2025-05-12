@@ -29,7 +29,7 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
     Optional<Measure> findByUserAndClientAndDate(
             @Param("user") User user,
             @Param("client") Client client,
-            @Param("date") LocalDate date
+            @Param("date") Long date
     );
 
 
