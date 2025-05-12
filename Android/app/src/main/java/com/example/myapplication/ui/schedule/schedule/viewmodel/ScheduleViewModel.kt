@@ -13,6 +13,9 @@ class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
 
+    private val _selectedDate = MutableLiveData(LocalDate.now())
+    val selectedDate: LiveData<LocalDate> = _selectedDate
+
     private val _scheduleList = MutableLiveData<List<ScheduleItem>>()
     val scheduleList: LiveData<List<ScheduleItem>> = _scheduleList
 
@@ -29,8 +32,46 @@ class ScheduleViewModel @Inject constructor(
         10 to "#FFF200"
     )
 
+    private val _dotMap = mutableMapOf<LocalDate, List<Int>>()
+    val dotMap: Map<LocalDate, List<Int>> get() = _dotMap
+
+    // 캐싱하는 데이터
+    private val loadedRanges = mutableListOf<Pair<LocalDate, LocalDate>>()
+
+    fun selectDate(date: LocalDate) {
+        _selectedDate.value = date
+        loadSchedulesForDate(date)
+    }
+
+    fun loadDotData(start: LocalDate, end: LocalDate) {
+        if (loadedRanges.any { it.contains(start, end) }) return
+
+        /* api로 추후 교체*/
+        val dotData = dummySchedules
+            .filter { it.visitedDate in start..end }
+            .groupBy { it.visitedDate }
+            .mapValues { entry -> entry.value.map { it.clientId } }
+
+        _dotMap.putAll(dotData)
+        loadedRanges.add(start to end)
+    }
+
+    fun loadSchedulesForDate(date: LocalDate) {
+        _scheduleList.value = dummySchedules
+            .filter { it.visitedDate == date }
+            .map {
+                ScheduleItem(
+                    it.scheduleId, it.clientId, "고객", it.visitedDate.toString(), it.startAt, it.endAt
+                )
+            }
+    }
+
+    private fun Pair<LocalDate, LocalDate>.contains(start: LocalDate, end: LocalDate): Boolean {
+        return this.first <= start && this.second >= end
+    }
+
     init {
-        loadDummyData()
+        selectDate(LocalDate.now())
     }
 
     private fun loadDummyData() {
@@ -66,12 +107,6 @@ class ScheduleViewModel @Inject constructor(
         ScheduleDotItem(102, 9, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
         ScheduleDotItem(102, 10, LocalDate.of(2025, 5, 1), "11:00", "11:30")
     )
-
-    // 날짜 별 도트 정보 맵핑
-    val dotMap: Map<LocalDate, List<Int>> = dummySchedules
-        .groupBy { it.visitedDate }
-        .mapValues { entry -> entry.value.map { it.clientId } }
-
 
 }
 
