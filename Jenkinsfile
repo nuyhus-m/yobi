@@ -43,7 +43,8 @@ pipeline {
             steps {
                 sh """
                     docker stop redis postgres ocr-app be-spring-container || true
-                    docker rm redis postgres ocr-app be-spring-container || true
+                    docker rm -f redis postgres ocr-app be-spring-container || true
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v || true
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
                 """
             }
