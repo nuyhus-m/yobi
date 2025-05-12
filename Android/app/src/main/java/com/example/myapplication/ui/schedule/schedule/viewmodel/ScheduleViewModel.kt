@@ -3,13 +3,14 @@ package com.example.myapplication.ui.schedule.schedule.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.myapplication.data.repository.ScheduleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import java.time.LocalDate
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-//    private val userRepository: UserRepository
+    private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
 
     private val _scheduleList = MutableLiveData<List<ScheduleItem>>()
