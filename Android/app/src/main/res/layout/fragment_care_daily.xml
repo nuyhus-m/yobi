@@ -223,7 +223,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_smile" />
+                    android:src="@drawable/ic_stress_low" />
 
                 <TextView
                     android:id="@+id/tv_stress_level"
