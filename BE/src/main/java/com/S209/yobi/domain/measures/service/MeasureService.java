@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
@@ -48,7 +49,11 @@ public class MeasureService {
 
         // 오늘 날짜 기준으로 측정 여부 확인
         LocalDate today = LocalDate.now();
-        boolean alreadyMeasured = measureRepository.findByUserAndClientAndDate(user, client, today).isPresent();
+        long epochMilli = today
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        boolean alreadyMeasured = measureRepository.findByUserAndClientAndDate(user, client, epochMilli).isPresent();
         if (alreadyMeasured) {
             log.info("이미 측정된 기록 있음 [userId: {}, clientId: {}, date: {}]", userId, client.getId(), today);
             return ApiResponseDTO.fail(ApiResponseCode.DUPLICATE_MEASURE);
@@ -57,8 +62,8 @@ public class MeasureService {
         // measure 저장
         Measure measure = Measure.fromBase(user, client, requestDTO.getBodyRequestDTO(), requestDTO.getBloodPressureDTO());
 
-        bodyCompositionRepository.save(measure.getBody());
-        bloodPressureRepository.save(measure.getBlood());
+//        bodyCompositionRepository.save(measure.getBody());
+//        bloodPressureRepository.save(measure.getBlood());
         measureRepository.save(measure);
 
         // 범위 계산 및 저장 로직 : 비동기로 호출
@@ -80,8 +85,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
@@ -106,8 +114,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
@@ -134,8 +145,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
@@ -166,8 +180,11 @@ public class MeasureService {
 //        ZoneId userZone = ZoneId.of(user.getTimezone()); // 예: "Asia/Seoul", "America/New_York"
 //        LocalDate today = LocalDate.now(userZone);
 
-        LocalDate today = LocalDate.now();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
@@ -198,8 +215,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         if (optionalMeasure.isEmpty()) {
             log.info("당일 필수 측정 데이터 없음, [userId:{}, clientId:{}]", userId, clientId);
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
@@ -226,8 +246,11 @@ public class MeasureService {
                 .orElseThrow(() -> new EntityNotFoundException("돌봄 대상을 찾을 수 없습니다."));
 
         // 당일 필수 측정 데이터 확인
-        LocalDate today = LocalDate.now();
-        boolean exists = measureRepository.findByUserAndClientAndDate(user, client, today).isPresent();
+        LocalDate today = LocalDate.now(); // 오늘 날짜를 가져옵니다.
+        long epochMilli = today.atStartOfDay(ZoneId.systemDefault())  // 날짜를 시작 시간으로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초 단위로 변환
+        boolean exists = measureRepository.findByUserAndClientAndDate(user, client, epochMilli).isPresent();
         return CheckBaseResultDTO.of(exists);
     }
 

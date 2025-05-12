@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,8 +52,12 @@ public class DashboardService {
         // 당일 측정 데이터 Optional 로 조회
         // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
         LocalDate today = LocalDate.now();
+        long epochMilli = today
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
 //        LocalDate today = LocalDate.parse("2025-05-08");
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         Measure measure = optionalMeasure.orElse(null); // null 가능
 
         // Redis 값 가져오기 : 체성분 범위
@@ -82,8 +87,11 @@ public class DashboardService {
 
         // 당일 측정 데이터 Optional 로 조회
         LocalDate today = LocalDate.now();
-//        LocalDate today = LocalDate.parse("2025-05-08");
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, today);
+        long epochMilli = today
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         Measure measure = optionalMeasure.orElse(null); // null 가능
 
         // Redis 값 가져오기 : 체성분 범위
