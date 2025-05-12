@@ -1,7 +1,9 @@
 package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
+import com.example.myapplication.data.dto.response.care.ClientReportResponse
 import com.example.myapplication.data.dto.response.care.HealthResponse
+import com.example.myapplication.data.dto.response.care.ReportDetailDto
 import com.example.myapplication.data.dto.response.care.TodayDetailResponse
 import com.example.myapplication.data.dto.response.care.TodayResponse
 import com.example.myapplication.data.remote.CareService
@@ -21,11 +23,7 @@ class CareRepository @Inject constructor(
         return careService.getTotalHealth(clientId, userId, size, cursorDate)
     }
 
-    suspend fun getClientDetail(
-        clientId: Int
-    ): Response<ClientDetailResponse> {
-        return careService.getClientDetail(clientId)
-    }
+
 
     suspend fun getTodayData(
         clientId: Int
@@ -37,6 +35,18 @@ class CareRepository @Inject constructor(
         clientId: Int
     ):Response<TodayDetailResponse>{
         return careService.getTodayDetailData(clientId)
+    }
+
+    suspend fun getWeeklyReportList(
+        clientId: Int
+    ):Response<ClientReportResponse>{
+        return careService.getWeeklyReportList(clientId)
+    }
+
+    suspend fun getReportDetail(
+        reportId :Int
+    ):Response<ReportDetailDto>{
+        return careService.getReportDetail(reportId)
     }
 
 }
