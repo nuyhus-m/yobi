@@ -218,12 +218,13 @@ public class SchedulesController {
     public ResponseEntity<?> registerScheduleByOcr(
             @RequestParam("image") MultipartFile image,
             @RequestParam("year") Integer year,
-            @RequestParam("month") Integer month
+            @RequestParam("month") Integer month,
+            @RequestParam(value = "timezone", defaultValue = "Asia/Seoul") String timezone
     ) {
         //임시 하드코딩
         Integer userId = 1;
 
-        ApiResult result = scheduleService.processOcrSchedules(image, userId, year, month);
+        ApiResult result = scheduleService.processOcrSchedules(image, userId, year, month, timezone);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
