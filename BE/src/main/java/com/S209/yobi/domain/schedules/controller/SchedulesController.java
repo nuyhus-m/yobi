@@ -40,7 +40,7 @@ public class SchedulesController {
             @ApiResponse(responseCode = "200", description = "일정 조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ScheduleResponseDTO.ScheduleDTO.class),
-                            examples = @ExampleObject(value = "{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"}")))
+                            examples = @ExampleObject(value = "{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1742569200000,\"startAt\":1742605200000,\"endAt\":1742616000000}")))
     })
     public ResponseEntity<?> getSchedule(
             @PathVariable Integer scheduleId
@@ -133,7 +133,7 @@ public class SchedulesController {
             @ApiResponse(responseCode = "200", description = "일정 목록 조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ScheduleResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"schedules\":[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"}]}")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1735657200000,\"startAt\":1735693200000,\"endAt\":1735704000000},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1735657200000,\"startAt\":1735693200000,\"endAt\":1735704000000}]")))
     })
     public ResponseEntity<?> getSchedulesByUser() {
         // 임시 하드코딩. JWT에서 추출해야 합니다!
@@ -147,6 +147,11 @@ public class SchedulesController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
+        // ScheduleResponseDTO에서 schedules 배열만 추출하여 반환
+        if (result instanceof ScheduleResponseDTO responseDTO) {
+            return ResponseEntity.ok(responseDTO.getSchedules());
+        }
+
         return ResponseEntity.ok(result);
     }
 
@@ -156,7 +161,7 @@ public class SchedulesController {
             @ApiResponse(responseCode = "200", description = "월별 일정 목록 조회 성공",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ScheduleResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"schedules\":[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-01\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-02\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"}]}")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746111600000,\"startAt\":1746144000000,\"endAt\":1746151200000}]")))
     })
     public ResponseEntity<?> getSchedulesByMonth(
             @RequestParam int year,
@@ -173,6 +178,11 @@ public class SchedulesController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
+        // ScheduleResponseDTO에서 schedules 배열만 추출하여 반환
+        if (result instanceof ScheduleResponseDTO responseDTO) {
+            return ResponseEntity.ok(responseDTO.getSchedules());
+        }
+
         return ResponseEntity.ok(result);
     }
 
@@ -182,7 +192,7 @@ public class SchedulesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일별 일정 목록 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":\"2025-01-04\",\"startAt\":\"10:00:00\",\"endAt\":\"13:00:00\"},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":\"2025-01-04\",\"startAt\":\"14:00:00\",\"endAt\":\"15:00:00\"}]")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000}]")))
     })
     public ResponseEntity<?> getSchedulesByDay(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
