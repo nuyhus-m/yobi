@@ -56,12 +56,30 @@ pipeline {
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v --remove-orphans || true
                     docker network prune -f || true
                     
-                    # 컨테이너 개별 실행
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d redis
+                    # 각 서비스 개별적으로 시작
+                    echo "Starting postgres..."
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d postgres
                     sleep 10
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d backend
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d ocr
+                    
+                    echo "Starting redis..."
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d redis
+                    sleep 5
+                    
+                    echo "Starting backend..."
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build backend
+                    sleep 5
+                    
+                    echo "Starting ocr..."
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build ocr
+                    sleep 5
+                    
+                    # 컨테이너 상태 확인
+                    echo "Checking container status..."
+                    docker ps
+                    
+                    # 로그 확인
+                    echo "Checking container logs..."
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE logs
                 """
             }
         }
