@@ -61,7 +61,7 @@
 
     <style name="CaptionTextStyle">
         <item name="android:fontFamily">@font/pretendard_regular</item>
-        <item name="android:textSize">14</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
