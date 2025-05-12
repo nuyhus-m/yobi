@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.base.HealthDataType
 import com.onesoftdigm.fitrus.device.sdk.FitrusBleDelegate
 import com.onesoftdigm.fitrus.device.sdk.FitrusDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,13 @@ class FitrusViewModel @Inject constructor(
 ) : ViewModel(), FitrusBleDelegate {
 
     private var _clientId = -1
-    private val clientId: Int get() = _clientId
+    val clientId: Int get() = _clientId
+
+    private var _isMeasured = false
+    val isMeasured: Boolean get() = _isMeasured
+
+    private var _type = HealthDataType.BODY_COMPOSITION
+    val type: HealthDataType get() = _type
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected
@@ -34,6 +41,14 @@ class FitrusViewModel @Inject constructor(
 
     fun setClientId(id: Int) {
         _clientId = id
+    }
+
+    fun setMeasureStatus(status: Boolean) {
+        _isMeasured = status
+    }
+
+    fun setMeasureType(type: HealthDataType) {
+        _type = type
     }
 
     private fun startScan() {
@@ -65,6 +80,7 @@ class FitrusViewModel @Inject constructor(
                 it.cancel()
             }
         }
+        stopScan()
         connectJob = null
     }
 
