@@ -57,15 +57,15 @@ pipeline {
         stage('Deploy to EC2-2') {
             steps {
                 sh """
-                    #docker stop ai-service || true
-                    #docker rm ai-service || true
-                    #docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
+                    docker stop ai-service || true
+                    docker rm ai-service || true
+                    docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
                     
-                    docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
-                          down --remove-orphans
+                    #docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                    #      down --remove-orphans
 
-                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
-                          up -d --build --force-recreate ai-service
+                    #docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                    #      up -d --build --force-recreate ai-service
                 """
             }
         }
