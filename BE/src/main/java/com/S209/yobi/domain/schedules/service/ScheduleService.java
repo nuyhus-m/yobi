@@ -264,7 +264,10 @@ public class ScheduleService {
 
     /// OCR로 일정 등록
     @Transactional
-    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
+    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month, String timezone) {
+        //사용자의 시간대 설정
+        ZoneId userZone = ZoneId.of(timezone);
+
         //이미지 유효성 검사
         if (image == null || image.isEmpty()) {
             throw new IllegalArgumentException("이미지 파일이 없음.");
@@ -336,28 +339,17 @@ public class ScheduleService {
                     try {
                         // 날짜, 시간 파싱 (LocalDate/LocalTime으로 파싱 후 타임스탬프로 변환)
                         LocalDate localDate = LocalDate.of(year, month, item.getDay());
-                        LocalTime startLocalTime, endLocalTime;
-                        try {
-                            startLocalTime = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
-                            endLocalTime = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
-                        } catch (DateTimeParseException e) {
-                            failCount++;
-                            failureReasons.add(String.format("시간 형식 오류: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
-                            continue;
-                        }
 
-                        // 시간 유효성 검사 (LocalTime 객체로 비교)
-                        if (endLocalTime.isBefore(startLocalTime)) {
-                            failCount++;
-                            failureReasons.add(String.format("시간 유효성 오류: %s일 종료 시간(%s)이 시작 시간(%s)보다 빠릅니다.",
-                                    item.getDay(), item.getEndAt(), item.getStartAt()));
-                            continue;
-                        }
+                        LocalTime startLocalTime = LocalTime.parse(item.getStartAt() + ":00");
+                        LocalTime endLocalTime = LocalTime.parse(item.getEndAt() + ":00");
 
-                        // LocalDate/LocalTime을 타임스탬프로 변환
-                        long visitedDateTimestamp = localDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
-                        long startAtTimestamp = localDate.atTime(startLocalTime).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
-                        long endAtTimestamp = localDate.atTime(endLocalTime).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+                        // 타임스탬프 변환 - 사용자 시간대 사용
+                        ZonedDateTime startZdt = ZonedDateTime.of(localDate, startLocalTime, userZone);
+                        ZonedDateTime endZdt = ZonedDateTime.of(localDate, endLocalTime, userZone);
+
+                        long visitedDateTimestamp = localDate.atStartOfDay(userZone).toInstant().toEpochMilli();
+                        long startAtTimestamp = startZdt.toInstant().toEpochMilli();
+                        long endAtTimestamp = endZdt.toInstant().toEpochMilli();
 
                         // 중복 일정 확인 (수정된 레포지토리 메서드 사용)
                         boolean hasOverlap = false;
