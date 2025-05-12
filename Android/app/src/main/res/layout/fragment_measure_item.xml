@@ -111,7 +111,7 @@
         android:layout_marginTop="@dimen/space_16dp"
         android:background="@drawable/bg_purple_sub_radius_8"
         android:gravity="center"
-        android:text="@string/body_temperature"
+        android:text="@string/temperature"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.12"
