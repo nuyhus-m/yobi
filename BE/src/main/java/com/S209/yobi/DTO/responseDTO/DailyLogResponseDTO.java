@@ -24,7 +24,7 @@ public class DailyLogResponseDTO implements ApiResult {
     public static class SimpleDailyLogDTO implements ApiResult {
         private Integer scheduleId;
         private String clientName;
-        private LocalDate visitedDate;
+        private long visitedDate;
     }
 
     @Getter
@@ -33,6 +33,6 @@ public class DailyLogResponseDTO implements ApiResult {
     public static class DailyLogDetailDTO implements ApiResult {
         private String logContent;
         private String clientName;
-        private LocalDate visitedDate;
+        private long visitedDate;
     }
 }
