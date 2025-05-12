@@ -25,10 +25,15 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setTitle()
         initButtons()
         observeConnectState()
 
         activityViewModel.tryConnectDevice()
+    }
+
+    private fun setTitle() {
+        binding.tvTitle.text = getString(R.string.measure_title, activityViewModel.clientName)
     }
 
     private fun initButtons() {

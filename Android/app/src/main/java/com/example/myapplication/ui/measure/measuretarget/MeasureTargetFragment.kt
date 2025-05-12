@@ -33,6 +33,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
     private val viewModel by viewModels<MeasureTargetViewModel>()
     private val activityViewModel by activityViewModels<FitrusViewModel>()
     private var selectedClientId = -1
+    private var selectedClientName = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,6 +67,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
             ) {
                 val selected = parent.getItemAtPosition(position) as ClientResponse
                 selectedClientId = selected.clientId
+                selectedClientName = selected.name
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -84,6 +86,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
                 viewModel.isMeasured.collectLatest {
                     Log.d(TAG, "observeMeasureStatus: $it")
                     activityViewModel.setClientId(selectedClientId)
+                    activityViewModel.setClientName(selectedClientName)
                     activityViewModel.setMeasureStatus(it)
                     if (it) {
                         findNavController().navigate(R.id.dest_measure_item)

@@ -26,6 +26,9 @@ class FitrusViewModel @Inject constructor(
     private var _clientId = -1
     val clientId: Int get() = _clientId
 
+    private var _clientName = ""
+    val clientName: String get() = _clientName
+
     private var _isMeasured = false
     val isMeasured: Boolean get() = _isMeasured
 
@@ -41,6 +44,10 @@ class FitrusViewModel @Inject constructor(
 
     fun setClientId(id: Int) {
         _clientId = id
+    }
+
+    fun setClientName(name: String) {
+        _clientName = name
     }
 
     fun setMeasureStatus(status: Boolean) {
