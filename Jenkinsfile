@@ -42,60 +42,17 @@ pipeline {
         stage('Deploy to EC2-1') {
             steps {
                 sh """
-                    # 실행 중인 모든 컨테이너 중지 및 제거
-                    docker ps -a | grep -E 'redis|postgres|ocr-app|be-spring-container|s209cicd|s209cicd2' | awk '{print \$1}' | xargs -r docker stop
-                    docker ps -a | grep -E 'redis|postgres|ocr-app|be-spring-container|s209cicd|s209cicd2' | awk '{print \$1}' | xargs -r docker rm -f
-                    
-                    # 포트를 사용 중인 프로세스 확인 및 종료
-                    netstat -tulpn 2>/dev/null | grep ':5432' | awk '{print \$7}' | cut -d'/' -f1 | xargs -r kill -9
-                    netstat -tulpn 2>/dev/null | grep ':6379' | awk '{print \$7}' | cut -d'/' -f1 | xargs -r kill -9
-                    netstat -tulpn 2>/dev/null | grep ':8081' | awk '{print \$7}' | cut -d'/' -f1 | xargs -r kill -9
-                    netstat -tulpn 2>/dev/null | grep ':7000' | awk '{print \$7}' | cut -d'/' -f1 | xargs -r kill -9
-                    
-                    # Docker Compose 정리 및 재시작
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v --remove-orphans || true
-                    docker network prune -f || true
-                    
-                    # 각 서비스 개별적으로 시작
-                    echo "Starting postgres..."
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d postgres
-                    sleep 10
-                    
-                    echo "Starting redis..."
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d redis
-                    sleep 5
-                    
-                    echo "Starting backend..."
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build backend
-                    sleep 5
-                    
-                    echo "Starting ocr..."
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build ocr
-                    sleep 5
-                    
-                    # 컨테이너 상태 확인
-                    echo "Checking container status..."
-                    docker ps
-                    
-                    # 로그 확인
-                    echo "Checking container logs..."
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE logs
+                    docker stop redis postgres ocr-app be-spring-container || true
+                    docker rm redis postgres ocr-app be-spring-container || true
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
                 """
             }
         }
         stage('Deploy to EC2-2') {
             steps {
                 sh """
-                    # 실행 중인 ai-app 컨테이너 강제 제거
-                    docker rm -f ai-app || true
-                    docker rm -f c42974760f61 || true
-                    
-                    # 포트를 사용 중인 프로세스 확인 및 종료
-                    netstat -tulpn 2>/dev/null | grep ':6000' | awk '{print \$7}' | cut -d'/' -f1 | xargs -r kill -9
-                    
-                    # Docker Compose 정리 및 재시작
-                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE down -v --remove-orphans || true
-                    docker network prune -f || true
+                    docker stop ai-service || true
+                    docker rm ai-service || true
                     docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
                 """
             }
