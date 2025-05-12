@@ -53,17 +53,8 @@
             android:id="@+id/action_careMainFragment_to_reportDetailFragment"
             app:destination="@id/dest_report_detail_fragment" />
         <argument
-            android:name="image"
-            app:argType="string" />
-        <argument
-            android:name="name"
-            app:argType="string" />
-        <argument
-            android:name="gender"
+            android:name="clientId"
             app:argType="integer" />
-        <argument
-            android:name="birth"
-            app:argType="string" />
     </fragment>
 
     <fragment

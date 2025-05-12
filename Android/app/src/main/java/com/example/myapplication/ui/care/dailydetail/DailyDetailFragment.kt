@@ -14,34 +14,33 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
     FragmentDailyDetailBinding::bind,
     R.layout.fragment_daily_detail
 ) {
-
     private val viewModel: DailyDetailViewModel by viewModels()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.uiState.observe(viewLifecycleOwner) { state ->
-            binding.apply {
-                tvBodyFat.text = "체지방률: ${state.bodyFat}"
-                tvMuscleMass.text = "근육량: ${state.muscleMass}"
-                tvBmr.text = "기초대사량: ${state.bmr}"
-                tvBodyWater.text = "체내 수분: ${state.bodyWater}"
-                tvProtein.text = "단백질량: ${state.protein}"
-                tvMineral.text = "무기질량: ${state.mineral}"
-                tvBodyAge.text = "신체나이: ${state.bodyAge}"
+        val clientId = 1 // 필요 시 SafeArgs로 전달받기
+        viewModel.fetchTodayDetailData(clientId)
 
-                tvTemperature.text = "체온: ${state.temperature}°C"
+        viewModel.todayDetailData.observe(viewLifecycleOwner) { data ->
+            data?.let {
+                val bc = it.bodyComposition
+                binding.tvBodyFat.text = "체지방률: ${bc?.bfp?.value ?: "-"}%"
+                binding.tvMuscleMass.text = "근육량: ${bc?.smm?.value ?: "-"}kg"
+                binding.tvBmr.text = "기초대사량: ${bc?.bmr?.value ?: "-"}kcal"
+                binding.tvBodyWater.text = "체내 수분: ${bc?.tbw?.value ?: "-"}L"
+                binding.tvProtein.text = "단백질량: ${bc?.protein?.value ?: "-"}kg"
+                binding.tvMineral.text = "무기질량: ${bc?.mineral?.value ?: "-"}kg"
+                binding.tvBodyAge.text = "신체나이: ${bc?.bodyAge ?: "-"}세"
 
-                tvSystolic.text = "수축기: ${state.systolic}mmHg"
-                tvDiastolic.text = "이완기: ${state.diastolic}mmHg"
-
-                tvHeartRate.text = "심박수: ${state.heartRate}bpm"
-                tvOxygen.text = "산소포화도: ${state.oxygen}%"
-
-                tvStressIndex.text = "스트레스 지수: ${state.stressIndex}"
-                tvStressLevel.text = "스트레스 등급: ${state.stressLevel}"
+                binding.tvTemperature.text = "체온: ${it.temperature?.temperature ?: "-"}℃"
+                binding.tvSystolic.text = "수축기: ${it.bloodPressure?.sbp ?: "-"}"
+                binding.tvDiastolic.text = "이완기: ${it.bloodPressure?.dbp ?: "-"}"
+                binding.tvHeartRate.text = "심박수: ${it.heartRate?.bpm ?: "-"} BPM"
+                binding.tvOxygen.text = "산소포화도: ${it.heartRate?.oxygen ?: "-"}%"
+                binding.tvStressIndex.text = "스트레스 지수: ${it.stress?.stressValue ?: "-"}"
+                binding.tvStressLevel.text = "스트레스 등급: ${it.stress?.stressLevel ?: "-"}"
             }
         }
     }
-
-
 }
