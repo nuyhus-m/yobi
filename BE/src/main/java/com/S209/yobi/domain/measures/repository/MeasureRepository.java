@@ -68,6 +68,7 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
 
 
 
+    Optional<Measure> findTopByUserAndClientOrderByDateDesc(User user, Client client);
 
 
 }
