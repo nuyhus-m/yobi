@@ -1,0 +1,21 @@
+package com.example.myapplication.data.repository
+
+import com.example.myapplication.data.dto.request.care.HealthResponse
+import com.example.myapplication.data.remote.CareService
+import retrofit2.Response
+import javax.inject.Inject
+
+class CareRepository @Inject constructor(
+    private val careService: CareService
+) {
+
+    suspend fun getTotalHealth(
+        clientId: Int,
+        userId: Int,
+        size: Int,
+        cursorDate: String? = null
+    ): Response<HealthResponse> {
+        return careService.getTotalHealth(clientId, userId, size, cursorDate)
+    }
+
+}

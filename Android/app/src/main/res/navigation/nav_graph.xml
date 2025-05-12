@@ -54,13 +54,13 @@
             app:destination="@id/dest_report_detail_fragment" />
         <argument
             android:name="image"
-            app:argType="reference" />
+            app:argType="string" />
         <argument
             android:name="name"
             app:argType="string" />
         <argument
             android:name="gender"
-            app:argType="string" />
+            app:argType="integer" />
         <argument
             android:name="birth"
             app:argType="string" />
