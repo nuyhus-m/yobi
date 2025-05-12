@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.repository.CareRepository
+import com.example.myapplication.data.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CareMainViewModel @Inject constructor(
-    private val careRepository: CareRepository
+    private val clientRepository: ClientRepository
 ) : ViewModel() {
 
     private val _clientDetail = MutableLiveData<ClientDetailResponse>()
@@ -24,7 +25,7 @@ class CareMainViewModel @Inject constructor(
     fun fetchClientDetail(clientId: Int) {
         viewModelScope.launch {
             try {
-                val response = careRepository.getClientDetail(clientId)
+                val response = clientRepository.getClientDetail(clientId)
                 if (response.isSuccessful) {
                     _clientDetail.value = response.body()
                 } else {

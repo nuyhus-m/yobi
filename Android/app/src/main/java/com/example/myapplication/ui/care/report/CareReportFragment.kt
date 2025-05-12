@@ -11,7 +11,6 @@ import com.example.myapplication.databinding.FragmentCareReportBinding
 import com.example.myapplication.ui.care.report.adapter.CareReportAdapter
 import com.example.myapplication.ui.care.report.viewmodel.CareReportViewModel
 import dagger.hilt.android.AndroidEntryPoint
-
 @AndroidEntryPoint
 class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
     FragmentCareReportBinding::bind,
@@ -19,7 +18,9 @@ class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
 ) {
     private val viewModel: CareReportViewModel by viewModels()
 
-    // Get name directly from arguments bundle instead of using navArgs()
+    private val clientId: Int
+        get() = arguments?.getInt("clientId") ?: -1
+
     private val name: String
         get() = arguments?.getString("name", "") ?: ""
 
@@ -27,20 +28,30 @@ class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = CareReportAdapter { report ->
-            // Create a bundle for navigation instead of using Directions
             val bundle = Bundle().apply {
                 putString("name", name)
-                putString("dateRange", report.rangeText)
-            }
+                putString("dateRange", convertMillisToRange(report.createdAt))
+                putInt("reportId", report.reportId)
 
+            }
             findNavController().navigate(R.id.dest_report_detail_fragment, bundle)
         }
 
-        binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = adapter
 
-        viewModel.dates.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        viewModel.fetchReports(clientId)
+
+        viewModel.reports.observe(viewLifecycleOwner) { reports ->
+            adapter.submitList(reports)
         }
+    }
+
+    private fun convertMillisToRange(millis: Long): String {
+        val formatter = java.text.SimpleDateFormat("yyyy/MM/dd", java.util.Locale.KOREA)
+        val date = java.util.Date(millis)
+        val start = formatter.format(date)
+        val end = formatter.format(java.util.Date(millis + 6 * 24 * 60 * 60 * 1000)) // 6일 후
+        return "$start - $end"
     }
 }

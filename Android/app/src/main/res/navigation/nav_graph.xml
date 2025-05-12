@@ -170,6 +170,10 @@
         <argument
             android:name="dateRange"
             app:argType="string" />
+
+        <argument
+            android:name="reportId"
+            app:argType="integer" />
     </fragment>
 
     <fragment

@@ -3,7 +3,6 @@ package com.example.myapplication.ui.care.carelist
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.R
@@ -11,7 +10,6 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentCareListBinding
 import com.example.myapplication.ui.MainViewModel
 import com.example.myapplication.ui.care.carelist.adapter.CareListAdapter
-import com.example.myapplication.ui.care.carelist.viewmodel.CareListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
