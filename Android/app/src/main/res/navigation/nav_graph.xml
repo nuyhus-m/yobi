@@ -61,27 +61,13 @@
         android:id="@+id/dest_measure_target"
         android:name="com.example.myapplication.ui.measure.measuretarget.MeasureTargetFragment"
         android:label="fragment_measure_target"
-        tools:layout="@layout/fragment_measure_target">
-        <action
-            android:id="@+id/action_dest_measure_target_to_dest_device_connect"
-            app:destination="@id/dest_device_connect" />
-    </fragment>
+        tools:layout="@layout/fragment_measure_target" />
 
     <fragment
         android:id="@+id/dest_device_connect"
         android:name="com.example.myapplication.ui.measure.deviceconnect.DeviceConnectFragment"
         android:label="fragment_device_connect"
-        tools:layout="@layout/fragment_device_connect">
-        <argument
-            android:name="clientId"
-            app:argType="integer" />
-        <argument
-            android:name="isMeasured"
-            app:argType="boolean" />
-        <argument
-            android:name="healthDataType"
-            app:argType="com.example.myapplication.base.HealthDataType" />
-    </fragment>
+        tools:layout="@layout/fragment_device_connect" />
 
     <fragment
         android:id="@+id/dest_bluetooth_guide"
