@@ -26,7 +26,7 @@ public class Measure {
 
     @NotNull
     @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private Long date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -75,7 +75,7 @@ public class Measure {
                 .client(client)
                 .body(BodyComposition.fromDTO(bodyDTO))
                 .blood(BloodPressure.fromDTO(bloodDTO))
-                .date(LocalDate.now())
+                .date(LocalDate.now().toEpochDay())
                 .build();
 
     }

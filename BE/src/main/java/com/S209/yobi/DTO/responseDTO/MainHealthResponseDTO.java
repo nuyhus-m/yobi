@@ -27,11 +27,11 @@ public class MainHealthResponseDTO implements ApiResult {
         // 오늘 측정 값이 업는 경우
         if(measure == null){
             // 시간 Long 타입으로 변환
-            long epochMilli = toEpochMilli(today);
+            long epochDay = today.toEpochDay();
 
             return MainHealthResponseDTO.builder()
                     .clientId(clientId)
-                    .today(epochMilli)
+                    .today(epochDay)
                     .bodyComposition(null)
                     .stress(null)
                     .heartRate(null)
@@ -41,12 +41,10 @@ public class MainHealthResponseDTO implements ApiResult {
 
         // 측정값이 있는 경우
 
-        // 시간 Long 타입으로 변환
-        long epochMilli = toEpochMilli(measure.getDate());
 
         return MainHealthResponseDTO.builder()
                 .clientId(measure.getClient().getId())
-                .today(epochMilli)
+                .today(measure.getDate())
                 .bodyComposition(BodyMainResponseDTO.of(measure.getBody(), redisLevels))
                 .stress(measure.getStress() != null ? StressResponseDTO.of(measure.getStress()): null)
                 .heartRate(measure.getHeart() != null ?HeartRateResponseDTO.of(measure.getHeart()): null)

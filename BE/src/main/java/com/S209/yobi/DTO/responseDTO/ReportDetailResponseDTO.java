@@ -20,14 +20,12 @@ public class ReportDetailResponseDTO implements ApiResult {
 
     public static ReportDetailResponseDTO of (WeeklyReport weeklyReport){
 
-        // 시간 Long 타입으로 변환
-        long epochMilli = toEpochMilli(weeklyReport.getCreatedAt());
 
         return ReportDetailResponseDTO.builder()
                 .reportId(weeklyReport.getId())
                 .reportContent(weeklyReport.getReportContent())
                 .logSummery(weeklyReport.getLogSummary())
-                .createdAt(epochMilli)
+                .createdAt(weeklyReport.getCreatedAt())
                 .build();
     }
 
