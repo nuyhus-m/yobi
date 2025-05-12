@@ -66,8 +66,7 @@ public class SchedulesController {
     @PostMapping
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 등록 성공",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "null")))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> createSchedule(
             @Valid @RequestBody ScheduleCreateRequestDTO requestDTO
@@ -93,9 +92,7 @@ public class SchedulesController {
     @PatchMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 수정 성공",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ScheduleResponseDTO.ScheduleDTO.class),
-                            examples = @ExampleObject(value = "null")))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> updateSchedule(
             @PathVariable Integer scheduleId,
@@ -116,8 +113,7 @@ public class SchedulesController {
     @DeleteMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 삭제 성공",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "null")))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> deleteSchedule(@PathVariable Integer scheduleId) {
         ApiResult result = scheduleService.deleteSchedule(scheduleId);
