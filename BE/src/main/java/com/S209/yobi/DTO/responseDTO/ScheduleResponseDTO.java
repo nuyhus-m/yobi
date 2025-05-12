@@ -2,6 +2,7 @@ package com.S209.yobi.DTO.responseDTO;
 
 import com.S209.yobi.domain.schedules.entity.Schedule;
 import com.S209.yobi.exceptionFinal.ApiResult;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "스케줄 응답 객체")
 public class ScheduleResponseDTO implements ApiResult {
     private List<ScheduleDTO> schedules;
 

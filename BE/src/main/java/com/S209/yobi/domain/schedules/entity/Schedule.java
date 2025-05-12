@@ -2,6 +2,7 @@ package com.S209.yobi.domain.schedules.entity;
 
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.clients.entity.Client;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "schedule")
 @BatchSize(size = 100)
+@Schema
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
