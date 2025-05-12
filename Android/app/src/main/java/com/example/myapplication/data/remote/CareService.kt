@@ -2,6 +2,7 @@ package com.example.myapplication.data.remote
 
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.dto.response.care.HealthResponse
+import com.example.myapplication.data.dto.response.care.TodayDetailResponse
 import com.example.myapplication.data.dto.response.care.TodayResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -28,5 +29,11 @@ interface CareService {
     suspend fun getTodayData(
         @Path("clientId") clientId: Int
     ):Response<TodayResponse>
+
+    // 단건 데이터 조회 (자세히보기)
+    @GET("dashboard/detail/{clientId}")
+    suspend fun getTodayDetailData(
+        @Path("clientId") clientId: Int
+    ):Response<TodayDetailResponse>
 
 }

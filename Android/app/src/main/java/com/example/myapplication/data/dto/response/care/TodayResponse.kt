@@ -16,11 +16,6 @@ data class BodyCompositionDto(
     val ecf: ValueLevel
 )
 
-data class ValueLevel(
-    val value: Int,
-    val level: String
-)
-
 data class StressDto(
     val stressId: Long,
     val stressValue: Int,

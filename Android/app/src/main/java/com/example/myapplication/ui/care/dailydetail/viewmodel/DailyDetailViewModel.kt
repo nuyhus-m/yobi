@@ -3,30 +3,30 @@ package com.example.myapplication.ui.care.dailydetail.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ui.care.dailydetail.data.DailyDetailUiState
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.dto.response.care.TodayDetailResponse
+import com.example.myapplication.data.repository.CareRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DailyDetailViewModel @Inject constructor() : ViewModel() {
+class DailyDetailViewModel @Inject constructor(
+    private val careRepository: CareRepository
+) : ViewModel() {
+    private val _todayDetailData = MutableLiveData<TodayDetailResponse>()
+    val todayDetailData: LiveData<TodayDetailResponse> = _todayDetailData
 
-    private val _uiState = MutableLiveData(
-        DailyDetailUiState(
-            bodyFat = "100%",
-            muscleMass = "100kg",
-            bmr = "1000kcal",
-            bodyWater = "100L",
-            protein = "100kg",
-            mineral = "100kg",
-            bodyAge = "100세",
-            temperature = "100",
-            systolic = "100",
-            diastolic = "100",
-            heartRate = "72",
-            oxygen = "98",
-            stressIndex = "100",
-            stressLevel = "높음"
-        )
-    )
-    val uiState: LiveData<DailyDetailUiState> = _uiState
+    fun fetchTodayDetailData(clientId: Int) {
+        viewModelScope.launch {
+            val response = careRepository.getTodayDetailData(clientId)
+            if (response.isSuccessful) {
+                _todayDetailData.value = response.body()
+
+            } else {
+
+            }
+        }
+    }
+
 }
