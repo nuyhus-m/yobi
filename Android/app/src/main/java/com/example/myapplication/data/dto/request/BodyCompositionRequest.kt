@@ -1,6 +1,6 @@
-package com.example.myapplication.data.model
+package com.example.myapplication.data.dto.request
 
-data class BodyComposition(
+data class BodyCompositionRequest(
     val bfm: Double,
     val bfp: Double,
     val bmr: Double,

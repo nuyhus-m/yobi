@@ -1,12 +1,12 @@
 package com.example.myapplication.data.remote
 
-import com.example.myapplication.data.model.BloodPressure
-import com.example.myapplication.data.model.BodyComposition
-import com.example.myapplication.data.model.HeartRate
-import com.example.myapplication.data.model.RequiredMeasureData
-import com.example.myapplication.data.model.RequiredMeasureStatus
-import com.example.myapplication.data.model.Stress
-import com.example.myapplication.data.model.Temperature
+import com.example.myapplication.data.dto.request.BloodPressureRequest
+import com.example.myapplication.data.dto.request.BodyCompositionRequest
+import com.example.myapplication.data.dto.request.HeartRateRequest
+import com.example.myapplication.data.dto.request.RequiredDataRequest
+import com.example.myapplication.data.dto.response.RequiredStatusResponse
+import com.example.myapplication.data.dto.request.StressRequest
+import com.example.myapplication.data.dto.request.TemperatureRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -20,14 +20,14 @@ interface MeasureService {
     suspend fun getMeasureStatus(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-    ): Response<RequiredMeasureStatus>
+    ): Response<RequiredStatusResponse>
 
     // 필수 데이터 저장
     @POST("health/base/{clientId}/{userId}")
     suspend fun saveRequiredMeasureData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: RequiredMeasureData
+        @Body body: RequiredDataRequest
     ): Response<Unit>
 
     // 체성분 데이터 저장
@@ -35,7 +35,7 @@ interface MeasureService {
     suspend fun saveBodyCompositionData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: BodyComposition
+        @Body body: BodyCompositionRequest
     ): Response<Unit>
 
     // 심박 측정 데이터 저장
@@ -43,7 +43,7 @@ interface MeasureService {
     suspend fun saveHeartRateData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: HeartRate
+        @Body body: HeartRateRequest
     ): Response<Unit>
 
     // 혈압 데이터 저장
@@ -51,7 +51,7 @@ interface MeasureService {
     suspend fun saveBloodPressureData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: BloodPressure
+        @Body body: BloodPressureRequest
     ): Response<Unit>
 
     // 스트레스 데이터 저장
@@ -59,7 +59,7 @@ interface MeasureService {
     suspend fun saveStressData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: Stress
+        @Body body: StressRequest
     ): Response<Unit>
 
     // 체온 데이터 저장
@@ -67,6 +67,6 @@ interface MeasureService {
     suspend fun saveTemperatureData(
         @Path("clientId") clientId: Int,
         @Path("userId") userId: Int,
-        @Body body: Temperature
+        @Body body: TemperatureRequest
     ): Response<Unit>
 }

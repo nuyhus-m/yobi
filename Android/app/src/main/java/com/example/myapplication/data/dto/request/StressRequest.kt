@@ -1,6 +1,6 @@
-package com.example.myapplication.data.model
+package com.example.myapplication.data.dto.request
 
-data class Stress(
+data class StressRequest(
     val bpm: Int,
     val oxygen: Int,
     val stressLevel: String,

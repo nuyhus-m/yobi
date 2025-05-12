@@ -1,6 +1,6 @@
-package com.example.myapplication.data.model
+package com.example.myapplication.data.dto.response
 
-data class Client(
+data class ClientResponse(
     val clientId: Int,
     val name: String,
     val gender: Int,
