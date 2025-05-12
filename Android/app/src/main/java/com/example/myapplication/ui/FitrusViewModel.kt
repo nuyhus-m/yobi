@@ -50,7 +50,7 @@ class FitrusViewModel @Inject constructor(
     fun tryConnectDevice() {
         connectJob = viewModelScope.launch {
             while (!_isConnected.value) {
-                Log.d(TAG, "repeatStartScan: ")
+                Log.d(TAG, "tryConnectDevice: ")
                 stopScan()
                 startScan()
                 delay(30000)
@@ -59,16 +59,17 @@ class FitrusViewModel @Inject constructor(
     }
 
     fun stopTryConnectDevice() {
+        Log.d(TAG, "stopTryConnectDevice: ")
         connectJob?.let {
             if (it.isActive) {
                 it.cancel()
             }
         }
         connectJob = null
-        Log.d(TAG, "stopTryConnectDevice: ")
     }
 
     fun disconnectDevice() {
+        Log.d(TAG, "disconnectDevice: ")
         if (manager.fitrusConnectionState) {
             manager.disconnectFitrus()
         }
