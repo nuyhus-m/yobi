@@ -8,7 +8,8 @@
     tools:context=".ui.AuthActivity"
     android:paddingTop="@dimen/space_70dp"
     android:paddingHorizontal="@dimen/space_24dp"
-    android:paddingBottom="@dimen/space_40dp">
+    android:paddingBottom="@dimen/space_40dp"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/tv_title"
@@ -21,13 +22,13 @@
         style="@style/TitleTextStyle"/>
 
     <!-- 캐릭터 영역 (이미지 자리만 잡음) -->
-    <View
-        android:id="@+id/view_character"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:background="@color/purple_sub"
+    <ImageView
+        android:id="@+id/iv_character"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:background="@drawable/anim_vector_frame"
         app:layout_constraintTop_toBottomOf="@+id/tv_title"
-        android:layout_marginTop="@dimen/space_70dp"
+        android:layout_marginTop="@dimen/space_40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -36,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="아이디"
-        app:layout_constraintTop_toBottomOf="@id/view_character"
+        app:layout_constraintTop_toBottomOf="@id/iv_character"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/space_16dp"
         style="@style/CardTitleTextStyle"/>

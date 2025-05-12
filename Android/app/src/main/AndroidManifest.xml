@@ -20,10 +20,12 @@
         <activity
             android:name=".ui.SplashActivity"
             android:exported="false"
-            android:theme="@style/Theme.Splash" />
+            android:theme="@style/Theme.Splash" >
+        </activity>
         <activity
             android:name=".ui.AuthActivity"
-            android:exported="false" />
+            android:exported="false" >
+        </activity>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">

@@ -1,6 +1,8 @@
 package com.example.myapplication.ui
 
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +17,10 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding.ivCharacter.post {
+            val animationDrawable = binding.ivCharacter.background as AnimationDrawable
+            animationDrawable.start()
+        }
 
     }
 }
