@@ -25,10 +25,7 @@ class CareListFragment : BaseFragment<FragmentCareListBinding>(
     private val adapter = CareListAdapter { selectedUser ->
         val action = CareListFragmentDirections
             .actionCareListFragmentToCareMainFragment(
-                image = selectedUser.image,
-                name = selectedUser.name,
-                gender = selectedUser.gender,
-                birth = selectedUser.birth
+                clientId = selectedUser.clientId
             )
         findNavController().navigate(action)
     }
