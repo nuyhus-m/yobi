@@ -40,7 +40,11 @@ class FitrusViewModel @Inject constructor(
 
     private var connectJob: Job? = null
 
-    private val manager = FitrusDevice(context, this, "normal_key")
+    private lateinit var manager: FitrusDevice
+
+    fun initFitrusDevice(device: FitrusDevice) {
+        manager = device
+    }
 
     fun setClientId(id: Int) {
         _clientId = id
