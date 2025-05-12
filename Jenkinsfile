@@ -55,7 +55,13 @@ pipeline {
                     # Docker Compose 정리 및 재시작
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v --remove-orphans || true
                     docker network prune -f || true
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
+                    
+                    # 컨테이너 개별 실행
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d redis
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d postgres
+                    sleep 10
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d backend
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d ocr
                 """
             }
         }
