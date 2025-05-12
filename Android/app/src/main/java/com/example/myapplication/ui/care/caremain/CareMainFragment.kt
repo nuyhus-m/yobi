@@ -11,6 +11,9 @@ import com.example.myapplication.ui.care.caremain.adapter.CarePagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import android.view.LayoutInflater
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 @AndroidEntryPoint
 class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
@@ -26,7 +29,13 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         binding.tvName.text = args.name
         binding.tvGender.text = args.gender
         binding.tvBirth.text = args.birth
-        binding.ivProfile.setImageResource(args.image)
+
+        Glide.with(this)
+            .load(args.image)
+            .transform(
+                CenterCrop(),
+                RoundedCorners(dpToPx(12)))
+            .into(binding.ivProfile)
 
         val pagerAdapter = CarePagerAdapter(this)
         binding.viewPager.adapter = pagerAdapter
@@ -39,15 +48,11 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
             customView.text = tabTitles[position]
             tab.customView = customView
         }.attach()
-//
-//        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-//            tab.text = when (position) {
-//                0 -> "일일\n건강상태"
-//                1 -> "내\n건강추이"
-//                2 -> "주간\n보고서"
-//                else -> ""
-//            }
-//        }.attach()
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
     }
 
 
