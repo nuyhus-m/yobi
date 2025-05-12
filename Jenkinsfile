@@ -42,9 +42,19 @@ pipeline {
         stage('Deploy to EC2-1') {
             steps {
                 sh """
-                    docker stop redis postgres ocr-app be-spring-container || true
-                    docker rm -f redis postgres ocr-app be-spring-container || true
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v || true
+                    # 실행 중인 모든 컨테이너 중지 및 제거
+                    docker ps -a | grep -E 'redis|postgres|ocr-app|be-spring-container|s209cicd|s209cicd2' | awk '{print \$1}' | xargs -r docker stop
+                    docker ps -a | grep -E 'redis|postgres|ocr-app|be-spring-container|s209cicd|s209cicd2' | awk '{print \$1}' | xargs -r docker rm -f
+                    
+                    # 포트를 사용 중인 프로세스 확인 및 종료
+                    lsof -ti:5432 | xargs -r kill -9
+                    lsof -ti:6379 | xargs -r kill -9
+                    lsof -ti:8081 | xargs -r kill -9
+                    lsof -ti:7000 | xargs -r kill -9
+                    
+                    # Docker Compose 정리 및 재시작
+                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v --remove-orphans || true
+                    docker network prune -f || true
                     docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
                 """
             }
