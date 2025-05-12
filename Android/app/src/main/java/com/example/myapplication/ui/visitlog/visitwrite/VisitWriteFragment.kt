@@ -99,6 +99,9 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         }
 
         btnReRecordContainer.setOnClickListener {
+            finalBuffer.clear()
+            lastFinalChunk = ""
+            hasFinalResult = false
             startRecording()
         }
 
@@ -119,14 +122,14 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         if (isRecording) return@with
         setUiState(UiState.RECORDING)
         isRecording = true
-        hasFinalResult = false
+
         setStopButtonEnabled(false) // 녹음 시작 시 중지 버튼 비활성화
 
-        finalBuffer.clear()
-        lastFinalChunk = ""
+        // 현재 진행 중인 중간 결과를 저장하는 변수
+        var currentInterimResult = ""
 
-        // 수집된 최종 결과를 저장하기 위한 집합
-        val processedFinalResults = mutableSetOf<String>()
+        // 녹음 시작 시 초기 UI 설정
+        tvOverlayResult.text = finalBuffer.toString()
 
         lifecycleScope.launch {
             speechManager.startStreaming()
@@ -140,12 +143,12 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                         // NLP 필터를 IO 스레드에서 돌리고, UI 업데이트는 메인으로
                         launch(Dispatchers.IO) {
                             val safe = nlpFilter.isSafe(result.text)
-                            // 안전하고 이전에 처리되지 않은 결과인 경우에만 추가
-                            if (safe && !processedFinalResults.contains(result.text)) {
-                                processedFinalResults.add(result.text)
+                            // 안전한 결과인 경우에만 추가
+                            if (safe) {
                                 if (finalBuffer.isNotEmpty()) finalBuffer.append(" ")
                                 finalBuffer.append(result.text)
                                 lastFinalChunk = result.text
+                                currentInterimResult = ""
 
                                 hasFinalResult = true
 
@@ -156,11 +159,25 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                             }
                         }
                     } else {
-                        val preview = if (finalBuffer.isEmpty())
-                            result.text
-                        else
-                            "${finalBuffer} ${result.text}"
-                        tvOverlayResult.text = preview
+                        // 사용자가 다시 말하기 시작했으면 버튼 상태 업데이트
+                        currentInterimResult = result.text // 현재 중간 결과 업데이트
+
+                        withContext(Dispatchers.Main) {
+                            if (result.text.isNotEmpty()) {
+                                // 사용자가 말하는 중이므로 저장 버튼 비활성화
+                                setStopButtonEnabled(false)
+                            }
+
+                            // 최종 결과(finalBuffer)와 현재 중간 결과(currentInterimResult)를 결합하여 표시
+                            val preview = if (finalBuffer.isEmpty()) {
+                                currentInterimResult
+                            } else if (currentInterimResult.isEmpty()) {
+                                finalBuffer.toString()
+                            } else {
+                                "${finalBuffer.toString()} ${currentInterimResult}"
+                            }
+                            tvOverlayResult.text = preview
+                        }
                     }
                 }
         }

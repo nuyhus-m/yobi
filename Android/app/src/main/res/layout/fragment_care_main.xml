@@ -31,7 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/space_16dp">
-            android:padding="@dimen/space_16dp">
 
             <ImageView
                 android:id="@+id/iv_profile"
@@ -170,7 +169,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/space_8dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/space_24dp"
                 android:text="대구 동구 싸피로 12길 12동 12호"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -184,18 +183,17 @@
         android:id="@+id/view_line"
         android:layout_width="64dp"
         android:layout_height="8dp"
-        android:layout_marginTop="@dimen/space_8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="4dp"
         android:background="@drawable/bg_gray_radius_50"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cv_card_user_info"
-        />
+        app:layout_constraintTop_toBottomOf="@id/cv_card_user_info" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="@dimen/space_40dp"
         android:background="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
@@ -206,6 +204,7 @@
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorHeight="4dp"
         app:tabMode="fixed"
+        app:tabPaddingBottom="@dimen/space_16dp"
         app:tabRippleColor="@android:color/transparent"
         app:tabTextAppearance="@style/TabTextAppearance"
         app:tabTextColor="@drawable/tab_text_selector" />
