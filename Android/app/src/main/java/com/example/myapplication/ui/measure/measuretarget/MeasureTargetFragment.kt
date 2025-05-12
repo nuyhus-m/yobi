@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
+import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.model.Client
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.measure.measuretarget.viewmodel.MeasureTargetViewModel
@@ -84,7 +85,9 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
                     } else {
                         val action =
                             MeasureTargetFragmentDirections.actionDestMeasureTargetToDestDeviceConnect(
-                                isMeasured = false
+                                clientId = selectedClientId,
+                                isMeasured = false,
+                                healthDataType = HealthDataType.BODY_COMPOSITION
                             )
                         findNavController().navigate(action)
                     }

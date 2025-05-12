@@ -82,8 +82,14 @@
         android:label="fragment_device_connect"
         tools:layout="@layout/fragment_device_connect">
         <argument
+            android:name="clientId"
+            app:argType="integer" />
+        <argument
             android:name="isMeasured"
             app:argType="boolean" />
+        <argument
+            android:name="healthDataType"
+            app:argType="com.example.myapplication.base.HealthDataType" />
     </fragment>
 
     <fragment
