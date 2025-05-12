@@ -28,8 +28,7 @@ public class DailyLogsController {
     @PatchMapping("/{scheduleId}/update")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일지 작성/수정 성공",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "null")))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> updateDailyLog(
             @PathVariable Integer scheduleId,
@@ -50,8 +49,7 @@ public class DailyLogsController {
     @PatchMapping("/{scheduleId}/delete")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일지 삭제 성공",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "null")))
+                    content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> deleteDailyLog(
             @PathVariable Integer scheduleId
@@ -72,7 +70,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 일지 리스트 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735660800000},{\"scheduleId\":117,\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735833600000}]")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"홍길동\",\"visitedDate\":1735660800000},{\"scheduleId\":117,\"clientName\":\"홍길동\",\"visitedDate\":1735833600000}]")))
     })
     public ResponseEntity<?> getDailyLogsByUser() {
         //하드코딩
@@ -98,7 +96,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "클라이언트별 일지 리스트 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"김철수\",\"visitedDateTimestamp\":1735660800000},{\"scheduleId\":117,\"clientName\":\"김철수\",\"visitedDateTimestamp\":1735833600000}]")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientName\":\"김철수\",\"visitedDate\":1735660800000},{\"scheduleId\":117,\"clientName\":\"김철수\",\"visitedDate\":1735833600000}]")))
     })
     public ResponseEntity<?> getDailyLogsByClient(
             @PathVariable Integer clientId
@@ -127,7 +125,7 @@ public class DailyLogsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일지 상세 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"logContent\":\"오늘 홍길동 어르신은 혈압이 안정적이었습니다. 식사도 잘 하셨고 산책도 다녀왔습니다.\",\"clientName\":\"홍길동\",\"visitedDateTimestamp\":1735660800000}")))
+                            examples = @ExampleObject(value = "{\"logContent\":\"오늘 홍길동 어르신은 혈압이 안정적이었습니다. 식사도 잘 하셨고 산책도 다녀왔습니다.\",\"clientName\":\"홍길동\",\"visitedDate\":1735660800000}")))
     })
     public ResponseEntity<?> getDailyLog(
             @PathVariable Integer scheduleId

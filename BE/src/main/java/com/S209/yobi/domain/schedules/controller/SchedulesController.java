@@ -56,13 +56,7 @@ public class SchedulesController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "단건 일정 등록", description = "(OCR X) 단건 일정을 등록합니다.<br>" +
-                    "clientId: 1<br>" +
-                    "visitedDate: \"2022-05-01\"<br>" +
-                    "startAt: \"09:00:00\"<br>" +
-                    "endAt: \"10:00:00\"<br>" +
-                    "의 형태로 request 넘기면 됩니다."
-    )
+    @Operation(summary = "단건 일정 등록", description = "(OCR X) 단건 일정을 등록합니다.")
     @PostMapping
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 등록 성공",
@@ -83,12 +77,7 @@ public class SchedulesController {
     }
 
 
-    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다. <br/>" +
-            "clientId: 112,<br/>" +
-            "visitedDate: \"2025-05-03\",<br/>" +
-            "startAt: \"14:00:00\",<br/>" +
-            "endAt: \"15:00:00\"<br/>" +
-            "의 형태로 request 요청하면 됩니다.")
+    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다.")
     @PatchMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 수정 성공",
@@ -195,7 +184,7 @@ public class SchedulesController {
                             examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000}]")))
     })
     public ResponseEntity<?> getSchedulesByDay(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @RequestParam long date
     ) {
         // 하드코딩 임시
         Integer userId = 1;
