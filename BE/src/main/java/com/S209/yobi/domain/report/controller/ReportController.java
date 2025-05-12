@@ -23,8 +23,27 @@ public class ReportController {
     private final ReportService reportService;
 
 
+    @Operation(summary = "주간 보고서 리스트 불러오기", description = "주간 보고서 리스트를 조회합니다.")
+    @GetMapping(value = "/{clientId}/{userId}")
+    public ResponseEntity<?> getReportList(
+//            @AuthenticationPrincipal CustomUserDetail userDetail,
+            @PathVariable int clientId,
+            @PathVariable int userId
+    ){
+        ApiResult result = reportService.getReportList(userId, clientId);
+
+        if(result instanceof  ApiResponseDTO<?> errorResult){
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+
     @Operation(summary = "주간 보고서 단건 조회", description = "주간 보고서 단건을 조회합니다.")
-    @GetMapping(value = "/{reportId}/{userId}")
+    @GetMapping(value = "/detail/{reportId}/{userId}")
     public ResponseEntity<?> getReportDetail(
 //            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable Long reportId,

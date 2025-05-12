@@ -33,12 +33,11 @@ public class Stress {
     private Short bpm;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Long createdAt;
 
     @PrePersist
     protected void onCreate(){
-        Instant now = Instant.now();
-        this.createdAt = now;
+        this.createdAt = System.currentTimeMillis();  // 현재 시각의 epoch millis
     }
 
     public static Stress fromDTO(StressRequestDTO dto){

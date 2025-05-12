@@ -40,8 +40,7 @@ public class HealthMapper {
 
         // measure 순회를 돌면서 , 각 항목별로 추출하고 key값으로 date를 넣고 각 항목의 value에는 항목의 값을 빼서 넣기
         for(Measure measure : measures){
-            LocalDate date = measure.getDate();
-            long epochMilli = toEpochMilli(date);
+            Long date = measure.getDate();
 
             // BodyComposition
             BodyComposition body = measure.getBody();
@@ -51,10 +50,10 @@ public class HealthMapper {
                 float roundedEcf = Math.round(body.getEcf() * 10) / 10.0f;
                 float roundedProtein = Math.round(body.getProtein() * 10) / 10.0f;
 
-                bodyCompositionMap.get("bfp").add(GraphPointDTO.builder().date(epochMilli).value(roundedBfp).build());
-                bodyCompositionMap.get("bmr").add(GraphPointDTO.builder().date(epochMilli).value(roundedBmr).build());
-                bodyCompositionMap.get("ecf").add(GraphPointDTO.builder().date(epochMilli).value(roundedEcf).build());
-                bodyCompositionMap.get("protein").add(GraphPointDTO.builder().date(epochMilli).value(roundedProtein).build());
+                bodyCompositionMap.get("bfp").add(GraphPointDTO.builder().date(date).value(roundedBfp).build());
+                bodyCompositionMap.get("bmr").add(GraphPointDTO.builder().date(date).value(roundedBmr).build());
+                bodyCompositionMap.get("ecf").add(GraphPointDTO.builder().date(date).value(roundedEcf).build());
+                bodyCompositionMap.get("protein").add(GraphPointDTO.builder().date(date).value(roundedProtein).build());
             }
 
             // BloodPressure
@@ -63,14 +62,14 @@ public class HealthMapper {
                 float roundedSbp = Math.round(blood.getSbp() * 10) / 10.0f;
                 float roundedDbp = Math.round(blood.getDbp() * 10) / 10.0f;
 
-                bloodPressureMap.get("sbp").add(GraphPointDTO.builder().date(epochMilli).value(roundedSbp).build());
-                bloodPressureMap.get("dbp").add(GraphPointDTO.builder().date(epochMilli).value(roundedDbp).build());
+                bloodPressureMap.get("sbp").add(GraphPointDTO.builder().date(date).value(roundedSbp).build());
+                bloodPressureMap.get("dbp").add(GraphPointDTO.builder().date(date).value(roundedDbp).build());
             }
 
             // Stress
             Stress stress = measure.getStress();
             if(stress != null){
-                stressMap.get("stressValue").add(GraphPointDTO.builder().date(epochMilli).value(stress.getStressValue()).build());
+                stressMap.get("stressValue").add(GraphPointDTO.builder().date(date).value(stress.getStressValue()).build());
             }
 
 

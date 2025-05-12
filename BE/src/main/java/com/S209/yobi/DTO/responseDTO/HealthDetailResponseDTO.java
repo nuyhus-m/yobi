@@ -28,11 +28,11 @@ public class HealthDetailResponseDTO implements ApiResult {
         if(measure == null){
 
             // 시간 Long 타입으로 변환
-            long epochMilli = toEpochMilli(today);
+            long epochDay = today.toEpochDay();
 
             return HealthDetailResponseDTO.builder()
                     .clientId(clientId)
-                    .today(epochMilli)
+                    .today(epochDay)
                     .bodyComposition(null)
                     .temperature(null)
                     .bloodPressure(null)
@@ -41,12 +41,9 @@ public class HealthDetailResponseDTO implements ApiResult {
                     .build();
         }
 
-        // 시간 Long 타입으로 변환
-        long epochMilli = toEpochMilli(measure.getDate());
-
         return HealthDetailResponseDTO.builder()
                 .clientId(measure.getClient().getId())
-                .today(epochMilli)
+                .today(measure.getDate())
                 .bodyComposition(BodyCompositionResponseDTO.of(measure.getBody(),redisLevels)) // 필수 값
                 .temperature(measure.getTemperature() != null ? TemperatureResponseDTO.of(measure.getTemperature()): null)
                 .bloodPressure(BloodResponseDTO.of(measure.getBlood())) // 필수 값

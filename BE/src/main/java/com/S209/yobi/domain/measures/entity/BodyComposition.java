@@ -50,12 +50,11 @@ public class BodyComposition {
     private Short bodyAge;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Long createdAt;
 
     @PrePersist
     protected void onCreate(){
-        Instant now = Instant.now();
-        this.createdAt = now;
+        this.createdAt = System.currentTimeMillis();  // 현재 시각의 epoch millis
     }
 
 

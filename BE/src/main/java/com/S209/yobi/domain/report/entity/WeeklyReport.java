@@ -35,6 +35,6 @@ public class WeeklyReport {
 
     @NotNull
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private Long createdAt;
 
 }
