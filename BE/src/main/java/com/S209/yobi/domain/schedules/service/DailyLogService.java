@@ -66,7 +66,7 @@ public class DailyLogService {
                 .map(schedule -> SimpleDailyLogDTO.builder()
                         .scheduleId(schedule.getId())
                         .clientName(schedule.getClient().getName())
-                        .visitedDate(DateTimeUtils.toEpochMilli(schedule.getVisitedDate()))
+                        .visitedDate(schedule.getVisitedDate())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -105,12 +105,10 @@ public class DailyLogService {
         String logContent = schedule.getLogContent();
         String clientName = schedule.getClient().getName();
 
-        long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
-
         DailyLogDetailDTO detailDTO = DailyLogDetailDTO.builder()
                 .logContent(logContent)
                 .clientName(clientName)
-                .visitedDate(visitedDate)
+                .visitedDate(schedule.getVisitedDate())
                 .build();
 
         return detailDTO;

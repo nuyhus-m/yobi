@@ -43,21 +43,21 @@ public class ScheduleResponseDTO implements ApiResult {
     public static ScheduleResponseDTO fromList(List<Schedule> schedules) {
         List<ScheduleDTO> scheduleDTOs = schedules.stream()
                 .map(schedule -> {
-                    LocalDateTime startDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getStartAt());
-                    LocalDateTime endDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getEndAt());
+//                    LocalDateTime startDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getStartAt());
+//                    LocalDateTime endDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getEndAt());
 
-                    // DateTimeUtils를 사용해서 변환
-                    long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
-                    long startAt = startDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-                    long endAt = endDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+//                    // DateTimeUtils를 사용해서 변환
+//                    long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
+//                    long startAt = startDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+//                    long endAt = endDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
 
                     return ScheduleDTO.builder()
                             .scheduleId(schedule.getId())
                             .clientId(schedule.getClient().getId())
                             .clientName(schedule.getClient().getName())
-                            .visitedDate(visitedDate)
-                            .startAt(startAt)
-                            .endAt(endAt)
+                            .visitedDate(schedule.getVisitedDate())
+                            .startAt(schedule.getStartAt())
+                            .endAt(schedule.getEndAt())
                             .build();
                 })
 //                .map(schedule -> ScheduleDTO.builder()
@@ -75,20 +75,20 @@ public class ScheduleResponseDTO implements ApiResult {
 
     // 단일 일정을 변환하는 정적 메소드
     public static ScheduleDTO fromSchedule(Schedule schedule) {
-        LocalDateTime startDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getStartAt());
-        LocalDateTime endDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getEndAt());
-
-        long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
-        long startAt = startDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        long endAt = endDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+//        LocalDateTime startDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getStartAt());
+//        LocalDateTime endDateTime = LocalDateTime.of(schedule.getVisitedDate(), schedule.getEndAt());
+//
+//        long visitedDate = DateTimeUtils.toEpochMilli(schedule.getVisitedDate());
+//        long startAt = startDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+//        long endAt = endDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
 
         return ScheduleDTO.builder()
                 .scheduleId(schedule.getId())
                 .clientId(schedule.getClient().getId())
                 .clientName(schedule.getClient().getName())
-                .visitedDate(visitedDate)
-                .startAt(startAt)
-                .endAt(endAt)
+                .visitedDate(schedule.getVisitedDate())
+                .startAt(schedule.getStartAt())
+                .endAt(schedule.getEndAt())
                 .build();
     }
 }
