@@ -22,7 +22,7 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
             findNavController().popBackStack()
         }
 
-        binding.tvMeasureItem.text = getString(R.string.body_temperature)
+        binding.tvMeasureItem.text = getString(R.string.temperature)
         setBodyTemperature()
     }
 
