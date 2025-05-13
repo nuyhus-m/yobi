@@ -4,16 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BodyCompositionResult(
+data class TemperatureResult(
     @SerialName("FitrusDevice") val device: String,
     @SerialName("FirmwareVersion") val firmware: String,
-    val bfm: Double,
-    val bfp: Double,
-    val bmr: Double,
-    val bodyAge: Int,
-    val ecw: Double,
-    val icw: Double,
-    val mineral: Double,
-    val protein: Double,
-    val smm: Double
+    val temp: Double
 ) : MeasureResult()

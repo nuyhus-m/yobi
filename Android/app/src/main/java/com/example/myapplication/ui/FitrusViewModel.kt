@@ -4,9 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.base.HealthDataType
+import com.example.myapplication.data.dto.model.BodyCompositionResult
+import com.example.myapplication.data.dto.model.MeasureResult
+import com.example.myapplication.data.dto.model.TemperatureResult
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.repository.ClientRepository
 import com.example.myapplication.data.repository.MeasureRepository
+import com.example.myapplication.util.CommonUtils.mapToDataClass
 import com.onesoftdigm.fitrus.device.sdk.FitrusBleDelegate
 import com.onesoftdigm.fitrus.device.sdk.FitrusDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +45,9 @@ class FitrusViewModel @Inject constructor(
 
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage
+
+    private val _measureResult = MutableSharedFlow<MeasureResult>()
+    val measureResult: SharedFlow<MeasureResult> = _measureResult
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected
@@ -150,7 +157,15 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusCompMeasured(result: Map<String, String>) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleFitrusCompMeasured: ")
+        viewModelScope.launch {
+            runCatching {
+                val data = mapToDataClass<BodyCompositionResult>(result)
+                _measureResult.emit(MeasureResult.BodyComposition(data))
+            }.onFailure {
+                Log.e("FitrusViewModel", "BodyComposition 파싱 실패: ${it.message}", it)
+            }
+        }
     }
 
     override fun handleFitrusConnected() {
@@ -168,10 +183,19 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusPpgMeasured(result: Map<String, Any>) {
+        Log.d(TAG, "handleFitrusPpgMeasured: ")
         TODO("Not yet implemented")
     }
 
     override fun handleFitrusTempMeasured(result: Map<String, String>) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleFitrusTempMeasured: ")
+        viewModelScope.launch {
+            runCatching {
+                val data = mapToDataClass<TemperatureResult>(result)
+                _measureResult.emit(MeasureResult.Temperature(data))
+            }.onFailure {
+                Log.e("FitrusViewModel", "온도 파싱 실패: ${it.message}", it)
+            }
+        }
     }
 }
