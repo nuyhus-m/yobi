@@ -76,7 +76,13 @@
         android:id="@+id/dest_device_connect"
         android:name="com.example.myapplication.ui.measure.deviceconnect.DeviceConnectFragment"
         android:label="fragment_device_connect"
-        tools:layout="@layout/fragment_device_connect" />
+        tools:layout="@layout/fragment_device_connect">
+        <action
+            android:id="@+id/action_dest_device_connect_to_dest_measure_guide"
+            app:destination="@id/dest_measure_guide"
+            app:popUpTo="@id/dest_device_connect"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_bluetooth_guide"
