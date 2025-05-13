@@ -64,6 +64,8 @@
     <string name="schedule_delete_subtitle">일정에 대한 모든 내용이 삭제됩니다.</string>
     <string name="register_by_photo">사진으로 등록</string>
     <string name="register_by_text">직접 등록</string>
+    <string name="delete_title">일지를 삭제하시겠습니까?</string>
+    <string name="delete_subtitle">일지 삭제시, 복구할수 없습니다.</string>
 
     <!-- 측정 -->
     <string name="measure">측정하기</string>

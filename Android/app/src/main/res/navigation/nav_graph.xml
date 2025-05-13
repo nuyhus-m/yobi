@@ -110,9 +110,11 @@
         android:name="com.example.myapplication.ui.visitlog.visitloglist.VisitLogListFragment"
         android:label="fragment_visit_log_list"
         tools:layout="@layout/fragment_visit_log_list">
+
         <action
-            android:id="@+id/action_visitLogListFragment_to_visitWriteFragment"
-            app:destination="@id/dest_visit_write_fragment" />
+            android:id="@+id/action_visitLogListFragment_to_diaryDetailFragment"
+            app:destination="@id/dest_diary_detail_fragment" />
+
     </fragment>
 
     <fragment
@@ -131,6 +133,7 @@
             android:defaultValue=""
             app:argType="string" />
     </fragment>
+
     <fragment
         android:id="@+id/dest_care_report_fragment"
         android:name="com.example.myapplication.ui.care.report.CareReportFragment"
@@ -179,6 +182,7 @@
         android:name="com.example.myapplication.ui.care.dailydetail.DailyDetailFragment"
         android:label="fragment_daily_detail"
         tools:layout="@layout/fragment_daily_detail" />
+
     <action
         android:id="@+id/action_global_dailyDetailFragment"
         app:destination="@id/dest_daily_detail_fragment" />
@@ -188,6 +192,20 @@
         android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
         android:label="fragment_care_seven"
         tools:layout="@layout/fragment_care_seven" />
+
+    <fragment
+        android:id="@+id/dest_diary_detail_fragment"
+        android:name="com.example.myapplication.ui.visitlog.diarydetail.DiaryDetailFragment"
+        android:label="DiaryDetailFragment">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_diaryDetailFragment_to_dest_delete_dairy_dialog"
+            app:destination="@id/dest_delete_dairy_dialog" />
+    </fragment>
+
     <fragment
         android:id="@+id/dest_my_page"
         android:name="com.example.myapplication.ui.mypage.mypage.MyPageFragment"
@@ -241,6 +259,14 @@
         android:name="com.example.myapplication.ui.schedule.DatePickerDialog"
         android:label="DatePickerDialog"
         tools:layout="@layout/dialog_date_picker" />
+    <dialog
+        android:id="@+id/dest_delete_dairy_dialog"
+        android:name="com.example.myapplication.ui.visitlog.DeleteDairyDialog"
+        android:label="DeleteDairyDialog">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+    </dialog>
 
 
 </navigation>
