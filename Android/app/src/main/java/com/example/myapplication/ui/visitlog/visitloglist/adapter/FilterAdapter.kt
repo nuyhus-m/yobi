@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.ItemFilterBinding
-import com.example.myapplication.ui.visitlog.visitloglist.viewmodel.FilterItem
+import com.example.myapplication.ui.visitlog.visitloglist.viewmodel.data.FilterItem
 
 // 사람 고르기용 adpater
 class FilterAdapter(

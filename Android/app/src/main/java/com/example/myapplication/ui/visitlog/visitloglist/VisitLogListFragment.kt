@@ -21,14 +21,15 @@ class VisitLogListFragment : BaseFragment<FragmentVisitLogListBinding>(
 ) {
 
     private val viewModel: VisitLogViewModel by viewModels()
+
     private val logAdapter = VisitLogAdapter { selectedLog ->
         val action = VisitLogListFragmentDirections
-            .actionVisitLogListFragmentToVisitWriteFragment(
-                name = selectedLog.name,
-                date = selectedLog.date
+            .actionVisitLogListFragmentToDiaryDetailFragment(
+                scheduleId = selectedLog.scheduleId
             )
         findNavController().navigate(action)
     }
+
     private val filterAdapter = FilterAdapter { selected ->
         viewModel.selectFilter(selected)
     }

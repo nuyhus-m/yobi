@@ -2,6 +2,7 @@ package com.example.myapplication.di
 
 import com.example.myapplication.data.remote.CareService
 import com.example.myapplication.data.remote.ClientService
+import com.example.myapplication.data.remote.DailyService
 import com.example.myapplication.data.remote.MeasureService
 import com.example.myapplication.data.remote.UserService
 import dagger.Module
@@ -35,8 +36,12 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideClientService(retrofit: Retrofit) : ClientService{
+    fun provideClientService(retrofit: Retrofit): ClientService {
         return retrofit.create(ClientService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideDailyService(retrofit: Retrofit): DailyService =
+        retrofit.create(DailyService::class.java)
 }

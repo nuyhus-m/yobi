@@ -88,7 +88,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_diary_text">
 
         <TextView
-            android:id="@+id/et_content"
+            android:id="@+id/tv_content"
             style="@style/BodyTextStyle"
             android:layout_width="match_parent"
             android:layout_height="150dp"
