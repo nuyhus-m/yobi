@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.base.HealthDataType
-import com.example.myapplication.data.dto.response.ClientResponse
+import com.example.myapplication.data.dto.response.care.ClientResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.FitrusViewModel
 import com.example.myapplication.util.setOnSingleClickListener

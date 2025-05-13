@@ -1,6 +1,6 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.data.dto.response.ClientResponse
+import com.example.myapplication.data.dto.response.care.ClientResponse
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.remote.ClientService
 import retrofit2.Response

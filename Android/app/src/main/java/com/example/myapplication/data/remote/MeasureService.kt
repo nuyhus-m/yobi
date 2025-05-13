@@ -6,7 +6,7 @@ import com.example.myapplication.data.dto.request.measure.HeartRateRequest
 import com.example.myapplication.data.dto.request.measure.RequiredDataRequest
 import com.example.myapplication.data.dto.request.measure.StressRequest
 import com.example.myapplication.data.dto.request.measure.TemperatureRequest
-import com.example.myapplication.data.dto.response.RequiredStatusResponse
+import com.example.myapplication.data.dto.response.measure.RequiredStatusResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

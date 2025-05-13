@@ -1,4 +1,4 @@
-package com.example.myapplication.data.dto.response
+package com.example.myapplication.data.dto.response.care
 
 data class ClientResponse(
     val clientId: Int,
