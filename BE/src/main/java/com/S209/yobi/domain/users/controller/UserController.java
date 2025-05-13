@@ -38,19 +38,6 @@ public class UserController {
 
     @Operation(summary = "사용자 회원가입", description = "이름, 사원번호, 비밀번호를 입력하여 회원가입을 진행합니다.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    // public ResponseEntity<Void> signUp(
-    //         @Parameter(description = "사용자 이름") @RequestParam("name") String name,
-    //         @Parameter(description = "사원 번호") @RequestParam("employeeNumber") Integer employeeNumber,
-    //         @Parameter(description = "비밀번호") @RequestParam("password") String password,
-    //         @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
-    //         @RequestPart(value = "image", required = false) MultipartFile image) {
-
-    //     SignUpRequest request = SignUpRequest.builder()
-    //             .name(name)
-    //             .employeeNumber(employeeNumber)
-    //             .password(password)
-    //             .image(image)
-    //             .build();
     public ResponseEntity<Void> signUp(@ModelAttribute SignUpRequest request) {
         userService.signUp(request);
         return ResponseEntity.ok().build();
