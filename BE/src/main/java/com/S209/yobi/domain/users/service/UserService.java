@@ -87,7 +87,7 @@ public class UserService implements UserDetailsService {
         return new UserInfoDTO(
             user.getId() != null ? user.getId().longValue() : null,
             user.getName(),
-            String.valueOf(user.getEmployeeNumber()),
+            user.getEmployeeNumber(),
             user.getImage(),
             user.getConsent()
         );
