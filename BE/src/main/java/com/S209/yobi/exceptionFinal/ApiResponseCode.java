@@ -21,7 +21,9 @@ public enum ApiResponseCode {
     CREATE_CLIENT_ERROR("500-2", "고객 생성 중 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
     SERVER_ERROR("500", "서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     PERIOD_NO_INPUT("400-1", "시작일과 종료일을 입력해주세요.", HttpStatus.BAD_REQUEST),
-    START_END_ERROR("400-2", "종료일이 시작일보다 빠를 수 없습니다.", HttpStatus.BAD_REQUEST);
+    START_END_ERROR("400-2", "종료일이 시작일보다 빠를 수 없습니다.", HttpStatus.BAD_REQUEST),
+    OLD_PASSWORD_WRONG("400-3", "이전 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    NEW_PASSWORD_SAME_AS_OLD("400-4", "새 비밀번호와 이전 비밀번호가 동일합니다.", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;
