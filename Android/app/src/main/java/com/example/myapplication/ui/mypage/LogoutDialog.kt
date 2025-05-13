@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.mypage
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,12 +8,21 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.example.myapplication.R
+import com.example.myapplication.data.local.SharedPreferencesUtil
 import com.example.myapplication.databinding.DialogLogoutBinding
+import com.example.myapplication.ui.AuthActivity
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 
+@AndroidEntryPoint
 class LogoutDialog : DialogFragment() {
 
     private var _binding: DialogLogoutBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var sharedPreferencesUtil: SharedPreferencesUtil
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +47,12 @@ class LogoutDialog : DialogFragment() {
         }
 
         binding.btnYes.setOnClickListener {
-            // TODO 확인 버튼 기능
+            sharedPreferencesUtil.clearTokens()
+
+            val intent = Intent(requireContext(), AuthActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+
             dismiss()
         }
     }
