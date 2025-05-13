@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 
 @Getter
@@ -70,12 +71,22 @@ public class Measure {
 
 
     public static Measure fromBase(User user, Client client, BodyRequestDTO bodyDTO, BloodRequestDTO bloodDTO){
+        if (bodyDTO == null) {
+            throw new IllegalArgumentException("BodyRequestDTO cannot be null");
+        }
+
+        // LocalDate를 Instant로 변환하고, epochMilli(밀리초)로 변환
+        long epochMilli = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())  // 시작 시간을 시스템 기본 시간대로 설정
+                .toInstant()  // Instant로 변환
+                .toEpochMilli();  // 밀리초로 변환
+
         return Measure.builder()
                 .user(user)
                 .client(client)
                 .body(BodyComposition.fromDTO(bodyDTO))
                 .blood(BloodPressure.fromDTO(bloodDTO))
-                .date(LocalDate.now().toEpochDay())
+                .date(epochMilli)
                 .build();
 
     }

@@ -6,6 +6,7 @@ import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -14,11 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -28,27 +28,30 @@ public class ClientController {
     private final ClientService clientService;
 
     @Operation(summary = "고객 정보 등록", description = "새로운 고객 정보를 등록합니다. 프로필 이미지는 S3에 저장됩니다.")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "고객 등록 성공",
                     content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> createClient(
-            @Valid @RequestPart("clientData") ClientRequestDTO requestDTO,
+            @Parameter(description = "고객 이름") @RequestParam("name") String name,
+            @Parameter(description = "생년월일") @RequestParam("birth") LocalDate birth,
+            @Parameter(description = "성별") @RequestParam("gender") Integer gender,
+            @Parameter(description = "키") @RequestParam("height") Double height,
+            @Parameter(description = "몸무게") @RequestParam("weight") Double weight,
+            @Parameter(description = "주소") @RequestParam("address") String address,
+            @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
             @RequestPart(value = "image", required = false) MultipartFile image) {
-
-        // 이미지가 전달된 경우에만 DTO에 설정
-        if (image != null && !image.isEmpty()) {
-            requestDTO = ClientRequestDTO.builder()
-                    .name(requestDTO.getName())
-                    .birth(requestDTO.getBirth())
-                    .gender(requestDTO.getGender())
-                    .height(requestDTO.getHeight())
-                    .weight(requestDTO.getWeight())
-                    .address(requestDTO.getAddress())
-                    .image(image)
-                    .build();
-        }
+        // 요청 파라미터로 ClientRequestDTO 객체 생성
+        ClientRequestDTO requestDTO = ClientRequestDTO.builder()
+                .name(name)
+                .birth(birth)
+                .gender(gender)
+                .height(height)
+                .weight(weight)
+                .address(address)
+                .image(image)
+                .build();
 
         ApiResult result = clientService.createClient(requestDTO);
 
