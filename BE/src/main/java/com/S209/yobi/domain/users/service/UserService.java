@@ -102,9 +102,11 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public UserInfoDTO getUserInfo(String employeeNumber) {
-        User user = userRepository.findByEmployeeNumber(Integer.parseInt(employeeNumber))
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+    public UserInfoDTO getUserInfoById(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+        
         return new UserInfoDTO(
             user.getId(),
             user.getName(),
