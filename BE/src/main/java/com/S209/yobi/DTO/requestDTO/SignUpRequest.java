@@ -27,11 +27,4 @@ public class SignUpRequest {
 
     @Schema(description = "프로필 이미지")
     private MultipartFile image;
-
-    public SignUpRequest(String name, Integer employeeNumber, String password, MultipartFile image) {
-        this.name = name;
-        this.employeeNumber = employeeNumber;
-        this.password = password;
-        this.image = image;
-    }
 } 
