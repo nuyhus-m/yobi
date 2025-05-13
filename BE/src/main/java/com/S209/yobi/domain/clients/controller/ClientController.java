@@ -113,4 +113,19 @@ public class ClientController {
 
         return ResponseEntity.ok(result);
     }
+
+
+    @Operation(summary = "특정 요양보호사의 특정 돌봄 대상 상세보기", description = "cliendId에 해당하는 client의 상세 정보를 반환합니다.")
+    @GetMapping("/detail/{clientId}")
+    public ResponseEntity<?> getClientDetail(@PathVariable Integer clientId) {
+        ApiResult result = clientService.getClientDetail(clientId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }
