@@ -10,12 +10,12 @@ import lombok.Getter;
 @Builder
 public class TemperatureResponseDTO {
     private Long temperatureId;
-    private Float temperature;
+    private MeasureWithLevel temperature;
 
     public static TemperatureResponseDTO of(Temperature temperature){
         return TemperatureResponseDTO.builder()
                 .temperatureId(temperature.getId())
-                .temperature(temperature.getTemperature())
+                .temperature(new MeasureWithLevel(temperature.getTemperature(), "높음"))
                 .build();
     }
 
