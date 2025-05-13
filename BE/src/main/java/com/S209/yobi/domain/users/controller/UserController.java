@@ -38,8 +38,15 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Operation(summary = "사용자 회원가입", description = "이름, 사원번호, 비밀번호를 입력하여 회원가입을 진행합니다.")
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> signUp(@ModelAttribute SignUpRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> signUp(
+        @Parameter(description = "사용자 이름") @RequestParam("name") String name,
+        @Parameter(description = "사원 번호") @RequestParam("employeeNumber") Integer employeeNumber,
+        @Parameter(description = "비밀번호") @RequestParam("password") String password,
+        @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
+        @RequestPart(value = "image", required = false) MultipartFile image
+    ) {
+        SignUpRequest request = new SignUpRequest(name, employeeNumber, password, image);
         userService.signUp(request);
         return ResponseEntity.ok().build();
     }
@@ -114,11 +121,13 @@ public class UserController {
         Integer userId = 1;
         ApiResult result = userService.updateConsent(userId);
 
-        if (result instanceof ApiResponseDTO<?> errorResult) {
-            String code = errorResult.getCode();
-            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-            return ResponseEntity.status(status).body(errorResult);
-        }
+        // getCode() 관련 부분 주석 처리
+        // if (result instanceof ApiResponseDTO<?> errorResult) {
+        //     String code = errorResult.getCode();
+        //     HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+        //     return ResponseEntity.status(status).body(errorResult);
+        // }
+        // return ResponseEntity.ok(result);
 
         return ResponseEntity.ok(result);
     }
@@ -132,11 +141,13 @@ public class UserController {
         Integer userId = 1;
         ApiResult result = userService.updatePassword(userId, request);
 
-        if (result instanceof ApiResponseDTO<?> errorResult) {
-            String code = errorResult.getCode();
-            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-            return ResponseEntity.status(status).body(errorResult);
-        }
+        // getCode() 관련 부분 주석 처리
+        // if (result instanceof ApiResponseDTO<?> errorResult) {
+        //     String code = errorResult.getCode();
+        //     HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+        //     return ResponseEntity.status(status).body(errorResult);
+        // }
+        // return ResponseEntity.ok(result);
 
         return ResponseEntity.ok(result);
     }
