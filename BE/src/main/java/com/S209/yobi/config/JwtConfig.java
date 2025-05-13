@@ -34,8 +34,8 @@ public class JwtConfig {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractEmployeeId(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long extractUserId(String token) {
+        return Long.parseLong(extractClaim(token, Claims::getSubject));
     }
 
     public Date extractExpiration(String token) {
@@ -59,16 +59,16 @@ public class JwtConfig {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername(), expiration);
+        return createToken(claims, String.valueOf(userId), expiration);
     }
 
-    public String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(UserDetails userDetails, Long userId) {
         Map<String, Object> claims = new HashMap<>();
-        String refreshToken = createToken(claims, userDetails.getUsername(), refreshExpiration);
-        // Redis에 Refresh Token 저장
-        saveRefreshToken(userDetails.getUsername(), refreshToken, refreshExpiration);
+        String refreshToken = createToken(claims, String.valueOf(userId), refreshExpiration);
+        // Redis에 Refresh Token 저장 (userId를 키로 사용)
+        saveRefreshToken(userId, refreshToken, refreshExpiration);
         return refreshToken;
     }
 
@@ -82,36 +82,36 @@ public class JwtConfig {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String employeeId = extractEmployeeId(token);
-        return (employeeId.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UserDetails userDetails, Long userId) {
+        final Long tokenUserId = extractUserId(token);
+        return (tokenUserId.equals(userId) && !isTokenExpired(token));
     }
 
-    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails) {
-        final String employeeId = extractEmployeeId(refreshToken);
-        return (employeeId.equals(userDetails.getUsername()) && 
+    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Long userId) {
+        final Long tokenUserId = extractUserId(refreshToken);
+        return (tokenUserId.equals(userId) && 
                 !isTokenExpired(refreshToken) && 
-                validateRefreshTokenInRedis(employeeId, refreshToken));
+                validateRefreshTokenInRedis(userId, refreshToken));
     }
 
     // Redis 관련 메서드들
-    private void saveRefreshToken(String employeeNumber, String refreshToken, long expirationTime) {
-        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+    private void saveRefreshToken(Long userId, String refreshToken, long expirationTime) {
+        String key = REFRESH_TOKEN_PREFIX + userId;
         redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
     }
 
-    private String getRefreshToken(String employeeNumber) {
-        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+    private String getRefreshToken(Long userId) {
+        String key = REFRESH_TOKEN_PREFIX + userId;
         return redisTemplate.opsForValue().get(key);
     }
 
-    private void deleteRefreshToken(String employeeNumber) {
-        String key = REFRESH_TOKEN_PREFIX + employeeNumber;
+    private void deleteRefreshToken(Long userId) {
+        String key = REFRESH_TOKEN_PREFIX + userId;
         redisTemplate.delete(key);
     }
 
-    private Boolean validateRefreshTokenInRedis(String employeeNumber, String refreshToken) {
-        String storedToken = getRefreshToken(employeeNumber);
+    private Boolean validateRefreshTokenInRedis(Long userId, String refreshToken) {
+        String storedToken = getRefreshToken(userId);
         return storedToken != null && storedToken.equals(refreshToken);
     }
 } 
