@@ -27,6 +27,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.S209.yobi.DTO.TokenDTO;
 
 @RestController
 @RequestMapping("/api/users")
@@ -96,7 +97,7 @@ public class UserController {
             
             if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
                 String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
-                return ResponseEntity.ok(ApiResponseDTO.success(new com.S209.yobi.DTO.responseDTO.TokenDTO(newAccessToken, token, "Bearer")));
+                return ResponseEntity.ok(ApiResponseDTO.success(new TokenDTO(newAccessToken, token, "Bearer")));
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
