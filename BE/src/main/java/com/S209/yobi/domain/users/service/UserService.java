@@ -5,9 +5,9 @@ import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.S3Service;
 import com.S209.yobi.config.JwtConfig;
+import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,12 +19,18 @@ import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 import java.io.IOException;
 
 @Service
-@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtConfig jwtConfig;
     private final S3Service s3Service;
+    private final JwtProvider jwtProvider;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, S3Service s3Service) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
+        this.s3Service = s3Service;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -80,8 +86,8 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid password");
         }
 
-        String accessToken = jwtConfig.generateToken(user.getEmployeeNumber(), user.getId());
-        String refreshToken = jwtConfig.generateRefreshToken(user.getEmployeeNumber(), user.getId());
+        String accessToken = jwtProvider.generateToken(user.getEmployeeNumber(), user.getId());
+        String refreshToken = jwtProvider.generateRefreshToken(user.getEmployeeNumber(), user.getId());
 
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)

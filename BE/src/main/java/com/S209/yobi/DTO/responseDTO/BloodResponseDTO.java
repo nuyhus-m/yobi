@@ -8,8 +8,8 @@ import lombok.Getter;
 @Builder
 public class BloodResponseDTO {
     private Long bloodId;
-    private float sbp;
-    private float dbp;
+    private MeasureWithLevel sbp;
+    private MeasureWithLevel dbp;
 
     public static BloodResponseDTO of(BloodPressure blood){
 
@@ -19,8 +19,8 @@ public class BloodResponseDTO {
 
         return BloodResponseDTO.builder()
                 .bloodId(blood.getId())
-                .sbp(roundedSbp)
-                .dbp(roundedDbp)
+                .sbp(new MeasureWithLevel(roundedSbp, "높음"))
+                .dbp(new MeasureWithLevel(roundedDbp, "높음"))
                 .build();
     }
 
