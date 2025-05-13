@@ -11,6 +11,7 @@ import com.S209.yobi.domain.users.repository.UserRepository;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

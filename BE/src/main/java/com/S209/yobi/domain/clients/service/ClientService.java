@@ -69,4 +69,12 @@ public class ClientService {
 
         return ClientResponseDTO.fromList(clients);
     }
+
+    // 특정 요양보호사의 특정 돌봄 대상 상세보기
+    public ApiResult getClientDetail(Integer clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new EntityNotFoundException("client를 찾을 수 없습니다."));
+
+        return ClientResponseDTO.ClientDTO.from(client);
+    }
 }
