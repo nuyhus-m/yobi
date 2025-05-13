@@ -6,26 +6,13 @@ services:
     container_name: ai-app
     build:
       context: ./AI
-      dockerfile: Dockerfile
-    restart: always
     ports:
       - "6000:6000"
-    env_file:
-      - .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${EC2_1_IP}:5432/${POSTGRES_DB}
-      REDIS_HOST: ${EC2_1_IP}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_DB: ${REDIS_DB}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      DATABASE_URL: ${DATABASE_URL} # AI에서 사용할 DATABASE_URL 설정
+      REDIS_HOST: ${REDIS_HOST} # AI에서 사용할 REDIS_HOST 설정
+      REDIS_PORT: ${REDIS_PORT} # AI에서 사용할 REDIS_PORT 설정
+      REDIS_DB: ${REDIS_DB} # AI에서 사용할 REDIS_DB 설정
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_KEY_ID: ${AWS_SECRET_KEY_ID}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-    networks:
-      - yobi-network
-    volumes:
-      - /tmp:/tmp
-
-networks:
-  yobi-network:
-    driver: bridge
