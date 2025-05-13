@@ -34,7 +34,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
     }
 
     private fun setTitle() {
-        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.clientName)
+        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.client?.name)
     }
 
     private fun initView() {
