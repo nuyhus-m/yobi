@@ -20,9 +20,3 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_KEY_ID: ${AWS_SECRET_KEY_ID}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-    networks:
-      - yobi-network
-
-networks:
-  yobi-network:
-    driver: bridge
