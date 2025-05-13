@@ -7,6 +7,7 @@ import com.S209.yobi.S3Service;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.ApiResult;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -107,5 +108,15 @@ public class UserService implements UserDetailsService {
             user.getImage(),
             user.getConsent()
         );
+    }
+
+    @Transactional
+    public ApiResult updateConsent(Integer userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        user.setConsent(true);
+
+        return null;
     }
 } 
