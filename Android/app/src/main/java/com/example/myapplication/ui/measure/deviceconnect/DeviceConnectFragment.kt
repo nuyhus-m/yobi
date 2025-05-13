@@ -20,7 +20,7 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
     R.layout.fragment_device_connect
 ) {
 
-    private val activityViewModel by activityViewModels<FitrusViewModel>()
+    private val fitrusViewModel by activityViewModels<FitrusViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,11 +29,11 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
         initButtons()
         observeConnectState()
 
-        activityViewModel.tryConnectDevice()
+        fitrusViewModel.tryConnectDevice()
     }
 
     private fun setTitle() {
-        binding.tvTitle.text = getString(R.string.measure_title, activityViewModel.clientName)
+        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.clientName)
     }
 
     private fun initButtons() {
@@ -49,9 +49,9 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
     private fun observeConnectState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                activityViewModel.isConnected.collect {
+                fitrusViewModel.isConnected.collect {
                     if (it) {
-                        findNavController().navigate(R.id.dest_measure_guide)
+                        findNavController().navigate(R.id.action_dest_device_connect_to_dest_measure_guide)
                     }
                 }
             }
@@ -60,6 +60,6 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
 
     override fun onStop() {
         super.onStop()
-        activityViewModel.stopTryConnectDevice()
+        fitrusViewModel.stopTryConnectDevice()
     }
 }

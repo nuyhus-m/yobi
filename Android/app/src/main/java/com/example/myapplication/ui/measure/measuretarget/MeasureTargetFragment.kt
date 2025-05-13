@@ -31,7 +31,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
 ) {
 
     private val viewModel by viewModels<MeasureTargetViewModel>()
-    private val activityViewModel by activityViewModels<FitrusViewModel>()
+    private val fitrusViewModel by activityViewModels<FitrusViewModel>()
     private var selectedClientId = -1
     private var selectedClientName = ""
 
@@ -85,13 +85,13 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isMeasured.collectLatest {
                     Log.d(TAG, "observeMeasureStatus: $it")
-                    activityViewModel.setClientId(selectedClientId)
-                    activityViewModel.setClientName(selectedClientName)
-                    activityViewModel.setMeasureStatus(it)
+                    fitrusViewModel.setClientId(selectedClientId)
+                    fitrusViewModel.setClientName(selectedClientName)
+                    fitrusViewModel.setMeasureStatus(it)
                     if (it) {
                         findNavController().navigate(R.id.dest_measure_item)
                     } else {
-                        activityViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
+                        fitrusViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
                         findNavController().navigate(R.id.dest_device_connect)
                     }
                 }
