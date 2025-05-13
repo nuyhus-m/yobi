@@ -5,6 +5,7 @@ import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
+import com.S209.yobi.exceptionFinal.GlobalExceptionHandler;
 import com.S209.yobi.domain.users.service.UserService;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -57,13 +58,13 @@ public class UserController {
 
     @Operation(summary = "현재 사용자 정보 조회", description = "인가된 사용자인지 확인 후 사용자 정보를 반환합니다.")
     @GetMapping
-    public ResponseEntity<?> getUserProfile() {
+    public ResponseEntity<GlobalExceptionHandler<?>> getUserProfile() {
         try {
             // 1. SecurityContext에서 인증 정보 가져오기
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("인증되지 않은 사용자입니다.");
+                        .body(GlobalExceptionHandler.fail("401", "인증되지 않은 사용자입니다."));
             }
 
             // 2. JWT 토큰에서 userId 추출
@@ -72,7 +73,7 @@ public class UserController {
 
             // 3. 사용자 정보 조회
             UserInfoDTO userInfo = userService.getUserInfoById(userId);
-            return ResponseEntity.ok(userInfo);
+            return ResponseEntity.ok(ApiResponseDTO.success(userInfo));
 
         } catch (EntityNotFoundException e) {
             log.error("사용자 정보 조회 실패 : {}", e.getMessage());
@@ -92,6 +93,39 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+
+    @Operation(summary = "토큰 갱신", description = "Refresh token을 사용하여 새로운 Access token을 발급받습니다.")
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        try {
+            if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+            }
+
+            String token = refreshToken.substring(7);
+            Integer employeeNumber = jwtProvider.extractEmployeeNumber(token);
+            Integer userId = jwtProvider.extractUserId(token);
+
+            if (employeeNumber == null || userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+            }
+
+            UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
+            
+            if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
+                String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
+                return ResponseEntity.ok(ApiResponseDTO.success(new TokenDTO(newAccessToken, token, "Bearer")));
+            }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDTO.fail("401", "토큰 갱신에 실패했습니다."));
+        }
+        
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/users/consent")
     public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
