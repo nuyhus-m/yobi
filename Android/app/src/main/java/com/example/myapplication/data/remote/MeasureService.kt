@@ -1,11 +1,11 @@
 package com.example.myapplication.data.remote
 
-import com.example.myapplication.data.dto.request.BloodPressureRequest
-import com.example.myapplication.data.dto.request.BodyCompositionRequest
-import com.example.myapplication.data.dto.request.HeartRateRequest
-import com.example.myapplication.data.dto.request.RequiredDataRequest
-import com.example.myapplication.data.dto.request.StressRequest
-import com.example.myapplication.data.dto.request.TemperatureRequest
+import com.example.myapplication.data.dto.request.measure.BloodPressureRequest
+import com.example.myapplication.data.dto.request.measure.BodyCompositionRequest
+import com.example.myapplication.data.dto.request.measure.HeartRateRequest
+import com.example.myapplication.data.dto.request.measure.RequiredDataRequest
+import com.example.myapplication.data.dto.request.measure.StressRequest
+import com.example.myapplication.data.dto.request.measure.TemperatureRequest
 import com.example.myapplication.data.dto.response.RequiredStatusResponse
 import retrofit2.Response
 import retrofit2.http.Body
