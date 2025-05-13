@@ -21,7 +21,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
-    private final UserDetailsService userDetailsService;
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -46,10 +45,11 @@ public class UserService implements UserDetailsService {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         // User 엔티티 생성
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmployeeNumber(request.getEmployeeNumber());
-        user.setPassword(encodedPassword);
+        User user = User.builder()
+                .name(request.getName())
+                .employeeNumber(request.getEmployeeNumber())
+                .password(encodedPassword)
+                .build();
 
         // DB에 저장
         userRepository.save(user);
@@ -64,7 +64,6 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid password");
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(user.getId()));
         String accessToken = jwtConfig.generateToken(user.getId());
         String refreshToken = jwtConfig.generateRefreshToken(user.getId());
 
@@ -81,7 +80,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmployeeNumber(Integer.parseInt(employeeNumber))
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return new UserInfoDTO(
-            user.getId() != null ? user.getId().longValue() : null,
+            user.getId(),
             user.getName(),
             user.getEmployeeNumber(),
             user.getImage(),
