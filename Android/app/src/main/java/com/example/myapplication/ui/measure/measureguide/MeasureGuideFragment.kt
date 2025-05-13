@@ -27,7 +27,7 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         setTitle()
-        initButton()
+        initButtons()
         initViews()
         observeConnectState()
     }
@@ -36,9 +36,12 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
         binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.clientName)
     }
 
-    private fun initButton() {
+    private fun initButtons() {
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+        binding.btnStart.setOnClickListener {
+            findNavController().navigate(R.id.dest_measure_loading)
         }
     }
 
