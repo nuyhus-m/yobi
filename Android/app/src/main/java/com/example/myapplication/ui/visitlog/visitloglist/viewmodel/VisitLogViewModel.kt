@@ -3,36 +3,72 @@ package com.example.myapplication.ui.visitlog.visitloglist.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.dto.response.visitlog.DailyHumanDTO
+import com.example.myapplication.data.repository.DailyRepository
+import com.example.myapplication.ui.visitlog.visitloglist.viewmodel.data.FilterItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class VisitLogViewModel @Inject constructor() : ViewModel() {
+class VisitLogViewModel @Inject constructor(
+    private val repository: DailyRepository
+) : ViewModel() {
 
 
     // 위에 이름 선택하는 부분
     private val _filterItems = MutableLiveData<List<FilterItem>>()
     val filterItems: LiveData<List<FilterItem>> = _filterItems
-    
-    
-    // 방문 기록들
-    private val _allLogs = listOf(
-        VisitLog("박진현", "2025/04/28"),
-        VisitLog("민수현", "2025/04/28"),
-        VisitLog("민수현", "2025/04/27"),
-        VisitLog("박진현", "2025/04/27"),
-    )
 
-    private val _filteredLogs = MutableLiveData<List<VisitLog>>()
-    val filteredLogs: LiveData<List<VisitLog>> = _filteredLogs
+
+    // API로부터 가져온 모든 방문 기록들
+    private val _allLogs = MutableLiveData<List<DailyHumanDTO>>()
+
+    // 방문 기록들
+    private val _filteredLogs = MutableLiveData<List<DailyHumanDTO>>()
+    val filteredLogs: LiveData<List<DailyHumanDTO>> = _filteredLogs
+
+    // 로딩 상태
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    // 에러 메시지
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
 
     init {
-        val initialFilters = listOf("전체", "박진현", "민수현", "차현우", "이호정")
-            .mapIndexed { index, name -> FilterItem(name, index == 0) }
-        _filterItems.value = initialFilters
-        filterLogs("전체")
+        fetchDailyHumanList()
     }
 
+    private fun fetchDailyHumanList() {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            try {
+                val response = repository.getDailyHumanList()
+                if (response.isSuccessful) {
+                    val dailyHumans = response.body()?.data ?: emptyList()
+                    _allLogs.value = dailyHumans
+
+                    // 필터
+                    val names = dailyHumans.map { it.clientName }.distinct()
+                    val filterItems = mutableListOf(FilterItem("전체", true))
+                    filterItems.addAll(names.map { FilterItem(it, false) })
+                    _filterItems.value = filterItems
+
+                    filterLogs("전체")
+                } else {
+                    _errorMessage.value = "데이터 못불러왔어요 : ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "데이터 못불러왔어요 catch : ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+    // 필터 선택 시 호출되는 함수
     fun selectFilter(selectedName: String) {
         _filterItems.value = _filterItems.value?.map {
             it.copy(isSelected = it.name == selectedName)
@@ -40,22 +76,18 @@ class VisitLogViewModel @Inject constructor() : ViewModel() {
         filterLogs(selectedName)
     }
 
-    fun filterLogs(name: String) {
+    private fun filterLogs(name: String) {
+        val allLogs = _allLogs.value ?: emptyList()
         _filteredLogs.value =
             if (name == "전체") {
-                _allLogs
+                allLogs
             } else {
-                _allLogs.filter { it.name == name }
+                allLogs.filter { it.clientName == name }
             }
     }
+
+    // 새로고침 기능
+    fun refresh() {
+        fetchDailyHumanList()
+    }
 }
-
-data class VisitLog(
-    val name: String,
-    val date: String
-)
-
-data class FilterItem(
-    val name: String,
-    val isSelected: Boolean = false
-)

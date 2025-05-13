@@ -3,17 +3,17 @@ package com.example.myapplication.ui.visitlog.visitloglist.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.data.dto.response.visitlog.DailyHumanDTO
 import com.example.myapplication.databinding.ItemVisitLogBinding
-import com.example.myapplication.ui.visitlog.visitloglist.viewmodel.VisitLog
 
 // 아래 Log 리스트 위한 adapter
 class VisitLogAdapter(
-    private val onClick: (VisitLog) -> Unit
+    private val onClick: (DailyHumanDTO) -> Unit
 ) : RecyclerView.Adapter<VisitLogAdapter.VisitLogViewHolder>() {
 
-    private var items: List<VisitLog> = emptyList()
+    private var items: List<DailyHumanDTO> = emptyList()
 
-    fun submitList(logs: List<VisitLog>) {
+    fun submitList(logs: List<DailyHumanDTO>) {
         items = logs
         notifyDataSetChanged()
     }
@@ -32,12 +32,22 @@ class VisitLogAdapter(
 
     override fun onBindViewHolder(holder: VisitLogViewHolder, position: Int) {
         val item = items[position]
-        holder.binding.tvUsername.text = item.name
-        holder.binding.tvDate.text = item.date
-        holder.itemView.setOnClickListener{
+        holder.binding.tvUsername.text = item.clientName
+
+        val formattedDate = formatTimestampToDate(item.visitedDate)
+        holder.binding.tvDate.text = formattedDate
+        holder.itemView.setOnClickListener {
             onClick(item)
         }
     }
+
+    // 타임스탬프를 "YYYY/MM/DD" 형식으로 변환
+    fun formatTimestampToDate(timestamp: Long): String {
+        val date = java.util.Date(timestamp)
+        val format = java.text.SimpleDateFormat("yyyy/MM/dd", java.util.Locale.getDefault())
+        return format.format(date)
+    }
+
 
     override fun getItemCount(): Int {
         return items.size
