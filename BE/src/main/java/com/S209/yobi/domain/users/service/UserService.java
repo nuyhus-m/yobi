@@ -3,10 +3,10 @@ package com.S209.yobi.domain.users.service;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
-import com.S209.yobi.config.JwtConfig;
+import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,11 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 
 @Service
-@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtConfig jwtConfig;
+    private final JwtProvider jwtProvider;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, @Lazy JwtProvider jwtProvider) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -64,8 +69,8 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid password");
         }
 
-        String accessToken = jwtConfig.generateToken(user.getEmployeeNumber(), user.getId());
-        String refreshToken = jwtConfig.generateRefreshToken(user.getEmployeeNumber(), user.getId());
+        String accessToken = jwtProvider.generateToken(user.getEmployeeNumber(), user.getId());
+        String refreshToken = jwtProvider.generateRefreshToken(user.getEmployeeNumber(), user.getId());
 
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)
