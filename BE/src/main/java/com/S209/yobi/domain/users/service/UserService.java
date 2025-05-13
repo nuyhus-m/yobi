@@ -21,6 +21,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final UserDetailsService userDetailsService;
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -55,22 +56,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public LoginResponseDTO login(LoginRequestDTO request) {
-        // 사용자 조회
-        User user = userRepository.findByEmployeeNumber(request.getEmployeeNumber())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+        User user = userRepository.findByEmployeeNumber(loginRequestDTO.getEmployeeNumber())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
         }
 
-        // UserDetails 생성
-        UserDetails userDetails = loadUserByUsername(String.valueOf(request.getEmployeeNumber()));
-
-        // 토큰 생성
-        String accessToken = jwtConfig.generateToken(userDetails, user.getId());
-        String refreshToken = jwtConfig.generateRefreshToken(userDetails, user.getId());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(user.getId()));
+        String accessToken = jwtConfig.generateToken(user.getId());
+        String refreshToken = jwtConfig.generateRefreshToken(user.getId());
 
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)
