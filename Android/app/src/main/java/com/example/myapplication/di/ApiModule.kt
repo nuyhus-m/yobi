@@ -1,5 +1,6 @@
 package com.example.myapplication.di
 
+import com.example.myapplication.data.remote.AuthService
 import com.example.myapplication.data.remote.CareService
 import com.example.myapplication.data.remote.ClientService
 import com.example.myapplication.data.remote.DailyService
@@ -38,6 +39,12 @@ object ApiModule {
     @Singleton
     fun provideClientService(retrofit: Retrofit): ClientService {
         return retrofit.create(ClientService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthService(retrofit: Retrofit) : AuthService {
+        return retrofit.create(AuthService::class.java)
     }
 
     @Provides
