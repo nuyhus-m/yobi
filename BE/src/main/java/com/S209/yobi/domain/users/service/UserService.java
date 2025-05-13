@@ -21,7 +21,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
-    private final UserDetailsService userDetailsService;
+//    private final UserDetailsService userDetailsService;
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid password");
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(user.getId()));
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(user.getId()));
         String accessToken = jwtConfig.generateToken(user.getId());
         String refreshToken = jwtConfig.generateRefreshToken(user.getId());
 

@@ -12,6 +12,8 @@ import com.S209.yobi.domain.schedules.entity.Schedule;
 import com.S209.yobi.domain.schedules.repository.ScheduleRepository;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.ApiResponseCode;
+import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -407,8 +409,25 @@ public class ScheduleService {
 
             return OcrDTO.OcrResultDTO.of(successCount, failCount, failCount > 0 ? failureReasons : null);
         } catch (IOException e) {
-            log.error("이미지 처리 중 오류 발생: {}", e.getMessage());
             throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);
         }
+    }
+
+    // 특정 기간의 일정 리스트
+    @Transactional(readOnly = true)
+    public ApiResult getSchedulesByPeriod(Integer userId, long startDate, long endDate) {
+        if (startDate <= 0 || endDate <= 0) {
+            return ApiResponseDTO.fail(ApiResponseCode.PERIOD_NO_INPUT);
+        }
+
+        if (endDate < startDate) {
+            return ApiResponseDTO.fail(ApiResponseCode.START_END_ERROR);
+        }
+
+        List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
+                userId, startDate, endDate
+        );
+
+        return ScheduleResponseDTO.fromList(schedules);
     }
 }
