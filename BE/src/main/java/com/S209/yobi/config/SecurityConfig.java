@@ -27,7 +27,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final UserService userService;
     private final JwtConfig jwtConfig;
-    private final JwtAuthenticationFilter jwtAuthFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -40,6 +39,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtConfig, userService);
     }
 
     @Bean
@@ -66,7 +70,7 @@ public class SecurityConfig {
                          .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

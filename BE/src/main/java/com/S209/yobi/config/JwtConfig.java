@@ -34,8 +34,12 @@ public class JwtConfig {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public Integer extractEmployeeNumber(String token) {
+        return Integer.parseInt(extractClaim(token, claims -> claims.get("employeeNumber", String.class)));
+    }
+
     public Integer extractUserId(String token) {
-        return Integer.parseInt(extractClaim(token, Claims::getSubject));
+        return Integer.parseInt(extractClaim(token, claims -> claims.get("userId", String.class)));
     }
 
     public Date extractExpiration(String token) {
@@ -59,26 +63,34 @@ public class JwtConfig {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(Integer userId) {
+    public String generateToken(Integer employeeNumber, Integer userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("employeeNumber", String.valueOf(employeeNumber));
+        claims.put("userId", String.valueOf(userId));
+
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24시간
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateRefreshToken(Integer userId) {
+    public String generateRefreshToken(Integer employeeNumber, Integer userId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("employeeNumber", String.valueOf(employeeNumber));
+        claims.put("userId", String.valueOf(userId));
+
         String refreshToken = Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
 
-        // Redis에 refresh token 저장
+        // Redis에 refresh token 저장 (userId를 키로 사용)
         redisTemplate.opsForValue().set(
-                "refresh_token:" + userId,
+                REFRESH_TOKEN_PREFIX + userId,
                 refreshToken,
                 7,
                 TimeUnit.DAYS
@@ -87,14 +99,19 @@ public class JwtConfig {
         return refreshToken;
     }
 
-    public boolean validateToken(String token, Integer userId) {
+    public boolean validateToken(String token, Integer employeeNumber, Integer userId) {
+        final Integer extractedEmployeeNumber = extractEmployeeNumber(token);
         final Integer extractedUserId = extractUserId(token);
-        return (extractedUserId.equals(userId)) && !isTokenExpired(token);
+        return (extractedEmployeeNumber.equals(employeeNumber) && 
+                extractedUserId.equals(userId) && 
+                !isTokenExpired(token));
     }
 
-    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Integer userId) {
+    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Integer employeeNumber, Integer userId) {
+        final Integer tokenEmployeeNumber = extractEmployeeNumber(refreshToken);
         final Integer tokenUserId = extractUserId(refreshToken);
-        return (tokenUserId.equals(userId) && 
+        return (tokenEmployeeNumber.equals(employeeNumber) && 
+                tokenUserId.equals(userId) && 
                 !isTokenExpired(refreshToken) && 
                 validateRefreshTokenInRedis(userId, refreshToken));
     }

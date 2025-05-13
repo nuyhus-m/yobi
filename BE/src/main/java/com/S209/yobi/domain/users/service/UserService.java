@@ -64,8 +64,8 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Invalid password");
         }
 
-        String accessToken = jwtConfig.generateToken(user.getId());
-        String refreshToken = jwtConfig.generateRefreshToken(user.getId());
+        String accessToken = jwtConfig.generateToken(user.getEmployeeNumber(), user.getId());
+        String refreshToken = jwtConfig.generateRefreshToken(user.getEmployeeNumber(), user.getId());
 
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)
