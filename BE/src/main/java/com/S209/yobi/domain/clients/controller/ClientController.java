@@ -30,7 +30,7 @@ public class ClientController {
 
     private final ClientService clientService;
 
-    @Operation(summary = "고객 정보 등록", description = "새로운 고객 정보를 등록합니다. 프로필 이미지는 S3에 저장됩니다.")
+    @Operation(summary = "client 등록", description = "서비스에서 직접 구현하는 기능은 아닙니다.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "고객 등록 성공",
@@ -117,6 +117,13 @@ public class ClientController {
 
     @Operation(summary = "특정 요양보호사의 특정 돌봄 대상 상세보기", description = "cliendId에 해당하는 client의 상세 정보를 반환합니다.")
     @GetMapping("/detail/{clientId}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "client 불러오기 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"id\": 3, \"name\": \"박지성\", \"birth\": \"1960-04-03\", \"gender\": 0, \"height\": 160, \"weight\": 60, \"image\": \"https://s209-yobi.s3.ap-southeast-2.amazonaws.com/8e4f956b-cb6e-4845-bc1a-ffa78a740949.jpg\", \"address\": \"경상북도 구미시 주소\" }")
+                    )
+            )
+    })
     public ResponseEntity<?> getClientDetail(@PathVariable Integer clientId) {
         ApiResult result = clientService.getClientDetail(clientId);
 
