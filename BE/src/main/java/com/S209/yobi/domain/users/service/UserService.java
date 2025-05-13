@@ -3,6 +3,7 @@ package com.S209.yobi.domain.users.service;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
+import com.S209.yobi.S3Service;
 import com.S209.yobi.config.JwtConfig;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
@@ -15,12 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
+    private final S3Service s3Service;
 
     @Override
     public UserDetails loadUserByUsername(String employeeNumber) throws UsernameNotFoundException {
@@ -36,23 +40,35 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void signUp(SignUpRequest request) {
-        // 사번 중복 체크
-        if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
-            throw new IllegalArgumentException("이미 존재하는 사번입니다.");
+        try {// 사번 중복 체크
+            if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
+                throw new IllegalArgumentException("이미 존재하는 사번입니다.");
+            }
+
+            // 비밀번호 암호화
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+            // 이미지 파일 업로드 및 url 획득
+            String imageUrl = null;
+            if (request.getImage() != null && !request.getImage().isEmpty()) {
+                imageUrl = s3Service.uploadFile(request.getImage());
+            }
+
+            // User 엔티티 생성
+            User user = User.builder()
+                    .name(request.getName())
+                    .employeeNumber(request.getEmployeeNumber())
+                    .password(encodedPassword)
+                    .image(imageUrl)
+                    .build();
+
+            // DB에 저장
+            userRepository.save(user);
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 업로드 중 오류 발생", e);
+        } catch (Exception e) {
+            throw new RuntimeException("회원가입 중 오류 발생", e);
         }
-
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-        // User 엔티티 생성
-        User user = User.builder()
-                .name(request.getName())
-                .employeeNumber(request.getEmployeeNumber())
-                .password(encodedPassword)
-                .build();
-
-        // DB에 저장
-        userRepository.save(user);
     }
 
     @Transactional
