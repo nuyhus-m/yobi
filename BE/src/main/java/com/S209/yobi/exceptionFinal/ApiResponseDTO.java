@@ -16,9 +16,9 @@ public class ApiResponseDTO<T> implements ApiResult {
     private String message;
     private T data;
 
-//    public static <T> ApiResponseDTO<T> success(T data) {
-//        return new ApiResponseDTO<>("200", "success", data);
-//    }
+    public static <T> ApiResponseDTO<T> success(T data) {
+        return new ApiResponseDTO<>("200", "success", data);
+    }
 
     // 예외처리 응답
     public static <T> ApiResponseDTO<T> fail(String code, String message) {
