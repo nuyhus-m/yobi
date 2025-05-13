@@ -14,9 +14,9 @@ services:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL} # AI에서 사용할 DATABASE_URL 설정
-      REDIS_HOST: ${REDIS_HOST} # AI에서 사용할 REDIS_HOST 설정
-      REDIS_PORT: ${REDIS_PORT} # AI에서 사용할 REDIS_PORT 설정
-      REDIS_DB: ${REDIS_DB} # AI에서 사용할 REDIS_DB 설정
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_KEY_ID: ${AWS_SECRET_KEY_ID}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
