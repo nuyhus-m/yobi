@@ -127,9 +127,9 @@ public class UserController {
         }
         
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
-    @PatchMapping("/users/consent")
+    @PatchMapping("/consent")
     public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-//        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
+    //        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
 
         Integer userId = 1;
         ApiResult result = userService.updateConsent(userId);
