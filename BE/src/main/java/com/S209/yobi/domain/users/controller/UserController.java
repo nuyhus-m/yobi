@@ -74,7 +74,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
     @Operation(summary = "토큰 갱신", description = "Refresh token을 사용하여 새로운 Access token을 발급받습니다.")
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
@@ -93,11 +92,11 @@ public class UserController {
                         .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
             }
 
-            UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
+            org.springframework.security.core.userdetails.UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
             
             if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
                 String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
-                return ResponseEntity.ok(ApiResponseDTO.success(new TokenDTO(newAccessToken, token, "Bearer")));
+                return ResponseEntity.ok(ApiResponseDTO.success(new com.S209.yobi.DTO.responseDTO.TokenDTO(newAccessToken, token, "Bearer")));
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -106,12 +105,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponseDTO.fail("401", "토큰 갱신에 실패했습니다."));
         }
-        
+    }
+
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/consent")
     public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-    //        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
-
         Integer userId = 1;
         ApiResult result = userService.updateConsent(userId);
 
@@ -129,9 +127,7 @@ public class UserController {
     public ResponseEntity<?> updatePassword(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails,
             @RequestBody PasswordRequestDTO request
-            ) {
-//        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
-
+    ) {
         Integer userId = 1;
         ApiResult result = userService.updatePassword(userId, request);
 
