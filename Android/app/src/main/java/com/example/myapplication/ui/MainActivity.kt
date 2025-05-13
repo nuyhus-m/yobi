@@ -7,16 +7,19 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.myapplication.BuildConfig
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseActivity
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.example.myapplication.util.setOnSingleClickListener
+import com.onesoftdigm.fitrus.device.sdk.FitrusDevice
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
     private val mainViewModel: MainViewModel by viewModels()
+    private val fitrusViewModel: FitrusViewModel by viewModels()
 
     private lateinit var navController: NavController
 
@@ -47,6 +50,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
         mainViewModel.fetchClients()
 
+        initFiturusDevice()
+    }
+
+    private fun initFiturusDevice() {
+        val fitrusDevice = FitrusDevice(
+            this,
+            fitrusViewModel,
+            BuildConfig.FITRUS_API_KEY
+        )
+        fitrusViewModel.initFitrusDevice(fitrusDevice)
     }
 
     private fun updateBottomNavigationView(navController: NavController) {
