@@ -99,7 +99,13 @@
         android:id="@+id/dest_measure_guide"
         android:name="com.example.myapplication.ui.measure.measureguide.MeasureGuideFragment"
         android:label="fragment_measure_guide"
-        tools:layout="@layout/fragment_measure_guide" />
+        tools:layout="@layout/fragment_measure_guide">
+        <action
+            android:id="@+id/action_dest_measure_guide_to_dest_device_connect"
+            app:destination="@id/dest_device_connect"
+            app:popUpTo="@id/dest_measure_guide"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_measure_loading"
