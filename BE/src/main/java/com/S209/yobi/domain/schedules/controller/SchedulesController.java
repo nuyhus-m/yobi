@@ -233,4 +233,34 @@ public class SchedulesController {
 
         return ResponseEntity.ok(result);
     }
+
+    @Operation(summary = "특정 기간의 일정 목록 조회", description = "현재 로그인한 사용자에 대해 시작일부터 종료일까지(시작일, 종료일 포함)의 일정을 조회합니다.")
+    @GetMapping("/period")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "기간별 일정 목록 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ScheduleResponseDTO.class),
+                            examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746111600000,\"startAt\":1746144000000,\"endAt\":1746151200000}]")))
+    })
+    public ResponseEntity<?> getSchedulesByPeriod(
+            @RequestParam long startDate,
+            @RequestParam long endDate
+    ) {
+        // 하드코딩 임시
+        Integer userId = 1;
+
+        ApiResult result = scheduleService.getSchedulesByPeriod(userId, startDate, endDate);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        if (result instanceof ScheduleResponseDTO responseDTO) {
+            return ResponseEntity.ok(responseDTO.getSchedules());
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }

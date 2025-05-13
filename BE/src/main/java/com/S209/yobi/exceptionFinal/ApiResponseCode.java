@@ -19,7 +19,9 @@ public enum ApiResponseCode {
     DUPLICATE_MEASURE("409", "이미 오늘 측정이 완료되었습니다.", HttpStatus.CONFLICT),
     IMAGE_SERVER_ERROR("500-1", "이미지 업로드 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     CREATE_CLIENT_ERROR("500-2", "고객 생성 중 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
-    SERVER_ERROR("500", "서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    SERVER_ERROR("500", "서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    PERIOD_NO_INPUT("400-1", "시작일과 종료일을 입력해주세요.", HttpStatus.BAD_REQUEST),
+    START_END_ERROR("400-2", "종료일이 시작일보다 빠를 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;
