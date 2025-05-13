@@ -4,7 +4,6 @@ import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.S3Service;
-import com.S209.yobi.config.JwtConfig;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
