@@ -4,15 +4,22 @@ import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.domain.users.service.UserService;
+import com.S209.yobi.config.JwtProvider;
+import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -20,8 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final JwtProvider jwtProvider;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    @Operation(summary = "사용자 회원가입", description = "이름, ")
+    @Operation(summary = "사용자 회원가입", description = "이름, 사원번호, 비밀번호를 입력하여 회원가입을 진행합니다.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Void> signUp(
             @Parameter(description = "사용자 이름") @RequestParam("name") String name,
@@ -41,17 +50,40 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "현재 사용자 정보 조회", description = "인가된 사용자인지 확인 후 사용자 정보를 반환합니다.")
     @GetMapping
-    public ResponseEntity<?> getUser(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-        var userInfo = userService.getUserInfo(userDetails.getUsername());
-        return ResponseEntity.ok(userInfo);
+    public ResponseEntity<?> getUserProfile() {
+        try {
+            // 1. SecurityContext에서 인증 정보 가져오기
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("인증되지 않은 사용자입니다.");
+            }
+
+            // 2. JWT 토큰에서 userId 추출
+            String token = authentication.getCredentials().toString();
+            Integer userId = jwtProvider.extractUserId(token);
+
+            // 3. 사용자 정보 조회
+            UserInfoDTO userInfo = userService.getUserInfoById(userId);
+            return ResponseEntity.ok(userInfo);
+
+        } catch (EntityNotFoundException e) {
+            log.error("사용자 정보 조회 실패 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("사용자를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            log.error("사용자 정보 조회 중 오류 발생 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("인증되지 않은 요청입니다.");
+        }
     }
 
+    @Operation(summary = "로그인", description = "사번과 비밀번호를 입력하여 로그인을 진행합니다.")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         LoginResponseDTO response = userService.login(request);
         return ResponseEntity.ok(response);
     }
-
-
 }
