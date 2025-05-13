@@ -1,11 +1,18 @@
 package com.example.myapplication.ui.schedule.schedule.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.dto.model.ScheduleItemModel
 import com.example.myapplication.data.repository.ScheduleRepository
+import com.example.myapplication.util.TimeUtils.toEpochMillis
+import com.example.myapplication.util.TimeUtils.toLocalDate
+import com.example.myapplication.util.TimeUtils.toTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @HiltViewModel
@@ -16,9 +23,16 @@ class ScheduleViewModel @Inject constructor(
     private val _selectedDate = MutableLiveData(LocalDate.now())
     val selectedDate: LiveData<LocalDate> = _selectedDate
 
-    private val _scheduleList = MutableLiveData<List<ScheduleItem>>()
-    val scheduleList: LiveData<List<ScheduleItem>> = _scheduleList
+    private val _scheduleList = MutableLiveData<List<ScheduleItemModel>>()
+    val scheduleList: LiveData<List<ScheduleItemModel>> = _scheduleList
 
+    private val _dotMap = MutableLiveData<Map<LocalDate, List<Int>>>()
+    val dotMap: LiveData<Map<LocalDate, List<Int>>> = _dotMap
+
+    // 캐싱하는 데이터
+    private val loadedRanges = mutableListOf<Pair<LocalDate, LocalDate>>()
+
+    // 클라이언트 아이디별 도트 색 맵핑
     val clientColorMap = mapOf(
         1 to "#00B383",
         2 to "#735BF2",
@@ -32,98 +46,96 @@ class ScheduleViewModel @Inject constructor(
         10 to "#FFF200"
     )
 
-    private val _dotMap = mutableMapOf<LocalDate, List<Int>>()
-    val dotMap: Map<LocalDate, List<Int>> get() = _dotMap
+    init {
+        selectDate(LocalDate.now())
+    }
 
-    // 캐싱하는 데이터
-    private val loadedRanges = mutableListOf<Pair<LocalDate, LocalDate>>()
+    fun getPeriodSchedule(start: Long, end: Long) {
+        val startDate = start.toLocalDate()
+        val endDate = end.toLocalDate()
+
+        if (loadedRanges.any { it.contains(startDate, endDate) }) return
+
+        viewModelScope.launch {
+            kotlin.runCatching {
+                scheduleRepository.getPeriodSchedule(start, end)
+            }.onSuccess { response ->
+                if (response.isSuccessful) {
+                    val body = response.body() ?: emptyList()
+                    val mapped = body.groupBy { it.visitedDate.toLocalDate() }
+                        .mapValues { entry -> entry.value.map { it.clientId } }
+
+                    val currentMap = _dotMap.value.orEmpty().toMutableMap()
+                    currentMap.putAll(mapped)
+                    _dotMap.value = currentMap
+
+                    loadedRanges.add(startDate to endDate)
+                }
+
+            }.onFailure {
+                Log.d("getPeriodSchedule", "${it}")
+            }
+        }
+    }
+
+    fun getDaySchedule(date: Long) {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                scheduleRepository.getDaySchedule(date)
+            }.onSuccess { response ->
+                if (response.isSuccessful) {
+                    val list = response.body()?.map {
+                        ScheduleItemModel(
+                            it.scheduleId,
+                            it.clientId,
+                            it.clientName,
+                            it.visitedDate,
+                            it.visitedDate.toLocalDate().toString(),
+                            "${it.startAt.toTimeText()} ~ ${it.endAt.toTimeText()}",
+                            it.hasLogContent
+                        )
+                    } ?: emptyList()
+                    _scheduleList.value = list
+                }
+            }.onFailure {
+                Log.d("getDaySchedule", "${it}")
+            }
+        }
+    }
 
     fun selectDate(date: LocalDate) {
         _selectedDate.value = date
-        loadSchedulesForDate(date)
-    }
-
-    fun loadDotData(start: LocalDate, end: LocalDate) {
-        if (loadedRanges.any { it.contains(start, end) }) return
-
-        /* api로 추후 교체*/
-        val dotData = dummySchedules
-            .filter { it.visitedDate in start..end }
-            .groupBy { it.visitedDate }
-            .mapValues { entry -> entry.value.map { it.clientId } }
-
-        _dotMap.putAll(dotData)
-        loadedRanges.add(start to end)
-    }
-
-    fun loadSchedulesForDate(date: LocalDate) {
-        _scheduleList.value = dummySchedules
-            .filter { it.visitedDate == date }
-            .map {
-                ScheduleItem(
-                    it.scheduleId, it.clientId, "고객", it.visitedDate.toString(), it.startAt, it.endAt
-                )
-            }
+        getDaySchedule(date.toEpochMillis())
     }
 
     private fun Pair<LocalDate, LocalDate>.contains(start: LocalDate, end: LocalDate): Boolean {
         return this.first <= start && this.second >= end
     }
 
-    init {
-        selectDate(LocalDate.now())
+    fun updateDotMap(date: LocalDate, clientIds: List<Int>) {
+        val currentMap = _dotMap.value.orEmpty().toMutableMap()
+        if (clientIds.isEmpty()) {
+            currentMap.remove(date) // 일정이 없어지면 도트 제거
+        } else {
+            currentMap[date] = clientIds // 일정이 있으면 도트 추가/갱신
+        }
+        _dotMap.value = currentMap
     }
 
-    private fun loadDummyData() {
-        _scheduleList.value = listOf(
-            ScheduleItem(101, 1, "박진현", "2025-05-04", "10:00:00", "10:50:00"),
-            ScheduleItem(102, 2, "민수현", "2025-05-04", "11:00:00", "11:30:00"),
-            ScheduleItem(103, 3, "이서현", "2025-05-04", "12:00:00", "13:30:00"),
-            ScheduleItem(104, 4, "이호정", "2025-05-04", "13:00:00", "14:30:00"),
-            ScheduleItem(105, 5, "이문경", "2025-05-04", "14:00:00", "15:30:00"),
-            ScheduleItem(106, 6, "차현우", "2025-05-04", "15:00:00", "16:30:00")
-        )
-    }
+    fun refreshDotMapForRange(startDate: LocalDate, endDate: LocalDate, newData: Map<LocalDate, List<Int>>) {
+        val currentMap = _dotMap.value.orEmpty().toMutableMap()
 
-    private val dummySchedules = listOf(
-        ScheduleDotItem(101, 1, LocalDate.of(2025, 5, 2), "10:00", "10:50"),
-        ScheduleDotItem(102, 2, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 3, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 4, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 5, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 6, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 7, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 8, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 9, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(102, 10, LocalDate.of(2025, 5, 2), "11:00", "11:30"),
-        ScheduleDotItem(101, 1, LocalDate.of(2025, 5, 1), "10:00", "10:50"),
-        ScheduleDotItem(102, 2, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 3, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 4, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 5, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 6, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 7, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 8, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 9, LocalDate.of(2025, 5, 1), "11:00", "11:30"),
-        ScheduleDotItem(102, 10, LocalDate.of(2025, 5, 1), "11:00", "11:30")
-    )
+        // 해당 범위의 기존 데이터 제거
+        currentMap.keys.toList().forEach { date ->
+            if (date in startDate..endDate) {
+                currentMap.remove(date)
+            }
+        }
+
+        // 새 데이터 추가
+        currentMap.putAll(newData)
+        _dotMap.value = currentMap
+    }
 
 }
-
-data class ScheduleItem(
-    val scheduleId: Int,
-    val clientId: Int,
-    val clientName: String,
-    val visitedDate: String,
-    val startAt: String,
-    val endAt: String
-)
-
-data class ScheduleDotItem(
-    val scheduleId: Int,
-    val clientId: Int,
-    val visitedDate: LocalDate,
-    val startAt: String,
-    val endAt: String
-)
 

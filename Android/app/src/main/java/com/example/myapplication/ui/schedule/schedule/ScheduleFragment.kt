@@ -10,14 +10,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
+import com.example.myapplication.data.dto.model.ScheduleItemModel
 import com.example.myapplication.databinding.FragmentScheduleBinding
 import com.example.myapplication.ui.schedule.schedule.adapter.ScheduleAdapter
-import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleItem
 import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
@@ -38,10 +39,15 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private lateinit var scheduleAdapter: ScheduleAdapter
 
     private var currentMonth = YearMonth.now()
-    private var selectedDate: LocalDate? = LocalDate.now() // 기본은 오늘
+    private var selectedDate: LocalDate? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
+            selectedDate = date
+            binding.cv.notifyDateChanged(date)
+        }
 
         setupRecyclerView()
         observeScheduleList()
@@ -109,7 +115,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 container.view.setOnClickListener {
                     // 날짜 클릭 시 어떤 position이든 선택 가능하도록 수정
                     val oldDate = selectedDate
-                    selectedDate = data.date
+                    viewModel.selectDate(data.date)
+
 
                     // 새로 선택된 날짜 갱신
                     calendarView.notifyDateChanged(data.date)
@@ -141,14 +148,13 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 dotContainer.children.forEach { (it as LinearLayout).removeAllViews() }
 
                 // 2. 날짜에 해당하는 클라이언트 ID 리스트 가져오기
-                val clientIds = viewModel.dotMap[data.date] ?: emptyList()
+                val clientIds = viewModel.dotMap.value?.get(data.date) ?: emptyList()
 
                 // 3. 도트 View 추가 (최대 10개, 3개씩 나눠서 row1~4에 배치)
                 clientIds.take(10).forEachIndexed { index, clientId ->
                     val dot = AppCompatImageView(container.view.context).apply {
                         setImageResource(R.drawable.ic_schedule_dot)
-                        val color =
-                            Color.parseColor(viewModel.clientColorMap[clientId] ?: "#000000")
+                        val color = (viewModel.clientColorMap[clientId] ?: "#000000").toColorInt()
                         imageTintList = ColorStateList.valueOf(color)
                         layoutParams = LinearLayout.LayoutParams(4.dp, 4.dp).apply {
                             setMargins(1.dp, 0.dp, 1.dp, 0.dp)
@@ -200,15 +206,22 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     private fun setupRecyclerView() {
         scheduleAdapter = ScheduleAdapter(
-            emptyList<ScheduleItem>(),
+            emptyList<ScheduleItemModel>(),
             viewModel,
             onEditClick = { scheduleId ->
                 val action = ScheduleFragmentDirections
-                    .actionScheduleFragmentToDestManualSchedule(scheduleId.toLong())
+                    .actionScheduleFragmentToDestManualSchedule(scheduleId)
                 findNavController().navigate(action)
             },
-            onLogCreateClick = { scheduleId ->
+            onLogCreateClick = { scheduleId, clientName, visitedDate ->
+                val action = ScheduleFragmentDirections
+                    .actionScheduleFragmentToDestVisitWrite(scheduleId, clientName, visitedDate)
                 findNavController().navigate(R.id.dest_visit_write_fragment)
+            },
+            onLogViewClick = { scheduleId ->
+                val action = ScheduleFragmentDirections
+                    .actionScheduleFragmentToDestDiaryDetail(scheduleId)
+                findNavController().navigate(action)
             }
         )
 

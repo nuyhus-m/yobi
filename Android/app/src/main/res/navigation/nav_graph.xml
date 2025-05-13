@@ -29,8 +29,8 @@
 
         <argument
             android:name="scheduleId"
-            android:defaultValue="-1L"
-            app:argType="long" /> <!-- 등록일 경우 -1로 처리 -->
+            android:defaultValue="-1"
+            app:argType="Int" /> <!-- 등록일 경우 -1로 처리 -->
     </fragment>
 
     <fragment
