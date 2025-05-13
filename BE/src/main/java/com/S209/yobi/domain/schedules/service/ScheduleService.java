@@ -15,11 +15,14 @@ import com.S209.yobi.domain.users.repository.UserRepository;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
+import com.S209.yobi.config.JwtProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.misc.IntegerStack;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +45,19 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final OcrFastApiClient ocrFastApiClient;
     private final ImageResizeService imageResizeService;
+    private final JwtProvider jwtProvider;
     private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
+
+    private Integer getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("인증되지 않은 사용자입니다.");
+        }
+        
+        // JWT 토큰에서 userId 추출
+        String token = authentication.getCredentials().toString();
+        return jwtProvider.extractUserId(token);
+    }
 
     // 단건 일정 조회
     @Transactional(readOnly = true)
@@ -85,9 +100,8 @@ public class ScheduleService {
     // 단건 일정 수정
     @Transactional
     public ApiResult updateSchedule(Integer scheduleId, ScheduleUpdateRequestDTO requestDto) throws AccessDeniedException {
-        // 현재 인증된 사용자인지 확인
-        // 임시 하드코딩! 추후 JWT에서 추출해야 합니다.
-        Integer currentUserId = 1;
+        // 현재 인증된 사용자 ID 가져오기
+        Integer currentUserId = getCurrentUserId();
 
         // 기존 일정 존재 여부 확인 - Join Fetch를 사용하여 한 번에 관련 엔티티 로드
         Schedule schedule = scheduleRepository.findByIdWithClientAndUser(scheduleId)
@@ -197,19 +211,19 @@ public class ScheduleService {
     // 단건 일정 삭제
     @Transactional
     public ApiResult deleteSchedule(Integer scheduleId) {
-        //Schedule 존재 여부 확인
+        // Schedule 존재 여부 확인
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found"));
 
+        // 현재 인증된 사용자 ID 가져오기
+        Integer currentUserId = getCurrentUserId();
+
         // 권한 검증
-        // 임시로 하드코딩. JWT 추출 필요
-        Integer currentUserId = 1;
         if (!schedule.getUser().getId().equals(currentUserId)) {
-            throw new org.springframework.security.access.AccessDeniedException("삭제 권한이 없음.");
+            throw new AccessDeniedException("삭제 권한이 없음.");
         }
 
         scheduleRepository.delete(schedule);
-
         return null;
     }
 
