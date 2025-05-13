@@ -39,7 +39,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             .build()
 
         binding.ivCenter.setOnSingleClickListener {
-            navController.navigate(R.id.dest_measure_target)
+            navController.navigate(R.id.dest_measure_loading)
         }
 
         binding.bnv.setOnItemSelectedListener { item ->
