@@ -10,9 +10,11 @@ import com.example.myapplication.data.dto.model.TemperatureResult
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.repository.ClientRepository
 import com.example.myapplication.data.repository.MeasureRepository
+import com.example.myapplication.util.CommonUtils
 import com.example.myapplication.util.CommonUtils.mapToDataClass
 import com.onesoftdigm.fitrus.device.sdk.FitrusBleDelegate
 import com.onesoftdigm.fitrus.device.sdk.FitrusDevice
+import com.onesoftdigm.fitrus.device.sdk.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,7 +34,7 @@ class FitrusViewModel @Inject constructor(
 ) : ViewModel(), FitrusBleDelegate {
 
     private var _client: ClientDetailResponse? = null
-    val client: ClientDetailResponse? get() = _client
+    val client: ClientDetailResponse get() = _client!!
 
     private var _isMeasured = false
     val isMeasured: Boolean get() = _isMeasured
@@ -145,6 +147,38 @@ class FitrusViewModel @Inject constructor(
         Log.d(TAG, "disconnectDevice: ")
         if (manager.fitrusConnectionState) {
             manager.disconnectFitrus()
+        }
+    }
+
+    fun startMeasure() {
+        when (measureType) {
+            HealthDataType.BODY_COMPOSITION -> {
+                manager.startFitrusCompMeasure(
+                    if (client.gender == 0) {
+                        Gender.MALE
+                    } else {
+                        Gender.FEMALE
+                    },
+                    client.height,
+                    client.weight,
+                    CommonUtils.convertDateFormat(client.birth),
+                    0f,
+                )
+            }
+
+            HealthDataType.HEART_RATE -> {
+                manager.startFitrusHeartRateMeasure()
+            }
+
+            HealthDataType.BLOOD_PRESSURE -> {
+                manager.StartFitrusBloodPressure(120f, 80f)
+            }
+
+            HealthDataType.STRESS -> {
+                manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
+            }
+
+            HealthDataType.TEMPERATURE -> manager.startFitrusTempBodyMeasure()
         }
     }
 

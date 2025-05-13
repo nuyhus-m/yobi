@@ -25,6 +25,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
         initButton()
         setTitle()
         initView()
+        startMeasure()
     }
 
     private fun initButton() {
@@ -42,5 +43,9 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
             val animationDrawable = binding.ivCharacter.background as AnimationDrawable
             animationDrawable.start()
         }
+    }
+
+    private fun startMeasure() {
+        fitrusViewModel.startMeasure()
     }
 }
