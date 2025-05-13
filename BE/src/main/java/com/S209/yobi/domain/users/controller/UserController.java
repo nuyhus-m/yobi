@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.S209.yobi.DTO.TokenDTO;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
