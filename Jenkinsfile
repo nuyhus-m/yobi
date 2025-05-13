@@ -42,11 +42,17 @@ pipeline {
         stage('Deploy to EC2-1') {
             steps {
                 sh """
+                    # 기존 컨테이너 중지 및 삭제
                     docker stop redis postgres ocr-app be-spring-container || true
-                    docker rm -f redis postgres ocr-app be-spring-container || true
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE down -v || true
-                    docker-compose -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --build redis postgres backend ocr
-                """
+                    docker rm redis postgres ocr-app be-spring-container || true
+
+                    # 기존 네트워크와 orphan 컨테이너 정리
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE down --remove-orphans
+
+                    # 컨테이너 재생성 및 재배포
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
+                        up -d --build --force-recreate redis postgres backend ocr
+                        """
             }
         }
         stage('Deploy to EC2-2') {
@@ -54,7 +60,13 @@ pipeline {
                 sh """
                     docker stop ai-service || true
                     docker rm ai-service || true
-                    docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
+                    docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE up -d --build
+                    
+                    #docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                    #      down --remove-orphans
+
+                    #docker-compose -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+                    #      up -d --build --force-recreate ai-service
                 """
             }
         }

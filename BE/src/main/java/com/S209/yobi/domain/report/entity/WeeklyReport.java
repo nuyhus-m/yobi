@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +18,7 @@ public class WeeklyReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,6 +35,6 @@ public class WeeklyReport {
 
     @NotNull
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private Long createdAt;
 
 }

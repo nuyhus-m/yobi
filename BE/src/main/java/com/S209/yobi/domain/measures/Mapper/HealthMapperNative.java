@@ -4,11 +4,11 @@ import com.S209.yobi.DTO.responseDTO.GraphPointDTO;
 import com.S209.yobi.DTO.responseDTO.TotalHealthResponseDTO;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import static com.S209.yobi.Mapper.DateTimeUtils.toEpochMilli;
 
 @Component
 public class HealthMapperNative {
@@ -30,7 +30,7 @@ public class HealthMapperNative {
 
         for(Object[] measure : measures){
 
-            LocalDate date = ((java.sql.Date) measure[0]).toLocalDate();
+            long date = toEpochMilli(((java.sql.Date) measure[0]).toLocalDate());
 
             if(measure[1] != null) bodyComposition.get("bfp").add(new GraphPointDTO(date, (Number) measure[1]));
             if(measure[2] != null) bodyComposition.get("bmr").add(new GraphPointDTO(date, (Number) measure[2]));

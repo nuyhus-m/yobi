@@ -2,6 +2,7 @@ package com.S209.yobi.domain.schedules.entity;
 
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.clients.entity.Client;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,16 +10,16 @@ import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "schedule")
 @BatchSize(size = 100)
+@Schema
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,15 +38,15 @@ public class Schedule {
 
     @NotNull
     @Column(name = "visited_date", nullable = false)
-    private LocalDate visitedDate;
+    private long visitedDate;
 
     @NotNull
     @Column(name = "start_at", nullable = false)
-    private LocalTime startAt;
+    private long startAt;
 
     @NotNull
     @Column(name = "end_at", nullable = false)
-    private LocalTime endAt;
+    private long endAt;
 
     @Setter
     @Size(max = 150)
@@ -72,15 +73,15 @@ public class Schedule {
         return client;
     }
 
-    public @NotNull LocalDate getVisitedDate() {
+    public long getVisitedDate() {
         return visitedDate;
     }
 
-    public @NotNull LocalTime getStartAt() {
+    public long getStartAt() {
         return startAt;
     }
 
-    public @NotNull LocalTime getEndAt() {
+    public long getEndAt() {
         return endAt;
     }
 
@@ -92,16 +93,15 @@ public class Schedule {
         this.client = client;
     }
 
-    public void setVisitedDate(@NotNull LocalDate visitedDate) {
+    public void setVisitedDate(long visitedDate) {
         this.visitedDate = visitedDate;
     }
 
-    public void setStartAt(@NotNull LocalTime startAt) {
+    public void setStartAt(long startAt) {
         this.startAt = startAt;
     }
 
-    public void setEndAt(@NotNull LocalTime endAt) {
+    public void setEndAt(long endAt) {
         this.endAt = endAt;
     }
-
 }

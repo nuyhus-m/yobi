@@ -3,13 +3,16 @@ package com.S209.yobi.domain.schedules.service;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO.DailyLogDetailDTO;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO.SimpleDailyLogDTO;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO;
+import com.S209.yobi.Mapper.DateTimeUtils;
 import com.S209.yobi.domain.schedules.entity.Schedule;
 import com.S209.yobi.domain.schedules.repository.ScheduleRepository;
 import com.S209.yobi.exceptionFinal.ApiResult;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -94,18 +97,18 @@ public class DailyLogService {
 
     // 일지 단건 조회
     @Transactional
+    @Schema
     public ApiResult getDailyLog(Integer scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule Not Found."));
 
         String logContent = schedule.getLogContent();
         String clientName = schedule.getClient().getName();
-        LocalDate visitedDate = schedule.getVisitedDate();
 
         DailyLogDetailDTO detailDTO = DailyLogDetailDTO.builder()
                 .logContent(logContent)
                 .clientName(clientName)
-                .visitedDate(visitedDate)
+                .visitedDate(schedule.getVisitedDate())
                 .build();
 
         return detailDTO;

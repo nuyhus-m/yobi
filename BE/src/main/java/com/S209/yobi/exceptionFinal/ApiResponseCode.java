@@ -1,8 +1,10 @@
 package com.S209.yobi.exceptionFinal;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+
 
 public enum ApiResponseCode {
 
@@ -12,6 +14,8 @@ public enum ApiResponseCode {
     // 실패
     NOT_FOUND_MEASURE("404-1", "먼저 체성분과 혈압을 측정해야 합니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_USER("404-2", "유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_CLIENT("404-4", "해당하는 클라이언트가 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_REPORT("404-5", "해당하는 리포트가 없습니다.", HttpStatus.NOT_FOUND),
     DUPLICATE_MEASURE("409", "이미 오늘 측정이 완료되었습니다.", HttpStatus.CONFLICT),
     SERVER_ERROR("500", "서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 

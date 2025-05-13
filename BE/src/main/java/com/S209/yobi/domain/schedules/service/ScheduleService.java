@@ -16,15 +16,14 @@ import com.S209.yobi.exceptionFinal.ApiResult;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.misc.IntegerStack;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +40,7 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final OcrFastApiClient ocrFastApiClient;
     private final ImageResizeService imageResizeService;
+    private static final ZoneId DEFAULT_ZONE = ZoneId.of("Asia/Seoul");
 
     // 단건 일정 조회
     @Transactional(readOnly = true)
@@ -63,7 +63,7 @@ public class ScheduleService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (requestDto.getEndAt().isBefore(requestDto.getStartAt())) {
+        if (requestDto.getEndAt() < requestDto.getStartAt()) {
             throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
         }
 
@@ -103,19 +103,19 @@ public class ScheduleService {
             schedule.setClient(client);
         }
 
-        LocalDate visitedDate = schedule.getVisitedDate();
+        long visitedDate = schedule.getVisitedDate();
         if (requestDto.getVisitedDate() != null) {
             visitedDate = requestDto.getVisitedDate();
             schedule.setVisitedDate(visitedDate);
         }
 
-        LocalTime startAt = schedule.getStartAt();
+        long startAt = schedule.getStartAt();
         if (requestDto.getStartAt() != null) {
             startAt = requestDto.getStartAt();
             schedule.setStartAt(startAt);
         }
 
-        LocalTime endAt = schedule.getEndAt();
+        long endAt = schedule.getEndAt();
         if (requestDto.getEndAt() != null) {
             endAt = requestDto.getEndAt();
             schedule.setEndAt(endAt);
@@ -125,7 +125,7 @@ public class ScheduleService {
         validateRequiredFields(schedule);
 
         // 2. 시간 유효성 검사
-        if (endAt.isBefore(startAt)) {
+        if (endAt < startAt) {
             throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없습니다.");
         }
 
@@ -141,41 +141,55 @@ public class ScheduleService {
             throw new IllegalArgumentException("클라이언트 정보는 필수입니다.");
         }
 
-        if (schedule.getVisitedDate() == null) {
+        if (schedule.getVisitedDate() <= 0) {
             throw new IllegalArgumentException("방문 날짜는 필수입니다.");
         }
 
-        if (schedule.getStartAt() == null) {
+        if (schedule.getStartAt() <= 0) {
             throw new IllegalArgumentException("시작 시간은 필수입니다.");
         }
 
-        if (schedule.getEndAt() == null) {
+        if (schedule.getEndAt() <= 0) {
             throw new IllegalArgumentException("종료 시간은 필수입니다.");
         }
     }
 
     // 일정 중복 검사 메소드
-    private void checkScheduleOverlap(Integer userId, Integer scheduleId, LocalDate visitedDate, LocalTime startAt, LocalTime endAt) {
-        // 같은 날짜에 시간이 겹치는 일정 조회 - Join Fetch 사용
-        List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateWithClient(userId, visitedDate);
+    private void checkScheduleOverlap(Integer userId, Integer scheduleId, long visitedDateTimestamp, long startAtTimestamp, long endAtTimestamp) {
+        // 해당 날짜의 시작과 끝 타임스탬프 계산
+        // 주어진 visitedDateTimestamp에서 해당 날짜의 시작(00:00:00)과 끝(23:59:59) 타임스탬프 계산
+        LocalDate date = Instant.ofEpochMilli(visitedDateTimestamp).atZone(DEFAULT_ZONE).toLocalDate();
+        long dayStart = date.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
+        long dayEnd = date.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+
+        // 같은 날짜에 시간이 겹치는 일정 조회
+        List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateWithClient(
+                userId, dayStart, dayEnd);
 
         List<Schedule> conflicts = overlappingSchedules.stream()
                 .filter(s -> !s.getId().equals(scheduleId)) // 해당 스케줄 자기 자신 제외
-                .filter(s -> isTimeOverlapping(s.getStartAt(), s.getEndAt(), startAt, endAt)) // 시간 중복 확인
+                .filter(s -> isTimeOverlapping(s.getStartAt(), s.getEndAt(), startAtTimestamp, endAtTimestamp)) // 시간 중복 확인
                 .collect(Collectors.toList());
 
         if (!conflicts.isEmpty()) {
             Schedule conflict = conflicts.get(0);
             String errorMessage = String.format("해당 시간(%s~%s)에 이미 다른 일정(%s~%s, %s님)이 있습니다.",
-                    startAt, endAt, conflict.getStartAt(), conflict.getEndAt(),
+                    formatTimestamp(startAtTimestamp), formatTimestamp(endAtTimestamp),
+                    formatTimestamp(conflict.getStartAt()), formatTimestamp(conflict.getEndAt()),
                     conflict.getClient().getName());
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
+    // 타임스탬프를 HH:mm:ss 형식으로 포맷팅
+    private String formatTimestamp(long timestamp) {
+        LocalTime time = Instant.ofEpochMilli(timestamp).atZone(DEFAULT_ZONE).toLocalTime();
+        return time.toString();
+    }
+
     // 시간 중복 확인 헬퍼 메소드
-    private boolean isTimeOverlapping(LocalTime existingStart, LocalTime existingEnd, LocalTime newStart, LocalTime newEnd) {
-        return newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart);
+    private boolean isTimeOverlapping(long existingStart, long existingEnd, long newStart, long newEnd) {
+        return newStart < existingEnd && newEnd > existingStart;
     }
 
     // 단건 일정 삭제
@@ -208,11 +222,17 @@ public class ScheduleService {
     // 특정 월의 일정 리스트
     @Transactional(readOnly = true)
     public ApiResult getSchedulesByMonth(Integer userId, int year, int month) {
-        LocalDate startDate = LocalDate.of(year, month, 1);
-        LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+        // 해당 월의 첫날과 마지막날의 타임스탬프 계산
+        LocalDate startLocalDate = LocalDate.of(year, month, 1);
+        LocalDate endLocalDate = startLocalDate.plusMonths(1).minusDays(1);
 
+        // 타임스탬프로 변환 (해당 날짜의 시작과 끝)
+        long startTimestamp = startLocalDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
+        long endTimestamp = endLocalDate.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+
+        // 해당 타임스탬프 범위 내의 일정 조회
         List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
-                userId, startDate, endDate
+                userId, startTimestamp, endTimestamp
         );
 
         return ScheduleResponseDTO.fromList(schedules);
@@ -220,14 +240,20 @@ public class ScheduleService {
 
     // 특정일의 일정 리스트
     @Transactional(readOnly = true)
-    public ApiResult getSchedulesByDay(Integer userId, LocalDate date) {
-        if (date == null) {
+    public ApiResult getSchedulesByDay(Integer userId, long date) {
+        if (date <= 0) {
             throw new IllegalArgumentException("날짜를 입력해주세요.");
         }
 
-        List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateOrderByStartAtAsc(
-                userId, date
-        );
+        LocalDate localDate = Instant.ofEpochMilli(date).atZone(DEFAULT_ZONE).toLocalDate();
+
+        // 해당 날짜의 시작과 끝 타임스탬프 계산
+        long dayStart = localDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
+        long dayEnd = localDate.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+
+        // 해당 날짜의 일정 조회
+        List<Schedule> schedules = scheduleRepository.findByUserIdAndVisitedDateBetweenOrderByVisitedDateAscStartAtAsc(
+                userId, dayStart, dayEnd);
 
         List<ScheduleResponseDTO.ScheduleDTO> result = schedules.stream()
                 .map(schedule -> ScheduleResponseDTO.fromSchedule(schedule))
@@ -236,9 +262,12 @@ public class ScheduleService {
         return new SimpleResultDTO<>(result);
     }
 
-    // OCR로 일정 등록
+    /// OCR로 일정 등록
     @Transactional
-    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month) {
+    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month, String timezone) {
+        //사용자의 시간대 설정
+        ZoneId userZone = ZoneId.of(timezone);
+
         //이미지 유효성 검사
         if (image == null || image.isEmpty()) {
             throw new IllegalArgumentException("이미지 파일이 없음.");
@@ -307,56 +336,60 @@ public class ScheduleService {
                         continue;
                     }
 
-                    // 날짜, 시간 파싱
-                    LocalDate visitedDate = LocalDate.of(year, month, item.getDay());
-                    LocalTime startAt, endAt;
                     try {
-                        startAt = LocalTime.parse(item.getStartAt() + ":00");  // 초 추가
-                        endAt = LocalTime.parse(item.getEndAt() + ":00");      // 초 추가
+                        // 날짜, 시간 파싱 (LocalDate/LocalTime으로 파싱 후 타임스탬프로 변환)
+                        LocalDate localDate = LocalDate.of(year, month, item.getDay());
+
+                        LocalTime startLocalTime = LocalTime.parse(item.getStartAt() + ":00");
+                        LocalTime endLocalTime = LocalTime.parse(item.getEndAt() + ":00");
+
+                        // 타임스탬프 변환 - 사용자 시간대 사용
+                        ZonedDateTime startZdt = ZonedDateTime.of(localDate, startLocalTime, userZone);
+                        ZonedDateTime endZdt = ZonedDateTime.of(localDate, endLocalTime, userZone);
+
+                        long visitedDateTimestamp = localDate.atStartOfDay(userZone).toInstant().toEpochMilli();
+                        long startAtTimestamp = startZdt.toInstant().toEpochMilli();
+                        long endAtTimestamp = endZdt.toInstant().toEpochMilli();
+
+                        // 중복 일정 확인 (수정된 레포지토리 메서드 사용)
+                        boolean hasOverlap = false;
+                        try {
+                            // 해당 날짜의 시작과 끝 타임스탬프
+                            long dayStart = localDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
+                            long dayEnd = localDate.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
+
+                            List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateAndTimeOverlapping(
+                                    userId, dayStart, dayEnd, startAtTimestamp, endAtTimestamp);
+                            hasOverlap = !overlappingSchedules.isEmpty();
+                        } catch (Exception e) {
+                            log.warn("중복 일정 확인 중 오류: {}", e.getMessage());
+                            // 중복 확인 실패해도 일정 등록은 진행
+                        }
+
+                        if (hasOverlap) {
+                            failCount++;
+                            failureReasons.add(String.format("중복 일정: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
+                            continue;
+                        }
+
+                        // Schedule 객체 생성 및 저장
+                        Schedule schedule = Schedule.builder()
+                                .user(user)
+                                .client(client)
+                                .visitedDate(visitedDateTimestamp)
+                                .startAt(startAtTimestamp)
+                                .endAt(endAtTimestamp)
+                                .build();
+
+                        scheduleRepository.save(schedule);
+                        successCount++;
+                        log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}",
+                                localDate, startLocalTime, endLocalTime, client.getName());
                     } catch (DateTimeParseException e) {
                         failCount++;
                         failureReasons.add(String.format("시간 형식 오류: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
                         continue;
                     }
-
-                    // 시간 유효성 검사
-                    if (endAt.isBefore(startAt)) {
-                        failCount++;
-                        failureReasons.add(String.format("시간 유효성 오류: %s일 종료 시간(%s)이 시작 시간(%s)보다 빠릅니다.",
-                                item.getDay(), item.getEndAt(), item.getStartAt()));
-                        continue;
-                    }
-
-                    // 중복 일정 확인
-                    boolean hasOverlap = false;
-                    try {
-                        List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateAndTimeOverlapping(
-                                userId, visitedDate, startAt, endAt);
-                        hasOverlap = !overlappingSchedules.isEmpty();
-                    } catch (Exception e) {
-                        log.warn("중복 일정 확인 중 오류: {}", e.getMessage());
-                        // 중복 확인 실패해도 일정 등록은 진행
-                    }
-
-                    if (hasOverlap) {
-                        failCount++;
-                        failureReasons.add(String.format("중복 일정: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
-                        continue;
-                    }
-
-                    // Schedule 생성 및 저장
-                    Schedule schedule = Schedule.builder()
-                            .user(user)
-                            .client(client)
-                            .visitedDate(visitedDate)
-                            .startAt(startAt)
-                            .endAt(endAt)
-                            .build();
-
-                    scheduleRepository.save(schedule);
-                    successCount++;
-                    log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}",
-                            visitedDate, startAt, endAt, client.getName());
                 } catch (Exception e) {
                     failCount++;
                     failureReasons.add(String.format("기타 오류: %s", e.getMessage()));

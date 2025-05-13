@@ -9,7 +9,7 @@ import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.measures.entity.Stress;
 import com.S209.yobi.domain.users.entity.User;
 import org.springframework.stereotype.Component;
-
+import static com.S209.yobi.Mapper.DateTimeUtils.toEpochMilli;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,6 +18,8 @@ import java.util.Map;
 
 @Component
 public class HealthMapper {
+
+
 
     public TotalHealthResponseDTO toTotalHealthDTO(User user, Client client, List<Measure> measures){
         Map<String, List<GraphPointDTO>> bodyCompositionMap = new LinkedHashMap<>();
@@ -38,7 +40,7 @@ public class HealthMapper {
 
         // measure 순회를 돌면서 , 각 항목별로 추출하고 key값으로 date를 넣고 각 항목의 value에는 항목의 값을 빼서 넣기
         for(Measure measure : measures){
-            LocalDate date = measure.getDate();
+            Long date = measure.getDate();
 
             // BodyComposition
             BodyComposition body = measure.getBody();

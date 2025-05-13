@@ -1,8 +1,6 @@
 package com.S209.yobi.DTO.responseDTO;
 
-import com.S209.yobi.DTO.requestDTO.TemperatureRequestDTO;
 import com.S209.yobi.domain.measures.entity.Measure;
-import com.S209.yobi.domain.measures.entity.Temperature;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,11 +8,14 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static com.S209.yobi.Mapper.DateTimeUtils.toEpochMilli;
+
+
 @Getter
 @Builder
 public class HealthDetailResponseDTO implements ApiResult {
     private Integer clientId;
-    private LocalDate today;
+    private Long today;
     private BodyCompositionResponseDTO bodyComposition;
     private TemperatureResponseDTO temperature;
     private BloodResponseDTO bloodPressure;
@@ -25,9 +26,13 @@ public class HealthDetailResponseDTO implements ApiResult {
 
         // 오늘 측정 값이 업는 경우
         if(measure == null){
+
+            // 시간 Long 타입으로 변환
+            long epochDay = today.toEpochDay();
+
             return HealthDetailResponseDTO.builder()
                     .clientId(clientId)
-                    .today(today)
+                    .today(epochDay)
                     .bodyComposition(null)
                     .temperature(null)
                     .bloodPressure(null)
