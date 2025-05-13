@@ -6,6 +6,8 @@ services:
     container_name: ai-app
     build:
       context: ./AI
+      dockerfile: Dockerfile
+    restart: always
     ports:
       - "6000:6000"
     env_file:
@@ -21,6 +23,8 @@ services:
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
     networks:
       - yobi-network
+    volumes:
+      - /tmp:/tmp
 
 networks:
   yobi-network:
