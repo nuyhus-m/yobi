@@ -8,14 +8,14 @@ import lombok.Getter;
 @Builder
 public class HeartRateResponseDTO {
     private Long heartId;
-    private Short bpm;
-    private Short oxygen;
+    private MeasureWithLevel bpm;
+    private MeasureWithLevel oxygen;
 
     public static HeartRateResponseDTO of(HeartRate heartRate){
         return HeartRateResponseDTO.builder()
                 .heartId(heartRate.getId())
-                .bpm(heartRate.getBpm())
-                .oxygen(heartRate.getOxygen())
+                .bpm(new MeasureWithLevel(heartRate.getBpm(), "높음"))
+                .oxygen(new MeasureWithLevel(heartRate.getOxygen(), "높음"))
                 .build();
     }
 }
