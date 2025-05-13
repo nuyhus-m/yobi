@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class UserInfoDTO {
     private Long userId;
     private String name;
-    private String employeeNumber;
+    private Integer employeeNumber;
     private String image;
     private Boolean consent;
 } 

@@ -27,7 +27,7 @@ public class User {
 
     @NotNull
     @Column(name = "employee_number", nullable = false, unique = true)
-    private String employeeNumber;
+    private Integer employeeNumber;
 
     @Size(max = 255)
     @NotNull

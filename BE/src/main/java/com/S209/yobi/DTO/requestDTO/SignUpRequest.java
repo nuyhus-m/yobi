@@ -13,7 +13,7 @@ public class SignUpRequest {
     private String name;
 
     @NotNull(message = "사번은 필수 입력값입니다.")
-    private String employeeNumber;
+    private Integer employeeNumber;
 
     @Size(min = 6, message = "비밀번호는 6자 이상이어야 합니다.")
     @NotNull(message = "비밀번호는 필수 입력값입니다.")
