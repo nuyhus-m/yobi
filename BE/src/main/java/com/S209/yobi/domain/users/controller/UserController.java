@@ -4,6 +4,7 @@ import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.domain.users.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "사용자 회원가입", description = "이름, ")
     @PostMapping
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         userService.signUp(request);

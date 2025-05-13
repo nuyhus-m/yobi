@@ -69,8 +69,8 @@ public class UserService implements UserDetailsService {
         UserDetails userDetails = loadUserByUsername(String.valueOf(request.getEmployeeNumber()));
 
         // 토큰 생성
-        String accessToken = jwtConfig.generateToken(userDetails);
-        String refreshToken = jwtConfig.generateRefreshToken(userDetails);
+        String accessToken = jwtConfig.generateToken(userDetails, user.getId());
+        String refreshToken = jwtConfig.generateRefreshToken(userDetails, user.getId());
 
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)
