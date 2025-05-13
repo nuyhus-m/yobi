@@ -44,4 +44,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findByUserIdAndClientIdAndLogContentNotNullOrderByVisitedDateDesc(
             @Param("userId") Integer userId,
             @Param("clientId") Integer clientId);
+
 }
