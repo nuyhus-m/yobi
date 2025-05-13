@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -86,5 +86,38 @@ public class UserController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         LoginResponseDTO response = userService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "토큰 갱신", description = "Refresh token을 사용하여 새로운 Access token을 발급받습니다.")
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        try {
+            if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+            }
+
+            String token = refreshToken.substring(7);
+            Integer employeeNumber = jwtProvider.extractEmployeeNumber(token);
+            Integer userId = jwtProvider.extractUserId(token);
+
+            if (employeeNumber == null || userId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+            }
+
+            UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
+            
+            if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
+                String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
+                return ResponseEntity.ok(ApiResponseDTO.success(new TokenDTO(newAccessToken, token, "Bearer")));
+            }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDTO.fail("401", "토큰 갱신에 실패했습니다."));
+        }
     }
 }
