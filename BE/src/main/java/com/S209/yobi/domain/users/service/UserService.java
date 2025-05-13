@@ -6,7 +6,6 @@ import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, @Lazy JwtProvider jwtProvider) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
