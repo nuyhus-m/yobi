@@ -17,6 +17,10 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initButton()
+    }
+
+    private fun initButton() {
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
         }
