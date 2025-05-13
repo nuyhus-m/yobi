@@ -39,6 +39,9 @@ class FitrusViewModel @Inject constructor(
     private val _isInfoSuccess = MutableSharedFlow<Boolean>()
     val isInfoSuccess: SharedFlow<Boolean> = _isInfoSuccess
 
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage
+
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected
 
@@ -48,10 +51,6 @@ class FitrusViewModel @Inject constructor(
 
     fun initFitrusDevice(device: FitrusDevice) {
         manager = device
-    }
-
-    fun setMeasureStatus(status: Boolean) {
-        _isMeasured = status
     }
 
     fun setMeasureType(type: HealthDataType) {
@@ -70,9 +69,11 @@ class FitrusViewModel @Inject constructor(
                     }
                     Log.d(TAG, "getClientDetail: ${response.body()}")
                 } else {
+                    _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
                     Log.d(TAG, "getClientDetail: ${response.code()}")
                 }
             }.onFailure {
+                _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
                 Log.e(TAG, "getClientDetail: ${it.message}", it)
             }
         }
@@ -90,9 +91,11 @@ class FitrusViewModel @Inject constructor(
                     }
                     Log.d(TAG, "getMeasureStatus: ${response.body()}")
                 } else {
+                    _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
                     Log.d(TAG, "getMeasureStatus: ${response.code()}")
                 }
             }.onFailure {
+                _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
                 Log.e(TAG, "getMeasureStatus: ${it.message}", it)
             }
         }

@@ -16,6 +16,7 @@ import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.response.ClientResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.FitrusViewModel
+import com.example.myapplication.util.setOnSingleClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
         initSpinner()
         initNextButton()
         observeMeasureStatus()
+        observeToastMessage()
     }
 
     private fun initSpinner() {
@@ -70,7 +72,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
     }
 
     private fun initNextButton() {
-        binding.btnNext.setOnClickListener {
+        binding.btnNext.setOnSingleClickListener {
             fitrusViewModel.getClientDetail(selectedClientId)
         }
     }
@@ -86,6 +88,16 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
                         fitrusViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
                         findNavController().navigate(R.id.dest_device_connect)
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collectLatest {
+                    showToast(it)
                 }
             }
         }
