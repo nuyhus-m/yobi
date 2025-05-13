@@ -11,6 +11,9 @@ plugins {
     // hilt
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
+
+    // kotlinx.serialization
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 val properties = Properties().apply {
@@ -130,4 +133,6 @@ dependencies {
     /* calendar custom */
     implementation("com.kizitonwose.calendar:view:2.6.2")
 
+    // kotlinx.serialization
+    implementation(libs.kotlinx.serialization.json)
 }
