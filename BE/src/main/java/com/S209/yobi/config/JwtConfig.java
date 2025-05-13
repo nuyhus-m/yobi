@@ -34,8 +34,8 @@ public class JwtConfig {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Long extractUserId(String token) {
-        return Long.parseLong(extractClaim(token, Claims::getSubject));
+    public Integer extractUserId(String token) {
+        return Integer.parseInt(extractClaim(token, Claims::getSubject));
     }
 
     public Date extractExpiration(String token) {
@@ -59,58 +59,63 @@ public class JwtConfig {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails, Long userId) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, String.valueOf(userId), expiration);
-    }
-
-    public String generateRefreshToken(UserDetails userDetails, Long userId) {
-        Map<String, Object> claims = new HashMap<>();
-        String refreshToken = createToken(claims, String.valueOf(userId), refreshExpiration);
-        // Redis에 Refresh Token 저장 (userId를 키로 사용)
-        saveRefreshToken(userId, refreshToken, refreshExpiration);
-        return refreshToken;
-    }
-
-    private String createToken(Map<String, Object> claims, String subject, Long expiration) {
+    public String generateToken(Integer userId) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24시간
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails, Long userId) {
-        final Long tokenUserId = extractUserId(token);
-        return (tokenUserId.equals(userId) && !isTokenExpired(token));
+    public String generateRefreshToken(Integer userId) {
+        String refreshToken = Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+
+        // Redis에 refresh token 저장
+        redisTemplate.opsForValue().set(
+                "refresh_token:" + userId,
+                refreshToken,
+                7,
+                TimeUnit.DAYS
+        );
+
+        return refreshToken;
     }
 
-    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Long userId) {
-        final Long tokenUserId = extractUserId(refreshToken);
+    public boolean validateToken(String token, Integer userId) {
+        final Integer extractedUserId = extractUserId(token);
+        return (extractedUserId.equals(userId)) && !isTokenExpired(token);
+    }
+
+    public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Integer userId) {
+        final Integer tokenUserId = extractUserId(refreshToken);
         return (tokenUserId.equals(userId) && 
                 !isTokenExpired(refreshToken) && 
                 validateRefreshTokenInRedis(userId, refreshToken));
     }
 
     // Redis 관련 메서드들
-    private void saveRefreshToken(Long userId, String refreshToken, long expirationTime) {
+    private void saveRefreshToken(Integer userId, String refreshToken, long expirationTime) {
         String key = REFRESH_TOKEN_PREFIX + userId;
         redisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
     }
 
-    private String getRefreshToken(Long userId) {
+    private String getRefreshToken(Integer userId) {
         String key = REFRESH_TOKEN_PREFIX + userId;
         return redisTemplate.opsForValue().get(key);
     }
 
-    private void deleteRefreshToken(Long userId) {
+    private void deleteRefreshToken(Integer userId) {
         String key = REFRESH_TOKEN_PREFIX + userId;
         redisTemplate.delete(key);
     }
 
-    private Boolean validateRefreshTokenInRedis(Long userId, String refreshToken) {
+    private Boolean validateRefreshTokenInRedis(Integer userId, String refreshToken) {
         String storedToken = getRefreshToken(userId);
         return storedToken != null && storedToken.equals(refreshToken);
     }
