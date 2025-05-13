@@ -1,12 +1,15 @@
 package com.S209.yobi.domain.users.service;
 
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
+import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.S3Service;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.ApiResponseCode;
+import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -118,5 +122,25 @@ public class UserService implements UserDetailsService {
         user.setConsent(true);
 
         return null;
+    }
+
+    @Transactional
+    public ApiResult updatePassword(Integer userId, PasswordRequestDTO request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            return ApiResponseDTO.fail(ApiResponseCode.OLD_PASSWORD_WRONG);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            return ApiResponseDTO.fail(ApiResponseCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(newPassword);
+
+        return null;
+
     }
 } 

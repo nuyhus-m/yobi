@@ -1,6 +1,7 @@
 package com.S209.yobi.domain.users.controller;
 
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
+import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.domain.users.service.UserService;
@@ -64,6 +65,26 @@ public class UserController {
 
         Integer userId = 1;
         ApiResult result = userService.updateConsent(userId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.")
+    @PatchMapping("/users/password")
+    public ResponseEntity<?> updatePassword(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails,
+            @RequestBody PasswordRequestDTO request
+            ) {
+//        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
+
+        Integer userId = 1;
+        ApiResult result = userService.updatePassword(userId, request);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
