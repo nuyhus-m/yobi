@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(employeeNumber)
+                .username(String.valueOf(user.getEmployeeNumber()))
                 .password(user.getPassword())
                 .roles("USER")
                 .build();
@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void signUp(SignUpRequest request) {
         // 사번 중복 체크
-        if (userRepository.existsByEmployeeNumber(Integer.parseInt(request.getEmployeeNumber()))) {
+        if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
             throw new IllegalArgumentException("이미 존재하는 사번입니다.");
         }
 
@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
         // User 엔티티 생성
         User user = new User();
         user.setName(request.getName());
-        user.setEmployeeNumber(Integer.parseInt(request.getEmployeeNumber()));
+        user.setEmployeeNumber(request.getEmployeeNumber());
         user.setPassword(encodedPassword);
 
         // DB에 저장
@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO request) {
         // 사용자 조회
-        User user = userRepository.findByEmployeeNumber(Integer.parseInt(request.getEmployeeNumber()))
+        User user = userRepository.findByEmployeeNumber(request.getEmployeeNumber())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // 비밀번호 검증
@@ -66,7 +66,7 @@ public class UserService implements UserDetailsService {
         }
 
         // UserDetails 생성
-        UserDetails userDetails = loadUserByUsername(request.getEmployeeNumber());
+        UserDetails userDetails = loadUserByUsername(String.valueOf(request.getEmployeeNumber()));
 
         // 토큰 생성
         String accessToken = jwtConfig.generateToken(userDetails);
