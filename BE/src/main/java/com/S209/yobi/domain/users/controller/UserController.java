@@ -45,23 +45,17 @@ public class UserController {
 
     @Operation(summary = "현재 사용자 정보 조회", description = "인가된 사용자인지 확인 후 사용자 정보를 반환합니다.")
     @GetMapping
-    public ResponseEntity<GlobalExceptionHandler<?>> getUserProfile() {
+    public ResponseEntity<?> getUserProfile() {
         try {
-            // 1. SecurityContext에서 인증 정보 가져오기
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(GlobalExceptionHandler.fail("401", "인증되지 않은 사용자입니다."));
+                        .body("인증되지 않은 사용자입니다.");
             }
-
-            // 2. JWT 토큰에서 userId 추출
             String token = authentication.getCredentials().toString();
             Integer userId = jwtProvider.extractUserId(token);
-
-            // 3. 사용자 정보 조회
             UserInfoDTO userInfo = userService.getUserInfoById(userId);
-            return ResponseEntity.ok(ApiResponseDTO.success(userInfo));
-
+            return ResponseEntity.ok(userInfo);
         } catch (EntityNotFoundException e) {
             log.error("사용자 정보 조회 실패 : {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
