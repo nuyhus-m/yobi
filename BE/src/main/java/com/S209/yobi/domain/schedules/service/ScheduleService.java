@@ -258,7 +258,17 @@ public class ScheduleService {
                 userId, dayStart, dayEnd);
 
         List<ScheduleResponseDTO.ScheduleDTO> result = schedules.stream()
-                .map(schedule -> ScheduleResponseDTO.fromSchedule(schedule))
+                .map(schedule -> {
+                    return ScheduleResponseDTO.ScheduleDTO.builder()
+                            .scheduleId(schedule.getId())
+                            .clientId(schedule.getClient().getId())
+                            .clientName(schedule.getClient().getName())
+                            .visitedDate(schedule.getVisitedDate())
+                            .startAt(schedule.getStartAt())
+                            .endAt(schedule.getEndAt())
+                            .hasLogContent(schedule.getLogContent() != null && !schedule.getLogContent().isEmpty()) // 로그 존재 여부
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return new SimpleResultDTO<>(result);

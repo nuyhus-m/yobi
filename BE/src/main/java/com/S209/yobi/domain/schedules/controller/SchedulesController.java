@@ -180,7 +180,7 @@ public class SchedulesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일별 일정 목록 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000}]")))
+                            examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000, \"hasLogContent\": \"false\"},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000, \"hasLogContent\": \"false\"}]")))
     })
     public ResponseEntity<?> getSchedulesByDay(
             @RequestParam long date
