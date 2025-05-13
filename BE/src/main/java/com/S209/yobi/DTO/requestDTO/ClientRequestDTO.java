@@ -15,6 +15,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ClientRequestDTO {
+
+    @NotNull
+    private Integer userId;
+
     @Size(max = 10)
     @NotNull
     private String name;
