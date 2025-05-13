@@ -115,6 +115,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusConnected() {
+        Log.d(TAG, "handleFitrusConnected: ")
         _isConnected.value = true
     }
 
@@ -123,6 +124,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusDisconnected() {
+        Log.d(TAG, "handleFitrusDisconnected: ")
         _isConnected.value = false
     }
 
