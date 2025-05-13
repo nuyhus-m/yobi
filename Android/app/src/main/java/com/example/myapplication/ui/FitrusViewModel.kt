@@ -32,8 +32,8 @@ class FitrusViewModel @Inject constructor(
     private var _isMeasured = false
     val isMeasured: Boolean get() = _isMeasured
 
-    private var _type = HealthDataType.BODY_COMPOSITION
-    val type: HealthDataType get() = _type
+    private var _measureType = HealthDataType.BODY_COMPOSITION
+    val measureType: HealthDataType get() = _measureType
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected
@@ -59,7 +59,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     fun setMeasureType(type: HealthDataType) {
-        _type = type
+        _measureType = type
     }
 
     private fun startScan() {
