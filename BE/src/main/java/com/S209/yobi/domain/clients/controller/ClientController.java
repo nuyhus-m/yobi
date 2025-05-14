@@ -76,7 +76,7 @@ public class ClientController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "[\n" +
                                     "  {\n" +
-                                    "    \"id\": 1,\n" +
+                                    "    \"clientId\": 1,\n" +
                                     "    \"name\": \"홍길동\",\n" +
                                     "    \"birth\": \"1960-08-09\",\n" +
                                     "    \"gender\": 0,\n" +
@@ -86,7 +86,7 @@ public class ClientController {
                                     "    \"address\": \"서울시 강남구\"\n" +
                                     "  },\n" +
                                     "  {\n" +
-                                    "    \"id\": 2,\n" +
+                                    "    \"clientId\": 2,\n" +
                                     "    \"name\": \"김철수\",\n" +
                                     "    \"birth\": \"1950-08-09\",\n" +
                                     "    \"gender\": 0,\n" +
@@ -120,7 +120,7 @@ public class ClientController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "client 불러오기 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"id\": 3, \"name\": \"박지성\", \"birth\": \"1960-04-03\", \"gender\": 0, \"height\": 160, \"weight\": 60, \"image\": \"https://s209-yobi.s3.ap-southeast-2.amazonaws.com/8e4f956b-cb6e-4845-bc1a-ffa78a740949.jpg\", \"address\": \"경상북도 구미시 주소\" }")
+                            examples = @ExampleObject(value = "{ \"clientId\": 3, \"name\": \"박지성\", \"birth\": \"1960-04-03\", \"gender\": 0, \"height\": 160, \"weight\": 60, \"image\": \"https://s209-yobi.s3.ap-southeast-2.amazonaws.com/8e4f956b-cb6e-4845-bc1a-ffa78a740949.jpg\", \"address\": \"경상북도 구미시 주소\" }")
                     )
             )
     })

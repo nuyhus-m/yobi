@@ -43,22 +43,10 @@ public class S3Service {
             ));
 
             // 업로드된 파일의 URL 반환
-            return amazonS3Client.getUrl(bucket, fileName).toString();  // 여기도 bucket으로 수정
-        } catch (Exception e) {  // AmazonServiceException을 포함하는 더 넓은 예외 처리
+            return amazonS3Client.getUrl(bucket, fileName).toString();
+        } catch (Exception e) {
             log.error("S3 파일 업로드 실패: {}", e.getMessage());
             throw new IOException("S3 파일 업로드 실패: " + e.getMessage(), e);
-        }
-    }
-
-    public void deleteFile(String fileUrl) {
-        try {
-            if (fileUrl != null && fileUrl.contains(bucket)) {
-                String fileName = fileUrl.substring(fileUrl.indexOf(bucket) + bucket.length() + 1);
-                amazonS3Client.deleteObject(bucket, fileName);
-                log.info("S3 파일 삭제 성공: {}", fileName);
-            }
-        } catch (Exception e) {
-            log.error("S3 파일 삭제 실패: {}", e.getMessage());
         }
     }
 }
