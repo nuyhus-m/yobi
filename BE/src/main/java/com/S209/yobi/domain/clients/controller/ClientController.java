@@ -2,6 +2,7 @@ package com.S209.yobi.domain.clients.controller;
 
 import com.S209.yobi.DTO.requestDTO.ClientRequestDTO;
 import com.S209.yobi.DTO.responseDTO.ClientResponseDTO;
+import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.domain.clients.service.ClientService;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +30,7 @@ import java.time.LocalDate;
 public class ClientController {
 
     private final ClientService clientService;
+    private final AuthUtils authUtils;
 
     @Operation(summary = "client 등록", description = "서비스에서 직접 구현하는 기능은 아닙니다.")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
@@ -42,11 +46,14 @@ public class ClientController {
             @Parameter(description = "몸무게") @RequestParam("weight") Double weight,
             @Parameter(description = "주소") @RequestParam("address") String address,
             @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+
         // 요청 파라미터로 ClientRequestDTO 객체 생성
-        //userID 하드코딩
         ClientRequestDTO requestDTO = ClientRequestDTO.builder()
-                .userId(1)
+                .userId(userId)
                 .name(name)
                 .birth(birth)
                 .gender(gender)
@@ -95,8 +102,10 @@ public class ClientController {
                                     "  }\n" +
                                     "]")))
     })
-    public ResponseEntity<?> getClientsList() {
-        Integer userId = 1;
+    public ResponseEntity<?> getClientsList(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
         ApiResult result = clientService.getClientsList(userId);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
