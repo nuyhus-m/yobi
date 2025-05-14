@@ -11,6 +11,7 @@ public enum ApiResponseCode {
     SUCCESS("200", "요청이 성공했습니다.", HttpStatus.OK),
 
     // 실패
+    BAD_REQUEST("400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     NOT_FOUND_MEASURE("404-1", "먼저 체성분과 혈압을 측정해야 합니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_USER("404-2", "유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_CLIENT("404-4", "해당하는 클라이언트가 없습니다.", HttpStatus.NOT_FOUND),
