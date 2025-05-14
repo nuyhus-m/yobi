@@ -12,6 +12,7 @@ WORKDIR /app
 
 # 빌드 단계에서 생성된 JAR 파일을 복사
 COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/src/main/resources/application-prod.yml /app/application-prod.yml
 
 # 환경 변수 설정
 ENV SPRING_PROFILES_ACTIVE=prod
