@@ -4,6 +4,7 @@ import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleCreateRequestDTO;
 import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleUpdateRequestDTO;
 import com.S209.yobi.DTO.responseDTO.ScheduleResponseDTO;
 import com.S209.yobi.DTO.responseDTO.SimpleResultDTO;
+import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.schedules.service.ScheduleService;
 import com.S209.yobi.domain.users.entity.User;
@@ -39,8 +40,7 @@ import java.time.LocalDate;
 public class SchedulesController {
 
     private final ScheduleService scheduleService;
-    private final JwtProvider jwtProvider;
-    private final UserRepository userRepository;
+    private final AuthUtils authUtils;
 
     @Operation(summary = "단건 일정 조회", description = "scheduleId를 넘기면 단건 일정의 정보를 조회할 수 있습니다.")
     @GetMapping("/{scheduleId}")
@@ -135,7 +135,9 @@ public class SchedulesController {
     public ResponseEntity<?> getSchedulesByUser(
             @AuthenticationPrincipal UserDetails userDetails
             ) {
-        Integer userId = getUserIdFromUserDetails(userDetails);
+        Integer userId = userDetails != null ?
+                authUtils.getUserIdFromUserDetails(userDetails) :
+                authUtils.getCurrentUserId();
 
         ApiResult result = scheduleService.getSchedulesByUser(userId);
 
@@ -166,7 +168,9 @@ public class SchedulesController {
             @RequestParam int month,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Integer userId = getUserIdFromUserDetails(userDetails);
+        Integer userId = userDetails != null ?
+                authUtils.getUserIdFromUserDetails(userDetails) :
+                authUtils.getCurrentUserId();
 
         ApiResult result = scheduleService.getSchedulesByMonth(userId, year, month);
 
@@ -195,7 +199,9 @@ public class SchedulesController {
             @RequestParam long date,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Integer userId = getUserIdFromUserDetails(userDetails);
+        Integer userId = userDetails != null ?
+                authUtils.getUserIdFromUserDetails(userDetails) :
+                authUtils.getCurrentUserId();
 
         ApiResult result = scheduleService.getSchedulesByDay(userId, date);
 
@@ -230,7 +236,9 @@ public class SchedulesController {
             @RequestParam(value = "timezone", defaultValue = "Asia/Seoul") String timezone,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Integer userId = getUserIdFromUserDetails(userDetails);
+        Integer userId = userDetails != null ?
+                authUtils.getUserIdFromUserDetails(userDetails) :
+                authUtils.getCurrentUserId();
 
         ApiResult result = scheduleService.processOcrSchedules(image, userId, year, month, timezone);
 
@@ -256,7 +264,9 @@ public class SchedulesController {
             @RequestParam long endDate,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Integer userId = getUserIdFromUserDetails(userDetails);
+        Integer userId = userDetails != null ?
+                authUtils.getUserIdFromUserDetails(userDetails) :
+                authUtils.getCurrentUserId();
 
         ApiResult result = scheduleService.getSchedulesByPeriod(userId, startDate, endDate);
 
@@ -273,17 +283,4 @@ public class SchedulesController {
         return ResponseEntity.ok(result);
     }
 
-    private Integer getUserIdFromUserDetails(UserDetails userDetails) {
-        try {
-            Integer employeeNumber = Integer.parseInt(userDetails.getUsername());
-
-            User user = userRepository.findByEmployeeNumber(employeeNumber)
-                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
-
-            return user.getId();
-        } catch (Exception e) {
-            log.error("사용자 정보 추출 오류: {}", e.getMessage());
-            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "사용자 정보를 추출할 수 없습니다.");
-        }
-    }
 }
