@@ -151,11 +151,13 @@ class FitrusViewModel @Inject constructor(
         if (manager.fitrusConnectionState) {
             manager.disconnectFitrus()
         }
+        _isConnected.value = false
     }
 
     fun startMeasure() {
         when (measureType) {
             HealthDataType.BODY_COMPOSITION -> {
+                Log.d(TAG, "startMeasure: 체성분")
                 manager.startFitrusCompMeasure(
                     if (client.gender == 0) {
                         Gender.MALE
@@ -170,23 +172,29 @@ class FitrusViewModel @Inject constructor(
             }
 
             HealthDataType.HEART_RATE -> {
+                Log.d(TAG, "startMeasure: 심박")
                 manager.startFitrusHeartRateMeasure()
             }
 
             HealthDataType.BLOOD_PRESSURE -> {
+                Log.d(TAG, "startMeasure: 혈압")
                 manager.StartFitrusBloodPressure(120f, 80f)
             }
 
             HealthDataType.STRESS -> {
+                Log.d(TAG, "startMeasure: 스트레스")
                 manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
             }
 
-            HealthDataType.TEMPERATURE -> manager.startFitrusTempBodyMeasure()
+            HealthDataType.TEMPERATURE -> {
+                Log.d(TAG, "startMeasure: 체온")
+                manager.startFitrusTempBodyMeasure()
+            }
         }
     }
 
     override fun fitrusDispatchError(error: String) {
-        TODO("Not yet implemented")
+        Log.e(TAG, "fitrusDispatchError: $error")
     }
 
     override fun handleFitrusBatteryInfo(result: Map<String, Any>) {
@@ -194,11 +202,11 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusCompMeasured(result: Map<String, String>) {
-        Log.d(TAG, "handleFitrusCompMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<BodyCompositionResult>(result)
                 _measureResult.emit(data)
+                Log.d(TAG, "handleFitrusCompMeasured: $data")
             }.onFailure {
                 Log.e(TAG, "BodyComposition 파싱 실패: ${it.message}", it)
             }
@@ -220,13 +228,13 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusPpgMeasured(result: Map<String, Any>) {
-        Log.d(TAG, "handleFitrusPpgMeasured: $result")
         viewModelScope.launch {
             when (measureType) {
                 HealthDataType.HEART_RATE -> {
                     runCatching {
                         val data = mapToDataClass<HeartRateResult>(result)
                         _measureResult.emit(data)
+                        Log.d(TAG, "handleFitrusPpgMeasured: $data")
                     }.onFailure {
                         Log.e(TAG, "HeartRate 파싱 실패: ${it.message}", it)
                     }
@@ -236,6 +244,7 @@ class FitrusViewModel @Inject constructor(
                     runCatching {
                         val data = mapToDataClass<BloodPressureResult>(result)
                         _measureResult.emit(data)
+                        Log.d(TAG, "handleFitrusPpgMeasured: $data")
                     }.onFailure {
                         Log.e(TAG, "BloodPressure 파싱 실패: ${it.message}", it)
                     }
@@ -245,6 +254,7 @@ class FitrusViewModel @Inject constructor(
                     runCatching {
                         val data = mapToDataClass<StressResult>(result)
                         _measureResult.emit(data)
+                        Log.d(TAG, "handleFitrusPpgMeasured: $data")
                     }.onFailure {
                         Log.e(TAG, "Stress 파싱 실패: ${it.message}", it)
                     }
@@ -258,11 +268,11 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusTempMeasured(result: Map<String, String>) {
-        Log.d(TAG, "handleFitrusTempMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<TemperatureResult>(result)
                 _measureResult.emit(data)
+                Log.d(TAG, "handleFitrusTempMeasured: $data")
             }.onFailure {
                 Log.e(TAG, "Temp 파싱 실패: ${it.message}", it)
             }
