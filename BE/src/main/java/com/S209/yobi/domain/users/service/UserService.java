@@ -1,5 +1,6 @@
 package com.S209.yobi.domain.users.service;
 
+import com.S209.yobi.DTO.TokenDTO;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
@@ -175,7 +176,16 @@ public class UserService implements UserDetailsService {
         String newPassword = passwordEncoder.encode(request.getNewPassword());
         user.setPassword(newPassword);
 
-        return null;
+        String accessToken = jwtProvider.generateToken(user.getEmployeeNumber(), user.getId());
+        String refreshToken = jwtProvider.generateRefreshToken(user.getEmployeeNumber(), user.getId());
+
+        TokenDTO tokenDTO = TokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .build();
+
+        return ApiResponseDTO.success(tokenDTO);
 
     }
 
