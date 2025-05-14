@@ -37,11 +37,11 @@ public class DailyLogService {
 
         if (content != null) {
             if (schedule.getLogCreatedAt() == null) {
-                //최초 등록이라면
+                //최초 등록이라면 created_at 삽입
                 schedule.setLogContent(content);
                 schedule.setLogCreatedAt(seoulTime.toInstant());
             } else {
-                // 수정이라면
+                // 수정이라면 updated_at 갱신
                 schedule.setLogContent(content);
                 schedule.setLogUpdatedAt(seoulTime.toInstant());
             }
@@ -102,12 +102,9 @@ public class DailyLogService {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule Not Found."));
 
-        String logContent = schedule.getLogContent();
-        String clientName = schedule.getClient().getName();
-
         DailyLogDetailDTO detailDTO = DailyLogDetailDTO.builder()
-                .logContent(logContent)
-                .clientName(clientName)
+                .logContent(schedule.getLogContent())
+                .clientName(schedule.getClient().getName())
                 .visitedDate(schedule.getVisitedDate())
                 .build();
 
