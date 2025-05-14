@@ -17,10 +17,6 @@ import com.google.cloud.speech.v1.StreamingRecognitionConfig
 import com.google.cloud.speech.v1.StreamingRecognizeRequest
 import com.google.cloud.speech.v1.StreamingRecognizeResponse
 import com.google.protobuf.ByteString
-import com.konovalov.vad.webrtc.VadWebRTC
-import com.konovalov.vad.webrtc.config.FrameSize
-import com.konovalov.vad.webrtc.config.Mode
-import com.konovalov.vad.webrtc.config.SampleRate
 import io.grpc.ManagedChannelBuilder
 import io.grpc.auth.MoreCallCredentials
 import io.grpc.stub.StreamObserver
@@ -33,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.abs
 
 private const val TAG = "SpeechStreamManager"
 
@@ -46,15 +43,17 @@ class SpeechStreamManager(private val ctx: Context) {
         AudioFormat.ENCODING_PCM_16BIT
     )
 
-    // VAD (에너지 계산) 핸들
-    private var vad: VadWebRTC? = null
-
     // 최적화 1. 버퍼 크기 키우기 (너무 작으면 인식 자체를 못할 문제 발생)
     private val bufferSize = minBufferSize * 2
 
     // 최적화 2. 음성 감지 임계값 설정하기
+    private val silenceThreshold = 500
     private var lastActiveAudioTime = 0L
     private val voiceActivityTimeout = 1000L
+
+    // 최적화 3. 전용 스레드 풀 사용 (안쓰면... 병목현상)
+    private val audioExecutor = Executors.newSingleThreadExecutor()
+    private val processingExecutor = Executors.newSingleThreadExecutor()
 
     // 스트리밍 상태 추적
     private val isStreaming = AtomicBoolean(false)
@@ -71,22 +70,13 @@ class SpeechStreamManager(private val ctx: Context) {
             return@callbackFlow
         }
 
-        vad = VadWebRTC(
-            sampleRate = SampleRate.SAMPLE_RATE_16K,
-            frameSize = FrameSize.FRAME_SIZE_320,   // 320 samples → 20ms @ 16kHz
-            mode = Mode.VERY_AGGRESSIVE,        // 감도(침묵 억제) 높이기
-            silenceDurationMs = 300, // 침묵 최소 0.3초
-            speechDurationMs = 50 // 0.05초 이상 꾸준히 말해야 sppech
-
-        )
-
         // 이미 스트리밍 중인 경우 중지
         if (isStreaming.getAndSet(true)) {
             stopStreamingInternal()
         }
 
         try {
-            // 최적화 3. gRPC 채널 및 자격 + 채널 옵션 추가
+            // 최적화 4. gRPC 채널 및 자격 + 채널 옵션 추가
             val creds = CredentialsHelper.fromAssets(ctx)
             val channel = ManagedChannelBuilder
                 .forAddress("speech.googleapis.com", 443)
@@ -100,7 +90,7 @@ class SpeechStreamManager(private val ctx: Context) {
                 .withCallCredentials(MoreCallCredentials.from(creds))
                 .withDeadlineAfter(60, TimeUnit.SECONDS) // 타임아웃 설정
 
-            // 최적화 4. 요청 config 추가
+            // 최적화 5. 요청 config 추가
             val config = RecognitionConfig.newBuilder()
                 .setLanguageCode("ko-KR") // 한국어 특화 (외국어가 필요할 경우,setAlternativeLanguageCodes()를 쓰기)
                 .setSampleRateHertz(sampleRate)
@@ -115,7 +105,7 @@ class SpeechStreamManager(private val ctx: Context) {
             val streamConfig = StreamingRecognitionConfig.newBuilder()
                 .setConfig(config)
                 .setInterimResults(true) // 중간 결과 반환
-                // 최적화 5: 음성 종료 감지 설정
+                // 최적화 6: 음성 종료 감지 설정
                 .setSingleUtterance(false) // 여러 발화 허용
                 .build()
 
@@ -167,12 +157,10 @@ class SpeechStreamManager(private val ctx: Context) {
                 bufferSize
             ).apply { startRecording() }
 
-            // 최적화 6. 전용 스레드에서 오디오 처리하기 (비동기)
+            // 최적화 8. 전용 스레드에서 오디오 처리하기 (비동기)
             launch(Dispatchers.IO) {
-
-                // 중요!! vad-webRTC는 640프레임만 받음!!
-                val frameBytes = FrameSize.FRAME_SIZE_320.value * 2
                 val buf = ByteArray(bufferSize)
+                val shortBuf = ShortArray(bufferSize / 2)
 
                 // 쉿..한 프레임 수
                 var consecutiveSilenceFrames = 0
@@ -181,33 +169,53 @@ class SpeechStreamManager(private val ctx: Context) {
 
                 while (isActive && isStreaming.get()) {
                     val len = audioRecord?.read(buf, 0, buf.size) ?: -1
-                    if (len == frameBytes) {                               // 정확히 1프레임이면
-                        val speech = vad?.isSpeech(buf) == true            // ★ WebRTC VAD 호출
+                    if (len > 0) {
+                        // 최적화 9: 음성 활동 감지(VAD)
+                        // 16비트 샘플을 short 배열로 변환
+                        // 이부분을 통해 음성 세기 계산.
+                        for (i in 0 until len / 2) {
+                            shortBuf[i] =
+                                (buf[i * 2 + 1].toInt() shl 8 or (buf[i * 2].toInt() and 0xFF)).toShort()
+                        }
 
-                        if (speech) {
+                        // 간단한 에너지 기반 VAD ( 높은 에너지는 말하는것, 낮은건 침묵)
+                        var energy = 0.0
+                        for (i in 0 until len / 2) {
+                            energy += abs(shortBuf[i].toDouble())
+                        }
+                        energy /= (len / 2)
+
+                        if (energy > silenceThreshold) {
                             lastActiveAudioTime = System.currentTimeMillis()
                             consecutiveSilenceFrames = 0
+                            // 활성 음성이 감지되면 즉시 전송
                             requestObserver?.onNext(
                                 StreamingRecognizeRequest.newBuilder()
-                                    .setAudioContent(ByteString.copyFrom(buf))
+                                    .setAudioContent(ByteString.copyFrom(buf, 0, len))
                                     .build()
                             )
                         } else {
                             consecutiveSilenceFrames++
-                            // 짧은 침묵 → 그대로 전송
-                            if (consecutiveSilenceFrames < 5 ||
-                                consecutiveSilenceFrames % 3 == 0
-                            ) {
+                            // 침묵이 짧으면 전송 (문장 중간의 짧은 멈춤)
+                            if (consecutiveSilenceFrames < 5) {
                                 requestObserver?.onNext(
                                     StreamingRecognizeRequest.newBuilder()
-                                        .setAudioContent(ByteString.copyFrom(buf))
+                                        .setAudioContent(ByteString.copyFrom(buf, 0, len))
+                                        .build()
+                                )
+                            }
+                            // 침묵이 길면 낮은 빈도로 전송 (네트워크 트래픽 절약)
+                            else if (consecutiveSilenceFrames % 3 == 0) {
+                                requestObserver?.onNext(
+                                    StreamingRecognizeRequest.newBuilder()
+                                        .setAudioContent(ByteString.copyFrom(buf, 0, len))
                                         .build()
                                 )
                             }
                         }
                     }
 
-                    // 최적화 7: 장시간 침묵 시 처리
+                    // 최적화 10: 장시간 침묵 시 처리
                     if (System.currentTimeMillis() - lastActiveAudioTime > voiceActivityTimeout * 5 &&
                         lastActiveAudioTime > 0
                     ) {
@@ -273,18 +281,34 @@ class SpeechStreamManager(private val ctx: Context) {
     private fun completeRequestObserver() {
         try {
             requestObserver?.onCompleted()
-        } catch (_: Exception) {
-
+            requestObserver = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error completing request observer", e)
         }
-        requestObserver = null
-        vad?.close()            // ★ VAD 메모리 해제
-        vad = null
     }
 
 
     /**
      * 리소스 완전히 정리 (앱 종료 시에만 호출)
      */
+    fun shutdown() {
+        stopStreaming()
+        audioExecutor.shutdown()
+        processingExecutor.shutdown()
+        try {
+            // 최대 2초 기다림
+            if (!audioExecutor.awaitTermination(2, TimeUnit.SECONDS)) {
+                audioExecutor.shutdownNow()
+            }
+            if (!processingExecutor.awaitTermination(2, TimeUnit.SECONDS)) {
+                processingExecutor.shutdownNow()
+            }
+        } catch (e: InterruptedException) {
+            audioExecutor.shutdownNow()
+            processingExecutor.shutdownNow()
+            Thread.currentThread().interrupt()
+        }
+    }
 
     // 유틸리티 함수
     private fun min(a: Int, b: Int): Int = if (a <= b) a else b
