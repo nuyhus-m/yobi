@@ -7,6 +7,6 @@ data class ClientDetailResponse(
     val gender: Int,
     val height: Int,
     val weight: Int,
-    val image: String,
+    val image: String?,
     val address: String
 )

@@ -38,41 +38,41 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initSpinner()
+//        initSpinner()
         initNextButton()
         observeMeasureStatus()
     }
 
-    private fun initSpinner() {
-        val tempClientList = listOf(
-            ClientResponse(1, "김할아버지", 0, "", ""),
-            ClientResponse(2, "이할머니", 1, "", "")
-        )
-
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner,
-            tempClientList
-        )
-
-        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
-        binding.spinner.adapter = adapter
-
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selected = parent.getItemAtPosition(position) as ClientResponse
-                selectedClientId = selected.clientId
-                selectedClientName = selected.name
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-    }
+//    private fun initSpinner() {
+//        val tempClientList = listOf(
+//            ClientResponse(1, "김할아버지", 0, "", ""),
+//            ClientResponse(2, "이할머니", 1, "", "")
+//        )
+//
+//        val adapter = ArrayAdapter(
+//            requireContext(),
+//            R.layout.item_spinner,
+//            tempClientList
+//        )
+//
+//        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
+//        binding.spinner.adapter = adapter
+//
+//        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//            override fun onItemSelected(
+//                parent: AdapterView<*>,
+//                view: View?,
+//                position: Int,
+//                id: Long
+//            ) {
+//                val selected = parent.getItemAtPosition(position) as ClientResponse
+//                selectedClientId = selected.clientId
+//                selectedClientName = selected.name
+//            }
+//
+//            override fun onNothingSelected(parent: AdapterView<*>) {}
+//        }
+//    }
 
     private fun initNextButton() {
         binding.btnNext.setOnClickListener {
