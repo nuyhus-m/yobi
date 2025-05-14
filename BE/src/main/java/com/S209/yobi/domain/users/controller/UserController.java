@@ -1,16 +1,14 @@
 package com.S209.yobi.domain.users.controller;
 
+import com.S209.yobi.DTO.TokenDTO;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
-import com.S209.yobi.exceptionFinal.GlobalExceptionHandler;
-import com.S209.yobi.domain.users.service.UserService;
-import com.S209.yobi.exceptionFinal.ApiResponseCode;
-import com.S209.yobi.exceptionFinal.ApiResponseDTO;
-import com.S209.yobi.exceptionFinal.ApiResult;
 import com.S209.yobi.config.JwtProvider;
+import com.S209.yobi.domain.users.service.UserService;
+import com.S209.yobi.exceptionFinal.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.S209.yobi.DTO.TokenDTO;
@@ -53,12 +52,11 @@ public class UserController {
 
     @Operation(summary = "현재 사용자 정보 조회", description = "인가된 사용자인지 확인 후 사용자 정보를 반환합니다.")
     @GetMapping
-    public ResponseEntity<?> getUserProfile() {
+    public ResponseEntity<ApiResponseDTO<UserInfoDTO>> getUserProfile() throws CustomException {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body("인증되지 않은 사용자입니다.");
+                throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
             }
             String token = authentication.getCredentials().toString();
             Integer userId = jwtProvider.extractUserId(token);
@@ -66,12 +64,10 @@ public class UserController {
             return ResponseEntity.ok(userInfo);
         } catch (EntityNotFoundException e) {
             log.error("사용자 정보 조회 실패 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("사용자를 찾을 수 없습니다.");
+            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         } catch (Exception e) {
             log.error("사용자 정보 조회 중 오류 발생 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("인증되지 않은 요청입니다.");
+            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "인증되지 않은 요청입니다.");
         }
     }
 
@@ -114,6 +110,11 @@ public class UserController {
                     .body(ApiResponseDTO.fail("401", "토큰 갱신에 실패했습니다."));
         }
     }
+        
+    @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
+    @PatchMapping("/users/consent")
+    public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
+//        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
 
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/consent")

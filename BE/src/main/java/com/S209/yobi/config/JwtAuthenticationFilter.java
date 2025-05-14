@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtProvider.validateToken(jwt, employeeNumber, userId)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
-                        null,
+                        jwt,
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -81,9 +81,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/api/users") ||
-               path.startsWith("/api/users/login") ||
-               path.startsWith("/api/users/refresh") ||
+        return (path.equals("/api/users") && request.getMethod().equals("POST")) ||
+               path.equals("/api/users/login") ||
+               path.equals("/api/users/refresh") ||
                path.startsWith("/swagger-ui") ||
                path.startsWith("/api-docs");
     }
