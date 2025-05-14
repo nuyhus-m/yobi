@@ -6,6 +6,7 @@ import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleCreateRequestDTO;
 import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleUpdateRequestDTO;
 import com.S209.yobi.DTO.responseDTO.ScheduleResponseDTO;
 import com.S209.yobi.DTO.responseDTO.SimpleResultDTO;
+import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.schedules.entity.Schedule;
@@ -15,11 +16,9 @@ import com.S209.yobi.domain.users.repository.UserRepository;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
-import com.S209.yobi.config.JwtProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.antlr.v4.runtime.misc.IntegerStack;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +55,7 @@ public class ScheduleService {
         
         // JWT 토큰에서 userId 추출
         String token = authentication.getCredentials().toString();
+        log.info("우라라ㅏ라ㅏ: {}", jwtProvider.extractUserId(token));
         return jwtProvider.extractUserId(token);
     }
 
