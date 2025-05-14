@@ -53,12 +53,12 @@ public class BodyRangeCalculator {
         return (boundary[1] + boundary[2] / 2.0f);
     }
 
-    public static double getBmiStandard(String continent, int height) {
+    public static double getBmiStandard(String continent, float height) {
         int[] boundary = getBmiRange(continent, height);
         return (boundary[1] + boundary[2]) / 2.0f;
     }
 
-    public static double getWeightStandard(boolean isMale, int age, int height) {
+    public static double getWeightStandard(boolean isMale, int age, float height) {
         int[] boundary = getWeightRange(isMale, age, height);
         return (boundary[1] + boundary[2]) / 2.0f;
     }
@@ -92,12 +92,12 @@ public class BodyRangeCalculator {
         return calGenValue(boundary, smm);
     }
 
-    public static int genMuscleMass(boolean isMale, int age, double weight, double smm) {
+    public static int genMuscleMass(boolean isMale, int age, float weight, double smm) {
         double[] boundary = getSmmRange(isMale, age, weight);
         return calGenValue(boundary, smm);
     }
 
-    public static int genBmr(double weight, double bfp, double bmr) {
+    public static int genBmr(float weight, double bfp, double bmr) {
         int[] boundary = getBmrRange(weight, bfp);
         return calGenValue(boundary, bmr);
     }
@@ -107,12 +107,12 @@ public class BodyRangeCalculator {
         return calGenValue(boundary, bmr);
     }
 
-    public static int genBmi(String continent, int height, double bmi) {
+    public static int genBmi(String continent, float height, double bmi) {
         int[] boundary = getBmiRange(continent, height);
         return calGenValue(boundary, bmi);
     }
 
-    public static int genWeight(boolean isMale, int age, int height, double weight) {
+    public static int genWeight(boolean isMale, int age, float height, float weight) {
         int[] boundary = getWeightRange(isMale, age, height);
         return calGenValue(boundary, weight);
     }
@@ -131,12 +131,12 @@ public class BodyRangeCalculator {
         int[] boundary = getBodyWaterRange(isMale, age);
         return calGenValue(boundary, bodyWater);
     }
-    public static int genProtein(boolean isMale, int age, double weight, double bodyProtein) {
+    public static int genProtein(boolean isMale, int age, float weight, double bodyProtein) {
         double[] boundary = getProRange(isMale, age, weight);
         return calGenValue(boundary, bodyProtein);
     }
 
-    public static int genMinerals(boolean isMale, int age, double weight, double bodyMinerals) {
+    public static int genMinerals(boolean isMale, int age, float weight, double bodyMinerals) {
         double[] boundary = getMineralsRange(isMale, age, weight);
         return calGenValue(boundary, bodyMinerals);
     }
@@ -258,7 +258,7 @@ public class BodyRangeCalculator {
         return isMale? SMM_VALUE_MALE_TABLE : SMM_VALUE_FEMALE_TABLE;
     }
 
-    public static double[] getSmmRange(boolean isMale, int age, double weight) {
+    public static double[] getSmmRange(boolean isMale, int age, float weight) {
         // 골격근율 * 100 / 몸무게 = 골격근량
         double[] smm_ratio_boundary = getBoundary(MUSCLE_MIN_AGE_TABLE, isMale ? MUSCLE_RATIO_MIN_VALUE_MALE_TABLE : MUSCLE_RATIO_MIN_VALUE_FEMALE_TABLE, age);
         double[] smm_boundary = new double[smm_ratio_boundary.length];
@@ -269,7 +269,7 @@ public class BodyRangeCalculator {
         return smm_boundary;
     }
 
-    public static int[] getBmrRange(double weight, double bfp) {
+    public static int[] getBmrRange(float weight, double bfp) {
         final double bfm = weight * bfp / 100;
         final double lbm = weight - bfm;
         final double meanBmr = 21.6 * lbm + 370;
@@ -285,15 +285,15 @@ public class BodyRangeCalculator {
         return new int[]{(int) (0.6f * meanBmr), (int) (0.85 * meanBmr), (int) (1.2 * meanBmr), (int) (1.4 * meanBmr), (int) (1.6 * meanBmr)};
     }
 
-    public static int[] getBmiRange(String continent, int height_cm) {
+    public static int[] getBmiRange(String continent, float height_cm) {
         return getBoundary(getBmiHeightTable(continent), getBmiValueTable(continent), height_cm);
     }
 
-    public static int[] getWeightRange(boolean isMale, int age, int height_cm) {
+    public static int[] getWeightRange(boolean isMale, int age, float height_cm) {
         return getBoundary(getWeightHeightTable(age, isMale), getWeightValueTable(age, isMale), height_cm);
     }
 
-    public static double[] getProRange(boolean isMale, int age, double weight) {
+    public static double[] getProRange(boolean isMale, int age, float weight) {
         int[] protein_ratio_boundary = getBoundary(PRO_AGE_TABLE, isMale ? PRO_RATIO_VALUE_MALE_TABLE : PRO_RATIO_VALUE_FEMALE_TABLE, age);
         double[] protein_boundary = new double[protein_ratio_boundary.length];
 
@@ -302,7 +302,7 @@ public class BodyRangeCalculator {
         return protein_boundary;
     }
 
-    public static double[] getMineralsRange(boolean isMale, int age, double weight) {
+    public static double[] getMineralsRange(boolean isMale, int age, float weight) {
         int[] mineral_ratio_boundary = getBoundary(MINERAL_AGE_TABLE, isMale ? MINERAL_RATIO_VALUE_MALE_TABLE : MINERAL_RATIO_VALUE_FEMALE_TABLE, age);
         double[] mineral_boundary = new double[mineral_ratio_boundary.length];
 
@@ -322,7 +322,7 @@ public class BodyRangeCalculator {
 //        return new int[]{(int) (0.6f * normalVal), (int) (0.85 * normalVal), (int) (1.15 * normalVal), (int) (1.4 * normalVal), (int) (1.6 * normalVal)};
 //    }
 
-    public static int[] getBodyWaterRange(boolean isMale, int age, double weight) {
+    public static int[] getBodyWaterRange(boolean isMale, int age, float weight) {
         int[] bw_ratio_boundary = getBoundary(BW_AGE_TABLE, isMale ? BW_RATIO_VALUE_MALE_TABLE : BW_RATIO_VALUE_FEMALE_TABLE, age);
         int[] bw_boundary = new int[bw_ratio_boundary.length];
 
@@ -338,7 +338,7 @@ public class BodyRangeCalculator {
     //////////////////////////////////
     // 계산을 위해 필요한 메소드
     //////////////////////////////////=
-    public static int[] getBoundary(int[] minIndexTable, int[][] minValueTable, int index) {
+    public static int[] getBoundary(int[] minIndexTable, int[][] minValueTable, float index) {
         int tableIndex = 0;
 
         for (int i = minIndexTable.length - 1; i > 0; --i) {

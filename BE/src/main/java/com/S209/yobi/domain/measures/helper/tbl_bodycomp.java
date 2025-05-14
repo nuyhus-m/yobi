@@ -10,8 +10,8 @@ import lombok.Getter;
 public class tbl_bodycomp {
     private int uAge;
     private String uGender; // 예: "male" 또는 "female"
-    private double uHeight;
-    private double uWeight;
+    private float uHeight;
+    private float uWeight;
     private double bfp;       // 체지방률
     private double bfm;
     private double bmr;       // 기초대사량
