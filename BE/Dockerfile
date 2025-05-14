@@ -12,11 +12,10 @@ WORKDIR /app
 
 # 빌드 단계에서 생성된 JAR 파일을 복사
 COPY --from=build /app/build/libs/*.jar app.jar
-COPY --from=build /app/src/main/resources/application-prod.yml /app/application-prod.yml
+COPY --from=build /app/src/main/resources/application.yml /app/application.yml
 
 # 환경 변수 설정
-ENV SPRING_PROFILES_ACTIVE=prod
-ENV TZ=Asia/Seoul
+# ENV TZ=Asia/Seoul
 
 # 애플리케이션이 사용할 포트
 EXPOSE 8080
