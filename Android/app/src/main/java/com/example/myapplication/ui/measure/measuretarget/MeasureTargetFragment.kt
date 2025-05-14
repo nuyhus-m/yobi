@@ -16,6 +16,7 @@ import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.FitrusViewModel
+import com.example.myapplication.ui.MainViewModel
 import com.example.myapplication.ui.measure.measuretarget.viewmodel.MeasureTargetViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -30,27 +31,31 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
 ) {
 
     private val fitrusViewModel by activityViewModels<FitrusViewModel>()
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private val viewModel by viewModels<MeasureTargetViewModel>()
-    private var selectedClient = ClientDetailResponse(1, "김할아버지", "1960", 0, 170f, 60f, "", "")
+    private lateinit var selectedClient: ClientDetailResponse
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initSpinner()
         initNextButton()
+        initSpinner(mainViewModel.clientList.value ?: emptyList())
         observeMeasureStatus()
+        selectedClient = mainViewModel.clientList.value?.get(0)
+            ?: ClientDetailResponse(-1, "김할아버지", "1930-01-01", 0, 170f, 70f, null, "")
     }
 
-    private fun initSpinner() {
-        val tempClientList = listOf(
-            ClientDetailResponse(1, "김할아버지", "1960", 0, 170f, 60f, "", ""),
-            ClientDetailResponse(1, "김할아버지", "1960", 0, 170f, 60f, "", "")
-        )
+    private fun initNextButton() {
+        binding.btnNext.setOnClickListener {
+            viewModel.getMeasureStatus(selectedClient.clientId)
+        }
+    }
 
+    private fun initSpinner(clientList: List<ClientDetailResponse>) {
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.item_spinner,
-            tempClientList
+            clientList
         )
 
         adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
@@ -67,12 +72,6 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-    }
-
-    private fun initNextButton() {
-        binding.btnNext.setOnClickListener {
-            viewModel.getMeasureStatus(selectedClient.clientId)
         }
     }
 
