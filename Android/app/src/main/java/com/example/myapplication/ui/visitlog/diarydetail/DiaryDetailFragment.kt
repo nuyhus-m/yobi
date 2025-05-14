@@ -14,10 +14,12 @@ import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentDiaryDetailBinding
 import com.example.myapplication.ui.visitlog.diarydetail.viewmodel.DiaryDetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@AndroidEntryPoint
 class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
     FragmentDiaryDetailBinding::bind,
     R.layout.fragment_diary_detail

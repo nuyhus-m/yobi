@@ -121,10 +121,12 @@ class NlpFilter(ctx: Context) {
             }
         }
 
+        /*
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         fun shutdown() {
             client.close()
         }
+        */
     }
 
 }

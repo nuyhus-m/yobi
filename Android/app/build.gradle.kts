@@ -124,6 +124,9 @@ dependencies {
     // https://github.com/PhilJay/MPAndroidChart
     implementation(libs.mpandroidchart)
 
+    // https://github.com/gkonovalov/android-vad
+    implementation(libs.vad.webrtc)
+
     /* calendar custom */
     implementation("com.kizitonwose.calendar:view:2.6.2")
 
