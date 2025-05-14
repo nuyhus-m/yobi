@@ -6,6 +6,7 @@ import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
+import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.service.UserService;
 import com.S209.yobi.exceptionFinal.*;
@@ -34,6 +35,7 @@ import com.S209.yobi.DTO.TokenDTO;
 public class UserController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final AuthUtils authUtils;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Operation(summary = "사용자 회원가입", description = "이름, 사원번호, 비밀번호를 입력하여 회원가입을 진행합니다.")
@@ -122,8 +124,9 @@ public class UserController {
         
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/consent")
-    public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-        Integer userId = 1; // 임시로 하드코딩
+    public ResponseEntity<?> updateConsent(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
         ApiResult result = userService.updateConsent(userId);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
@@ -136,10 +139,9 @@ public class UserController {
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.")
     @PatchMapping("/password")
     public ResponseEntity<?> updatePassword(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails,
-            @RequestBody PasswordRequestDTO request
-    ) {
-        Integer userId = 1; // 임시로 하드코딩
+            @RequestBody PasswordRequestDTO request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
         ApiResult result = userService.updatePassword(userId, request);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
