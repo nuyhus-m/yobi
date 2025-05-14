@@ -13,6 +13,10 @@ import com.S209.yobi.exceptionFinal.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -136,18 +140,48 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.")
+    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경하고 새로운 토큰을 발급합니다.")
     @PatchMapping("/password")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "비밀번호 변경 성공 및 새 토큰 발급",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TokenDTO.class),
+                            examples = @ExampleObject(
+                                    value = "{\"accessToken\":\"eyJhbGciOiJIUzI1NiJ9...\",\"refreshToken\":\"eyJhbGciOiJIUzI1NiJ9...\",\"tokenType\":\"Bearer\"}"
+                            )
+                    )
+            )
+    })
     public ResponseEntity<?> updatePassword(
             @RequestBody PasswordRequestDTO request,
             @AuthenticationPrincipal UserDetails userDetails) {
         Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
         ApiResult result = userService.updatePassword(userId, request);
 
-        if (result instanceof ApiResponseDTO<?> errorResult) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        if (result instanceof ApiResponseDTO<?> responseDTO) {
+            String code = responseDTO.getCode();
+
+            if ("200".equals(code)) {
+                // data 필드에서 TokenDTO 객체를 추출하여 직접 반환
+                Object data = responseDTO.getData();
+                if (data instanceof TokenDTO) {
+                    return ResponseEntity.ok(data);
+                }
+                return ResponseEntity.ok(responseDTO);
+            } else {
+                HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+                try {
+                    httpStatus = ApiResponseCode.fromCode(code).getHttpStatus();
+                } catch (Exception e) {
+                }
+                return ResponseEntity.status(httpStatus).body(responseDTO);
+            }
         }
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponseDTO.fail(ApiResponseCode.SERVER_ERROR));
     }
 }
