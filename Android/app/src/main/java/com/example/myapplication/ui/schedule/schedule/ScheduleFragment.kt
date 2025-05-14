@@ -103,6 +103,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         // 월 제목 초기화
        updateMonthTitle(currentMonth)
 
+        // 날짜 셀 바인더 설정
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
