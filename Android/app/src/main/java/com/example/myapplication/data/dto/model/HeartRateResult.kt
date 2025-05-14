@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 data class HeartRateResult(
     @SerialName("FitrusDevice") val device: String,
     @SerialName("FirmwareVersion") val firmware: String,
-    val oxygen: Int,
-    val bpm: Int
+    val oxygen: Short,
+    val bpm: Short
 ) : MeasureResult()

@@ -11,6 +11,7 @@ import com.example.myapplication.data.dto.model.MeasureResult
 import com.example.myapplication.data.dto.model.StressResult
 import com.example.myapplication.data.dto.model.TemperatureResult
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
+import com.example.myapplication.data.dto.response.measure.HealthDataResponse
 import com.example.myapplication.data.repository.ClientRepository
 import com.example.myapplication.data.repository.MeasureRepository
 import com.example.myapplication.util.CommonUtils
@@ -45,6 +46,12 @@ class FitrusViewModel @Inject constructor(
     private var _measureType = HealthDataType.BODY_COMPOSITION
     val measureType: HealthDataType get() = _measureType
 
+    private var _bodyCompositionResult: BodyCompositionResult? = null
+    val bodyCompositionResult: BodyCompositionResult? get() = _bodyCompositionResult
+
+    private var _healthDataResponse: HealthDataResponse? = null
+    val healthDataResponse: HealthDataResponse? get() = _healthDataResponse
+
     private val _isInfoSuccess = MutableSharedFlow<Boolean>()
     val isInfoSuccess: SharedFlow<Boolean> = _isInfoSuccess
 
@@ -67,6 +74,14 @@ class FitrusViewModel @Inject constructor(
 
     fun setMeasureType(type: HealthDataType) {
         _measureType = type
+    }
+
+    fun setBodyCompositionResult(result: BodyCompositionResult) {
+        _bodyCompositionResult = result
+    }
+
+    fun setHealthDataResponse(result: HealthDataResponse) {
+        _healthDataResponse = result
     }
 
     fun getClientDetail(clientId: Int) {

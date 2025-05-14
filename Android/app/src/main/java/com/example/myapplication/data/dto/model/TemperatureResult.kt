@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class TemperatureResult(
     @SerialName("FitrusDevice") val device: String,
     @SerialName("FirmwareVersion") val firmware: String,
-    val temp: Double
+    val temp: Float
 ) : MeasureResult()

@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 data class BodyCompositionResult(
     @SerialName("FitrusDevice") val device: String,
     @SerialName("FirmwareVersion") val firmware: String,
-    val bfm: Double,
-    val bfp: Double,
-    val bmr: Double,
-    val bodyAge: Int,
-    val ecw: Double,
-    val icw: Double,
-    val mineral: Double,
-    val protein: Double,
-    val smm: Double
+    val bfm: Float,
+    val bfp: Float,
+    val bmr: Float,
+    val bodyAge: Short,
+    val ecw: Float,
+    val icw: Float,
+    val mineral: Float,
+    val protein: Float,
+    val smm: Float
 ) : MeasureResult()
