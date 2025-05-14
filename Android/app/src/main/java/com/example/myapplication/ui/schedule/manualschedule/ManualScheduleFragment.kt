@@ -28,7 +28,7 @@ class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
         setupScheduleSpinner()
 
         val scheduleId = args.scheduleId
-        val isEditMode = scheduleId != -1L
+        val isEditMode = scheduleId != -1
 
         if (isEditMode) {
             // 수정 모드

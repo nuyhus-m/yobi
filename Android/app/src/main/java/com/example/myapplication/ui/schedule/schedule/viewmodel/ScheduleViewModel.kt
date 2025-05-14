@@ -48,6 +48,34 @@ class ScheduleViewModel @Inject constructor(
 
     init {
         selectDate(LocalDate.now())
+        val dummyDate = LocalDate.now()
+
+        val dummyList = listOf(
+            ScheduleItemModel(
+                scheduleId = 1,
+                clientId = 1,
+                clientName = "김더미",
+                visitedDate = dummyDate.toEpochDay(),
+                date = dummyDate.toString(),
+                timeRange = "09:00 ~ 10:00",
+                hasLogContent = false
+            ),
+            ScheduleItemModel(
+                scheduleId = 2,
+                clientId = 2,
+                clientName = "박더미",
+                visitedDate = dummyDate.toEpochDay(),
+                date = dummyDate.toString(),
+                timeRange = "09:00 ~ 10:00",
+                hasLogContent = true
+            )
+        )
+        _scheduleList.value = dummyList
+
+        // ✅ 도트 데이터도 추가
+        _dotMap.value = mapOf(
+            dummyDate to listOf(1, 2)
+        )
     }
 
     fun getPeriodSchedule(start: Long, end: Long) {

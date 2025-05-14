@@ -38,7 +38,7 @@
         <argument
             android:name="scheduleId"
             android:defaultValue="-1"
-            app:argType="Int" /> <!-- 등록일 경우 -1로 처리 -->
+            app:argType="integer" /> <!-- 등록일 경우 -1로 처리 -->
     </fragment>
 
     <fragment
@@ -132,14 +132,16 @@
         tools:layout="@layout/fragment_visit_write">
 
         <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+
+        <argument
             android:name="name"
-            android:defaultValue=""
             app:argType="string" />
 
         <argument
             android:name="date"
-            android:defaultValue=""
-            app:argType="string" />
+            app:argType="long" />
     </fragment>
 
     <fragment

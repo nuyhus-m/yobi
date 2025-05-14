@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -250,12 +251,13 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             onLogCreateClick = { scheduleId, clientName, visitedDate ->
                 val action = ScheduleFragmentDirections
                     .actionScheduleFragmentToDestVisitWrite(scheduleId, clientName, visitedDate)
-                findNavController().navigate(R.id.dest_visit_write_fragment)
+                findNavController().navigate(action)
             },
             onLogViewClick = { scheduleId ->
+                Log.d("onLogViewClick", "$scheduleId")
                 val action = ScheduleFragmentDirections
                     .actionScheduleFragmentToDestDiaryDetail(scheduleId)
-                findNavController().navigate(R.id.dest_diary_detail_fragment)
+                findNavController().navigate(action)
             }
         )
 
