@@ -4,16 +4,18 @@ import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleCreateRequestDTO;
 import com.S209.yobi.DTO.requestDTO.ScheduleRequestDTO.ScheduleUpdateRequestDTO;
 import com.S209.yobi.DTO.responseDTO.ScheduleResponseDTO;
 import com.S209.yobi.DTO.responseDTO.SimpleResultDTO;
+import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.schedules.service.ScheduleService;
-import com.S209.yobi.exceptionFinal.ApiResponseCode;
-import com.S209.yobi.exceptionFinal.ApiResponseDTO;
-import com.S209.yobi.exceptionFinal.ApiResult;
+import com.S209.yobi.domain.users.entity.User;
+import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +39,8 @@ import java.time.LocalDate;
 public class SchedulesController {
 
     private final ScheduleService scheduleService;
+    private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
     @Operation(summary = "단건 일정 조회", description = "scheduleId를 넘기면 단건 일정의 정보를 조회할 수 있습니다.")
     @GetMapping("/{scheduleId}")
@@ -124,9 +132,10 @@ public class SchedulesController {
                             schema = @Schema(implementation = ScheduleResponseDTO.class),
                             examples = @ExampleObject(value = "[{\"scheduleId\":95,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1735657200000,\"startAt\":1735693200000,\"endAt\":1735704000000},{\"scheduleId\":117,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1735657200000,\"startAt\":1735693200000,\"endAt\":1735704000000}]")))
     })
-    public ResponseEntity<?> getSchedulesByUser() {
-        // 임시 하드코딩. JWT에서 추출해야 합니다!
-        Integer userId = 1;
+    public ResponseEntity<?> getSchedulesByUser(
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        Integer userId = getUserIdFromUserDetails(userDetails);
 
         ApiResult result = scheduleService.getSchedulesByUser(userId);
 
@@ -154,10 +163,10 @@ public class SchedulesController {
     })
     public ResponseEntity<?> getSchedulesByMonth(
             @RequestParam int year,
-            @RequestParam int month
+            @RequestParam int month,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 하드코딩
-        Integer userId = 1;
+        Integer userId = getUserIdFromUserDetails(userDetails);
 
         ApiResult result = scheduleService.getSchedulesByMonth(userId, year, month);
 
@@ -183,10 +192,10 @@ public class SchedulesController {
                             examples = @ExampleObject(value = "[{\"scheduleId\":65,\"clientId\":1,\"clientName\":\"홍길동\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000, \"hasLogContent\": \"false\"},{\"scheduleId\":109,\"clientId\":1,\"clientName\":\"이영희\",\"visitedDate\":1746025200000,\"startAt\":1746057600000,\"endAt\":1746061200000, \"hasLogContent\": \"false\"}]")))
     })
     public ResponseEntity<?> getSchedulesByDay(
-            @RequestParam long date
+            @RequestParam long date,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 하드코딩 임시
-        Integer userId = 1;
+        Integer userId = getUserIdFromUserDetails(userDetails);
 
         ApiResult result = scheduleService.getSchedulesByDay(userId, date);
 
@@ -218,10 +227,10 @@ public class SchedulesController {
             @RequestParam("image") MultipartFile image,
             @RequestParam("year") Integer year,
             @RequestParam("month") Integer month,
-            @RequestParam(value = "timezone", defaultValue = "Asia/Seoul") String timezone
+            @RequestParam(value = "timezone", defaultValue = "Asia/Seoul") String timezone,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        //임시 하드코딩
-        Integer userId = 1;
+        Integer userId = getUserIdFromUserDetails(userDetails);
 
         ApiResult result = scheduleService.processOcrSchedules(image, userId, year, month, timezone);
 
@@ -244,10 +253,10 @@ public class SchedulesController {
     })
     public ResponseEntity<?> getSchedulesByPeriod(
             @RequestParam long startDate,
-            @RequestParam long endDate
+            @RequestParam long endDate,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 하드코딩 임시
-        Integer userId = 1;
+        Integer userId = getUserIdFromUserDetails(userDetails);
 
         ApiResult result = scheduleService.getSchedulesByPeriod(userId, startDate, endDate);
 
@@ -262,5 +271,19 @@ public class SchedulesController {
         }
 
         return ResponseEntity.ok(result);
+    }
+
+    private Integer getUserIdFromUserDetails(UserDetails userDetails) {
+        try {
+            Integer employeeNumber = Integer.parseInt(userDetails.getUsername());
+
+            User user = userRepository.findByEmployeeNumber(employeeNumber)
+                    .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+
+            return user.getId();
+        } catch (Exception e) {
+            log.error("사용자 정보 추출 오류: {}", e.getMessage());
+            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "사용자 정보를 추출할 수 없습니다.");
+        }
     }
 }

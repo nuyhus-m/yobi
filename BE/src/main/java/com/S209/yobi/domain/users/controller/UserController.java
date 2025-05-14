@@ -59,6 +59,15 @@ public class UserController {
                 throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
             }
             String token = authentication.getCredentials().toString();
+            log.info("원본 토큰: {}", token);
+
+            // 토큰 처리 - "Bearer" 접두사 제거
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            token = token.trim();
+            log.info("처리된 토큰: {}", token);
+
             Integer userId = jwtProvider.extractUserId(token);
             UserInfoDTO userInfo = userService.getUserInfoById(userId);
             return ResponseEntity.ok(ApiResponseDTO.success(userInfo));
