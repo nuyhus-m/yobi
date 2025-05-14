@@ -1,11 +1,11 @@
 package com.example.myapplication.ui.measure.measuretarget
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,7 +16,7 @@ import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.response.care.ClientResponse
 import com.example.myapplication.databinding.FragmentMeasureTargetBinding
 import com.example.myapplication.ui.FitrusViewModel
-import com.example.myapplication.util.setOnSingleClickListener
+import com.example.myapplication.ui.measure.measuretarget.viewmodel.MeasureTargetViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,7 +30,8 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
 ) {
 
     private val fitrusViewModel by activityViewModels<FitrusViewModel>()
-    private var selectedClientId = -1
+    private val viewModel by viewModels<MeasureTargetViewModel>()
+    private var selectedClient = ClientResponse(1, "김할아버지", "1960", 0, 170f, 60f, "", "")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +39,6 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
         initSpinner()
         initNextButton()
         observeMeasureStatus()
-        observeToastMessage()
     }
 
     private fun initSpinner() {
@@ -63,8 +63,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
                 position: Int,
                 id: Long
             ) {
-                val selected = parent.getItemAtPosition(position) as ClientResponse
-                selectedClientId = selected.clientId
+                selectedClient = parent.getItemAtPosition(position) as ClientResponse
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -72,32 +71,23 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
     }
 
     private fun initNextButton() {
-        binding.btnNext.setOnSingleClickListener {
-            fitrusViewModel.getClientDetail(selectedClientId)
+        binding.btnNext.setOnClickListener {
+            viewModel.getMeasureStatus(selectedClient.clientId)
         }
     }
 
     private fun observeMeasureStatus() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                fitrusViewModel.isInfoSuccess.collectLatest {
-                    Log.d(TAG, "observeMeasureStatus: $it")
-                    if (fitrusViewModel.isMeasured) {
+                viewModel.isMeasured.collectLatest {
+                    fitrusViewModel.setClient(selectedClient)
+                    fitrusViewModel.setMeasureStatus(it)
+                    if (it) {
                         findNavController().navigate(R.id.dest_measure_item)
                     } else {
                         fitrusViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
                         findNavController().navigate(R.id.dest_device_connect)
                     }
-                }
-            }
-        }
-    }
-
-    private fun observeToastMessage() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                fitrusViewModel.toastMessage.collectLatest {
-                    showToast(it)
                 }
             }
         }

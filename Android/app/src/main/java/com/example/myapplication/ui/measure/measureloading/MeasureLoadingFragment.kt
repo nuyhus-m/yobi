@@ -55,7 +55,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
     }
 
     private fun setTitle() {
-        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.client?.name)
+        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.client.name)
     }
 
     private fun initView() {
@@ -95,7 +95,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                                 viewModel.saveRequiredMeasureData(
                                     fitrusViewModel.client.clientId,
                                     RequiredDataRequest(
-                                        bodyCompositionRequest = fitrusViewModel.bodyCompositionResult!!.toRequest(),
+                                        bodyCompositionRequest = fitrusViewModel.bodyCompositionResult.toRequest(),
                                         bloodPressureRequest = result.toRequest()
                                     )
                                 )

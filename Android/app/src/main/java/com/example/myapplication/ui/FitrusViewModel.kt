@@ -10,9 +10,8 @@ import com.example.myapplication.data.dto.model.HeartRateResult
 import com.example.myapplication.data.dto.model.MeasureResult
 import com.example.myapplication.data.dto.model.StressResult
 import com.example.myapplication.data.dto.model.TemperatureResult
-import com.example.myapplication.data.dto.response.care.ClientDetailResponse
+import com.example.myapplication.data.dto.response.care.ClientResponse
 import com.example.myapplication.data.dto.response.measure.HealthDataResponse
-import com.example.myapplication.data.repository.ClientRepository
 import com.example.myapplication.data.repository.MeasureRepository
 import com.example.myapplication.util.CommonUtils
 import com.example.myapplication.util.CommonUtils.mapToDataClass
@@ -33,12 +32,11 @@ private const val TAG = "FitrusViewModel"
 
 @HiltViewModel
 class FitrusViewModel @Inject constructor(
-    private val clientRepository: ClientRepository,
     private val measureRepository: MeasureRepository,
 ) : ViewModel(), FitrusBleDelegate {
 
-    private var _client: ClientDetailResponse? = null
-    val client: ClientDetailResponse get() = _client!!
+    private lateinit var _client: ClientResponse
+    val client: ClientResponse get() = _client
 
     private var _isMeasured = false
     val isMeasured: Boolean get() = _isMeasured
@@ -46,17 +44,11 @@ class FitrusViewModel @Inject constructor(
     private var _measureType = HealthDataType.BODY_COMPOSITION
     val measureType: HealthDataType get() = _measureType
 
-    private var _bodyCompositionResult: BodyCompositionResult? = null
-    val bodyCompositionResult: BodyCompositionResult? get() = _bodyCompositionResult
+    private lateinit var _bodyCompositionResult: BodyCompositionResult
+    val bodyCompositionResult: BodyCompositionResult get() = _bodyCompositionResult
 
-    private var _healthDataResponse: HealthDataResponse? = null
-    val healthDataResponse: HealthDataResponse? get() = _healthDataResponse
-
-    private val _isInfoSuccess = MutableSharedFlow<Boolean>()
-    val isInfoSuccess: SharedFlow<Boolean> = _isInfoSuccess
-
-    private val _toastMessage = MutableSharedFlow<String>()
-    val toastMessage: SharedFlow<String> = _toastMessage
+    private lateinit var _healthDataResponse: HealthDataResponse
+    val healthDataResponse: HealthDataResponse get() = _healthDataResponse
 
     private val _measureResult = MutableSharedFlow<MeasureResult>()
     val measureResult: SharedFlow<MeasureResult> = _measureResult
@@ -72,6 +64,14 @@ class FitrusViewModel @Inject constructor(
         manager = device
     }
 
+    fun setClient(client: ClientResponse) {
+        _client = client
+    }
+
+    fun setMeasureStatus(status: Boolean) {
+        _isMeasured = status
+    }
+
     fun setMeasureType(type: HealthDataType) {
         _measureType = type
     }
@@ -82,50 +82,6 @@ class FitrusViewModel @Inject constructor(
 
     fun setHealthDataResponse(result: HealthDataResponse) {
         _healthDataResponse = result
-    }
-
-    fun getClientDetail(clientId: Int) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                clientRepository.getClientDetail(clientId)
-            }.onSuccess { response ->
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        _client = it
-                        getMeasureStatus(clientId)
-                    }
-                    Log.d(TAG, "getClientDetail: ${response.body()}")
-                } else {
-                    _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
-                    Log.d(TAG, "getClientDetail: ${response.code()}")
-                }
-            }.onFailure {
-                _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
-                Log.e(TAG, "getClientDetail: ${it.message}", it)
-            }
-        }
-    }
-
-    private fun getMeasureStatus(clientId: Int) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                measureRepository.getMeasureStatus(clientId)
-            }.onSuccess { response ->
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        _isMeasured = it.measured
-                        _isInfoSuccess.emit(true)
-                    }
-                    Log.d(TAG, "getMeasureStatus: ${response.body()}")
-                } else {
-                    _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
-                    Log.d(TAG, "getMeasureStatus: ${response.code()}")
-                }
-            }.onFailure {
-                _toastMessage.emit("측정 대상 정보를 불러오는데 실패했습니다😭")
-                Log.e(TAG, "getMeasureStatus: ${it.message}", it)
-            }
-        }
     }
 
     private fun startScan() {
