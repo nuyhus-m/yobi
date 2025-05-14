@@ -6,7 +6,10 @@ import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.domain.users.service.UserService;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
-import com.S209.yobi.exceptionFinal.GlobalExceptionHandler;
+import com.S209.yobi.exceptionFinal.ApiResponseDTO;
+import com.S209.yobi.exceptionFinal.ApiResponseCode;
+import com.S209.yobi.exceptionFinal.CustomException;
+import com.S209.yobi.exceptionFinal.HttpStatusCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -53,13 +56,12 @@ public class UserController {
 
     @Operation(summary = "현재 사용자 정보 조회", description = "인가된 사용자인지 확인 후 사용자 정보를 반환합니다.")
     @GetMapping
-    public ResponseEntity<GlobalExceptionHandler<?>> getUserProfile() {
+    public ResponseEntity<ApiResponseDTO<UserInfoDTO>> getUserProfile() throws CustomException {
         try {
             // 1. SecurityContext에서 인증 정보 가져오기
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(GlobalExceptionHandler.fail("401", "인증되지 않은 사용자입니다."));
+                throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "인증되지 않은 사용자입니다.");
             }
 
             // 2. JWT 토큰에서 userId 추출
@@ -72,12 +74,10 @@ public class UserController {
 
         } catch (EntityNotFoundException e) {
             log.error("사용자 정보 조회 실패 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("사용자를 찾을 수 없습니다.");
+            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         } catch (Exception e) {
             log.error("사용자 정보 조회 중 오류 발생 : {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("인증되지 않은 요청입니다.");
+            throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.UNAUTHORIZED, "인증되지 않은 요청입니다.");
         }
     }
 

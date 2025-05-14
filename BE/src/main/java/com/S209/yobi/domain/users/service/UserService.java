@@ -7,6 +7,8 @@ import com.S209.yobi.S3Service;
 import com.S209.yobi.config.JwtProvider;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.S209.yobi.exceptionFinal.ApiResponseCode;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
+import com.S209.yobi.exceptionFinal.CustomException;
+import com.S209.yobi.exceptionFinal.HttpStatusCode;
 
 import java.io.IOException;
 
@@ -100,7 +104,7 @@ public class UserService implements UserDetailsService {
 
     public UserInfoDTO getUserInfoById(Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.NOT_FOUND, "존재하지 않는 사용자입니다."));
         
         return new UserInfoDTO(
             user.getId(),
