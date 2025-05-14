@@ -22,7 +22,7 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val clientId = 1
+        val clientId = 8
         viewModel.fetchTodayData(clientId)
 
         viewModel.todayData.observe(viewLifecycleOwner) { data ->

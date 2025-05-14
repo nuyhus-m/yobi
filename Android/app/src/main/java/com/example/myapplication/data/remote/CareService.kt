@@ -22,7 +22,7 @@ interface CareService {
     ): Response<HealthResponse>
 
     // 단건 데이터 조회(주요 데이터)
-    @GET("dashboard/main/{clientId")
+    @GET("dashboard/main/{clientId}")
     suspend fun getTodayData(
         @Path("clientId") clientId: Int
     ): Response<TodayResponse>
