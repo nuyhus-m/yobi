@@ -161,16 +161,16 @@ public class UserController {
                     )
             )
     })
-    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
-            if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
+            String refreshToken = request.getRefreshToken();
+            if (refreshToken == null || refreshToken.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
+                        .body(ApiResponseDTO.fail("401", "Refresh token이 필요합니다."));
             }
 
-            String token = refreshToken.substring(7);
-            Integer employeeNumber = jwtProvider.extractEmployeeNumber(token);
-            Integer userId = jwtProvider.extractUserId(token);
+            Integer employeeNumber = jwtProvider.extractEmployeeNumber(refreshToken);
+            Integer userId = jwtProvider.extractUserId(refreshToken);
 
             if (employeeNumber == null || userId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -179,9 +179,10 @@ public class UserController {
 
             UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
             
-            if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
+            if (jwtProvider.validateRefreshToken(refreshToken, userDetails, employeeNumber, userId)) {
                 String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
-                return handleApiResult(ApiResponseDTO.success(new TokenDTO(newAccessToken, token, "Bearer")));
+                String newRefreshToken = jwtProvider.generateRefreshToken(employeeNumber, userId);
+                return handleApiResult(ApiResponseDTO.success(new TokenDTO(newAccessToken, newRefreshToken, "Bearer")));
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
