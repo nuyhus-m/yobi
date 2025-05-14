@@ -61,7 +61,7 @@ public class UserController {
             String token = authentication.getCredentials().toString();
             Integer userId = jwtProvider.extractUserId(token);
             UserInfoDTO userInfo = userService.getUserInfoById(userId);
-            return ResponseEntity.ok(userInfo);
+            return ResponseEntity.ok(ApiResponseDTO.success(userInfo));
         } catch (EntityNotFoundException e) {
             log.error("사용자 정보 조회 실패 : {}", e.getMessage());
             throw new CustomException(ApiResponseCode.NOT_FOUND_USER, HttpStatusCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");
@@ -96,7 +96,7 @@ public class UserController {
                         .body(ApiResponseDTO.fail("401", "유효하지 않은 refresh token입니다."));
             }
 
-            org.springframework.security.core.userdetails.UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
+            UserDetails userDetails = userService.loadUserByUsername(String.valueOf(employeeNumber));
             
             if (jwtProvider.validateRefreshToken(token, userDetails, employeeNumber, userId)) {
                 String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
@@ -112,43 +112,30 @@ public class UserController {
     }
         
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
-    @PatchMapping("/users/consent")
-    public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-//        Integer userId = userService.getUserInfo(userDetails.getUsername()).getUserId();
-
-    @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/consent")
     public ResponseEntity<?> updateConsent(@AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails) {
-        Integer userId = 1;
+        Integer userId = 1; // 임시로 하드코딩
         ApiResult result = userService.updateConsent(userId);
 
-        // getCode() 관련 부분 주석 처리
-        // if (result instanceof ApiResponseDTO<?> errorResult) {
-        //     String code = errorResult.getCode();
-        //     HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-        //     return ResponseEntity.status(status).body(errorResult);
-        // }
-        // return ResponseEntity.ok(result);
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        }
 
         return ResponseEntity.ok(result);
     }
 
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.")
-    @PatchMapping("/users/password")
+    @PatchMapping("/password")
     public ResponseEntity<?> updatePassword(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User userDetails,
             @RequestBody PasswordRequestDTO request
     ) {
-        Integer userId = 1;
+        Integer userId = 1; // 임시로 하드코딩
         ApiResult result = userService.updatePassword(userId, request);
 
-        // getCode() 관련 부분 주석 처리
-        // if (result instanceof ApiResponseDTO<?> errorResult) {
-        //     String code = errorResult.getCode();
-        //     HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-        //     return ResponseEntity.status(status).body(errorResult);
-        // }
-        // return ResponseEntity.ok(result);
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
+        }
 
         return ResponseEntity.ok(result);
     }
