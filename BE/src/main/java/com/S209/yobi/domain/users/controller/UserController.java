@@ -1,14 +1,14 @@
 package com.S209.yobi.domain.users.controller;
 
+import com.S209.yobi.DTO.TokenDTO;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
 import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
-import com.S209.yobi.exceptionFinal.ApiResponseDTO;
-import com.S209.yobi.exceptionFinal.ApiResponseCode;
-import com.S209.yobi.exceptionFinal.CustomException;
-import com.S209.yobi.exceptionFinal.HttpStatusCode;
+import com.S209.yobi.config.JwtProvider;
+import com.S209.yobi.domain.users.service.UserService;
+import com.S209.yobi.exceptionFinal.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,6 +121,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponseDTO.fail("401", "토큰 갱신에 실패했습니다."));
         }
+    }
         
     @Operation(summary = "약관 동의", description = "로그인한 사용자의 약관(consent) 동의 여부를 true로 전환합니다.")
     @PatchMapping("/users/consent")

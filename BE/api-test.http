@@ -5,11 +5,11 @@ Content-Type: multipart/form-data; boundary=MyBoundary
 --MyBoundary
 Content-Disposition: form-data; name="name"
 
-우우우
+키에엑
 --MyBoundary
 Content-Disposition: form-data; name="employeeNumber"
 
-222222
+333333
 --MyBoundary
 Content-Disposition: form-data; name="password"
 
@@ -21,11 +21,11 @@ POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
 {
-  "employeeNumber": 222222,
+  "employeeNumber": 333333,
   "password": "ssafy123"
 }
 
 ### 로그인 후 토큰으로 보호된 API 테스트
 GET http://localhost:8080/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIzIiwiZW1wbG95ZWVOdW1iZXIiOiIyMjIyMjIiLCJpYXQiOjE3NDcxOTgzNDMsImV4cCI6MTc0OTc5MDM0M30.6htsNbXN6Sv1vsYqb-cCfrsnLzQgj7LvaxRlqdylFnY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI0IiwiZW1wbG95ZWVOdW1iZXIiOiIzMzMzMzMiLCJpYXQiOjE3NDcyMDEyNjMsImV4cCI6MTc0OTc5MzI2M30.jW2lN0ODymvJiTv9ZjpZ_dsYK77jfkvBD7o_-sz1PiE
 
