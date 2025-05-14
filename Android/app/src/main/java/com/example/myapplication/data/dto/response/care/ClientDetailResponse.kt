@@ -9,4 +9,8 @@ data class ClientDetailResponse(
     val weight: Float,
     val image: String?,
     val address: String
-)
+) {
+    override fun toString(): String {
+        return name
+    }
+}

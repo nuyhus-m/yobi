@@ -20,10 +20,10 @@ class MeasureTargetViewModel @Inject constructor(
     private val _isMeasured = MutableSharedFlow<Boolean>()
     val isMeasured: SharedFlow<Boolean> = _isMeasured
 
-    fun getMeasureStatus(clientId: Int, userId: Int) {
+    fun getMeasureStatus(clientId: Int) {
         viewModelScope.launch {
             kotlin.runCatching {
-                measureRepository.getMeasureStatus(clientId, userId)
+                measureRepository.getMeasureStatus(clientId)
             }.onSuccess { response ->
                 if (response.isSuccessful) {
                     response.body()?.let {

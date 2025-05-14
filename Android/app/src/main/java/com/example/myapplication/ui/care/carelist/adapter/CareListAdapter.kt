@@ -6,16 +6,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.myapplication.data.dto.response.ClientResponse
+import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.databinding.ItemCareUserBinding
 
 class CareListAdapter(
-    private val onClick: (ClientResponse) -> Unit
+    private val onClick: (ClientDetailResponse) -> Unit
 ) : RecyclerView.Adapter<CareListAdapter.CareViewHolder>() {
 
-    private val items = mutableListOf<ClientResponse>()
+    private val items = mutableListOf<ClientDetailResponse>()
 
-    fun submitList(data: List<ClientResponse>) {
+    fun submitList(data: List<ClientDetailResponse>) {
         items.clear()
         items.addAll(data)
         notifyDataSetChanged()
