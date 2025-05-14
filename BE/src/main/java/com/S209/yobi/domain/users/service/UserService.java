@@ -55,7 +55,7 @@ public class UserService implements UserDetailsService {
     public ApiResult signUp(SignUpRequest request) {
         try {// 사번 중복 체크
             if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
-                throw new IllegalArgumentException("이미 존재하는 사번입니다.");
+                return ApiResponseDTO.fail(ApiResponseCode.DUPLICATE_EMPLOYEE_NUMBER);
             }
 
             // 비밀번호 유효성 검사
@@ -95,7 +95,7 @@ public class UserService implements UserDetailsService {
 
             // DB에 저장
             userRepository.save(user);
-            return ApiResponseDTO.success(null);
+            return null;
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드 중 오류 발생", e);
         } catch (Exception e) {
