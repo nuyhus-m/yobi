@@ -70,13 +70,10 @@ public class ScheduleService {
 
     // 단건 일정 등록
     @Transactional
-    public ApiResult createSchedule(ScheduleCreateRequestDTO requestDto) {
+    public ApiResult createSchedule(Integer userId, ScheduleCreateRequestDTO requestDto) {
         Client client = clientRepository.findById(requestDto.getClientId())
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + requestDto.getClientId()));
 
-        // JWT에서 userId 추출하여 사용하여야 함.
-        // 현재는 임시 하드코딩!!!!
-        Integer userId = 1;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 

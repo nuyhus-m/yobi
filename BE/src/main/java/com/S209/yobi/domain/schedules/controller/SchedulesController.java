@@ -71,9 +71,12 @@ public class SchedulesController {
                     content = @Content(mediaType = "application/json"))
     })
     public ResponseEntity<?> createSchedule(
-            @Valid @RequestBody ScheduleCreateRequestDTO requestDTO
+            @Valid @RequestBody ScheduleCreateRequestDTO requestDTO,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        ApiResult result = scheduleService.createSchedule(requestDTO);
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+
+        ApiResult result = scheduleService.createSchedule(userId, requestDTO);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
