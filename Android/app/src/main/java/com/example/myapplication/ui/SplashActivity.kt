@@ -10,18 +10,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseActivity
+import com.example.myapplication.data.local.SharedPreferencesUtil
 import com.example.myapplication.databinding.ActivityAuthBinding
 import com.example.myapplication.databinding.ActivitySplashBinding
 import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding::inflate) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 텍스트 먼저 안 보이게
         binding.tvInMyHand.alpha = 0f
         binding.tvYo.alpha = 0f
         binding.tvYang.alpha = 0f
@@ -44,13 +48,28 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
                     textView.animate().alpha(1f).setDuration(400).start()
                 }
             }, 2300)
+
+            lifecycleScope.launch {
+                delay(3000)
+                checkAutoLogin()
+            }
+
         }
 
-        // (선택) 메인 화면으로 전환할 경우
-        // binding.root.postDelayed({
-        //     startActivity(Intent(this, MainActivity::class.java))
-        //     finish()
-        // }, 2000)
-
     }
+
+    @Inject
+    lateinit var sharedPreferencesUtil: SharedPreferencesUtil
+
+    private fun checkAutoLogin() {
+        val accessToken = sharedPreferencesUtil.getAccessToken()
+        val nextActivity = if (!accessToken.isNullOrBlank()) {
+            MainActivity::class.java
+        } else {
+            AuthActivity::class.java
+        }
+        startActivity(Intent(this, nextActivity))
+        finish()
+    }
+
 }

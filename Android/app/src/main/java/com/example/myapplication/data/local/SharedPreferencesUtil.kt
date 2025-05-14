@@ -10,6 +10,34 @@ class SharedPreferencesUtil (context: Context) {
     var preferences: SharedPreferences =
         context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
 
+    fun saveTokens(accessToken: String, refreshToken: String) {
+        preferences.edit().apply {
+            putString("accessToken", accessToken)
+            putString("refreshToken", refreshToken)
+            apply()
+        }
+    }
+
+    fun getAccessToken(): String? {
+        return preferences.getString("accessToken", null)
+    }
+
+    fun getRefreshToken(): String? {
+        return preferences.getString("refreshToken", null)
+    }
+
+    fun clearTokens() {
+        preferences.edit().apply {
+            remove("accessToken")
+            remove("refreshToken")
+            apply()
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return getAccessToken() != null
+    }
+
 
 //    //사용자 정보 저장
 //    fun addUser(user: User){

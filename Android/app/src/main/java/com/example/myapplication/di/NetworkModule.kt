@@ -1,6 +1,8 @@
 package com.example.myapplication.di
 
 import com.example.myapplication.base.MyApplication.Companion.BASE_URL
+import com.example.myapplication.data.local.SharedPreferencesUtil
+import com.example.myapplication.network.AuthInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -28,12 +30,15 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .readTimeout(5000, TimeUnit.MILLISECONDS)
             .connectTimeout(5000, TimeUnit.MILLISECONDS)
-            // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+//            // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
+//            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
     }
 
@@ -45,5 +50,13 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(
+        sharedPreferencesUtil: SharedPreferencesUtil
+    ): AuthInterceptor {
+        return AuthInterceptor(sharedPreferencesUtil)
     }
 }

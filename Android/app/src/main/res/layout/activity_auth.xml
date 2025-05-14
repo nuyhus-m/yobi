@@ -24,8 +24,8 @@
     <!-- 캐릭터 영역 (이미지 자리만 잡음) -->
     <ImageView
         android:id="@+id/iv_character"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:background="@drawable/anim_vector_frame"
         app:layout_constraintTop_toBottomOf="@+id/tv_title"
         android:layout_marginTop="@dimen/space_40dp"
@@ -39,11 +39,11 @@
         android:text="아이디"
         app:layout_constraintTop_toBottomOf="@id/iv_character"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="@dimen/space_16dp"
+        android:layout_marginTop="@dimen/space_40dp"
         style="@style/CardTitleTextStyle"/>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/et_id"
+        android:id="@+id/til_employ_number"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:endIconTint="@color/purple"
@@ -56,16 +56,31 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="아이디 입력"
-            android:background="@drawable/bg_white_stroke_purple_radius_8"/>
+            android:hint="여섯자리 사번을 입력해주세요"
+            android:background="@drawable/bg_white_stroke_purple_radius_8"
+            android:maxLines="1"
+            android:inputType="number"
+            android:maxLength="6"
+            style="body"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tv_id_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        style="@style/CaptionTextStyle"
+        app:layout_constraintTop_toBottomOf="@+id/til_employ_number"
+        android:layout_marginTop="@dimen/space_4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/red"/>
 
     <TextView
         android:id="@+id/tv_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="기존 비밀번호"
-        app:layout_constraintTop_toBottomOf="@id/et_id"
+        app:layout_constraintTop_toBottomOf="@id/til_employ_number"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/space_70dp"
         style="@style/CardTitleTextStyle"/>
@@ -86,12 +101,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:hint="비밀번호 입력"
-            android:background="@drawable/bg_white_stroke_purple_radius_8"/>
+            android:hint="비밀번호를 입력해주세요"
+            android:background="@drawable/bg_white_stroke_purple_radius_8"
+            android:maxLines="1"
+            android:maxLength="15"
+            style="body"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-
-
+    <TextView
+        android:id="@+id/tv_password_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        style="@style/CaptionTextStyle"
+        app:layout_constraintTop_toBottomOf="@+id/til_password"
+        android:layout_marginTop="@dimen/space_4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/red"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_login"
