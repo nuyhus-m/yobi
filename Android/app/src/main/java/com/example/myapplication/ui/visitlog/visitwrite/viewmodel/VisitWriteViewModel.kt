@@ -46,7 +46,7 @@ class VisitWriteViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
-                        onSuccess(body.clientName, body.visitedDate, body.logContent)
+                        body?.logContent?.let { onSuccess(body.clientName, body.visitedDate, it) }
                     } else {
                         // 아무일도 일어나지 않는다.
                     }
