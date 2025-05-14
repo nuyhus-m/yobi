@@ -16,8 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @Schema
 public class DailyLogResponseDTO implements ApiResult {
+    // 여러 일지 정보를 담는 리스트
     private List<SimpleDailyLogDTO> dailyLogs;
 
+    /*
+    * 간략한 일지 정보를 담는 내부 클래스
+    * */
     @Getter
     @Builder
     @Schema
@@ -27,6 +31,9 @@ public class DailyLogResponseDTO implements ApiResult {
         private long visitedDate;
     }
 
+    /*
+    * 상세 일지를 담는 내부 클래스
+    * 개별 일지 */
     @Getter
     @Builder
     @Schema

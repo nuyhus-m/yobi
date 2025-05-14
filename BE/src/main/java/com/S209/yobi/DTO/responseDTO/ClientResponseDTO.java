@@ -16,13 +16,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class ClientResponseDTO implements ApiResult {
+    // 여러 클라이언트의 정보를 담는 리스트
     private List<ClientDTO> clients;
 
+    /*
+    * 개별 클라이언트 정보를 담는 내부 클래스
+    * 각 클라이언트의 상세 정보를 포함
+    * */
     @Getter
     @Builder
     @AllArgsConstructor
     public static class ClientDTO implements ApiResult {
-        private Integer id;
+        private Integer clientId  ;
         private String name;
         private LocalDate birth;
         private Integer gender;
@@ -31,9 +36,13 @@ public class ClientResponseDTO implements ApiResult {
         private String image;
         private String address;
 
+        /*
+        * Client 엔티티를 ClientDTO로 변환하는 정적 메서드
+        * 단일 클라이언트 정보 변환시 사용
+        * */
         public static ClientDTO from(Client client) {
             return ClientDTO.builder()
-                    .id(client.getId())
+                    .clientId(client.getId())
                     .name(client.getName())
                     .birth(client.getBirth())
                     .gender(client.getGender())
@@ -46,12 +55,17 @@ public class ClientResponseDTO implements ApiResult {
     }
 
 
-    // 여러 client들을 반환하는 메소드
+    /*
+    * 클라이언트 엔티티 리스트를 DTO 형태로 변환하는 메서드
+    * 여러 클라이언트 저보를 한번에 변환시 사용
+    * */
     public static ClientResponseDTO fromList(List<Client> clients) {
+        // 클라이언트 엔티티 리스트를 DTO 리스트로 스트림 변환
         List<ClientDTO> clientDTOs = clients.stream()
                 .map(client -> {
+                    // 개별 클라이언트 엔티티를 DTO로 변환
                     return ClientDTO.builder()
-                            .id(client.getId())
+                            .clientId(client.getId())
                             .name(client.getName())
                             .birth(client.getBirth())
                             .gender(client.getGender())
