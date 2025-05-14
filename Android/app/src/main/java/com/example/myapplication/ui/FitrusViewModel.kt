@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.base.HealthDataType
+import com.example.myapplication.data.dto.model.BloodPressureResult
 import com.example.myapplication.data.dto.model.BodyCompositionResult
+import com.example.myapplication.data.dto.model.HeartRateResult
 import com.example.myapplication.data.dto.model.MeasureResult
+import com.example.myapplication.data.dto.model.StressResult
 import com.example.myapplication.data.dto.model.TemperatureResult
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.repository.ClientRepository
@@ -191,13 +194,13 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusCompMeasured(result: Map<String, String>) {
-        Log.d(TAG, "handleFitrusCompMeasured: ")
+        Log.d(TAG, "handleFitrusCompMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<BodyCompositionResult>(result)
-                _measureResult.emit(MeasureResult.BodyComposition(data))
+                _measureResult.emit(data)
             }.onFailure {
-                Log.e("FitrusViewModel", "BodyComposition 파싱 실패: ${it.message}", it)
+                Log.e(TAG, "BodyComposition 파싱 실패: ${it.message}", it)
             }
         }
     }
@@ -217,18 +220,51 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusPpgMeasured(result: Map<String, Any>) {
-        Log.d(TAG, "handleFitrusPpgMeasured: ")
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleFitrusPpgMeasured: $result")
+        viewModelScope.launch {
+            when (measureType) {
+                HealthDataType.HEART_RATE -> {
+                    runCatching {
+                        val data = mapToDataClass<HeartRateResult>(result)
+                        _measureResult.emit(data)
+                    }.onFailure {
+                        Log.e(TAG, "HeartRate 파싱 실패: ${it.message}", it)
+                    }
+                }
+
+                HealthDataType.BLOOD_PRESSURE -> {
+                    runCatching {
+                        val data = mapToDataClass<BloodPressureResult>(result)
+                        _measureResult.emit(data)
+                    }.onFailure {
+                        Log.e(TAG, "BloodPressure 파싱 실패: ${it.message}", it)
+                    }
+                }
+
+                HealthDataType.STRESS -> {
+                    runCatching {
+                        val data = mapToDataClass<StressResult>(result)
+                        _measureResult.emit(data)
+                    }.onFailure {
+                        Log.e(TAG, "Stress 파싱 실패: ${it.message}", it)
+                    }
+                }
+
+                else -> {
+                    Log.e(TAG, "handleFitrusPpgMeasured: 데이터 타입이 없음")
+                }
+            }
+        }
     }
 
     override fun handleFitrusTempMeasured(result: Map<String, String>) {
-        Log.d(TAG, "handleFitrusTempMeasured: ")
+        Log.d(TAG, "handleFitrusTempMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<TemperatureResult>(result)
-                _measureResult.emit(MeasureResult.Temperature(data))
+                _measureResult.emit(data)
             }.onFailure {
-                Log.e("FitrusViewModel", "온도 파싱 실패: ${it.message}", it)
+                Log.e(TAG, "Temp 파싱 실패: ${it.message}", it)
             }
         }
     }
