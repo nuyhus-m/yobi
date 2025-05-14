@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -50,10 +49,28 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void signUp(SignUpRequest request) {
+    public ApiResult signUp(SignUpRequest request) {
         try {// 사번 중복 체크
             if (userRepository.existsByEmployeeNumber(request.getEmployeeNumber())) {
                 throw new IllegalArgumentException("이미 존재하는 사번입니다.");
+            }
+
+            // 비밀번호 유효성 검사
+            String password = request.getPassword();
+            if (password == null || password.isEmpty()) {
+                return ApiResponseDTO.fail(ApiResponseCode.PASSWORD_NO_INPUT);
+            }
+
+            // 허용된 특수문자 목록
+            String allowedSpecialChars = "@$!%*#?&";
+
+            // 비밀번호에 허용되지 않은 특수문자가 포함되어 있는지 직접 검사
+            for (int i = 0; i < password.length(); i++) {
+                char c = password.charAt(i);
+                if (!Character.isLetterOrDigit(c) && allowedSpecialChars.indexOf(c) == -1) {
+                    System.out.println("허용되지 않은 특수문자 발견: " + c); // 디버깅용
+                    return ApiResponseDTO.fail(ApiResponseCode.INVALID_PASSWORD_FORMAT);
+                }
             }
 
             // 비밀번호 암호화
@@ -75,6 +92,7 @@ public class UserService implements UserDetailsService {
 
             // DB에 저장
             userRepository.save(user);
+            return ApiResponseDTO.success(null);
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드 중 오류 발생", e);
         } catch (Exception e) {
@@ -140,10 +158,38 @@ public class UserService implements UserDetailsService {
             return ApiResponseDTO.fail(ApiResponseCode.NEW_PASSWORD_SAME_AS_OLD);
         }
 
+        // 비밀번호 유효성 검사
+        ApiResult validationResult = validatePassword(request.getNewPassword());
+        if (validationResult instanceof ApiResponseDTO<?>) {
+            ApiResponseDTO<?> response = (ApiResponseDTO<?>) validationResult;
+            if (!"200".equals(response.getCode())) {
+                // 코드가 200이 아닐 경우 실패로 간주
+                return validationResult;
+            }
+        } else {
+            return ApiResponseDTO.fail(ApiResponseCode.SERVER_ERROR);
+        }
+
         String newPassword = passwordEncoder.encode(request.getNewPassword());
         user.setPassword(newPassword);
 
         return null;
 
+    }
+
+    // 비밀번호 검증 로직 (특수문자 관련)
+    private ApiResult validatePassword(String password) {
+        if (password == null || password.isEmpty()) {
+            return ApiResponseDTO.fail(ApiResponseCode.PASSWORD_NO_INPUT);
+        }
+
+        String allowedSpecialChars = "@$!%*#?&";
+        for (char c : password.toCharArray()) {
+            if (!Character.isLetterOrDigit(c) && allowedSpecialChars.indexOf(c) == -1) {
+                return ApiResponseDTO.fail(ApiResponseCode.INVALID_PASSWORD_FORMAT);
+            }
+        }
+
+        return ApiResponseDTO.success(null);
     }
 } 
