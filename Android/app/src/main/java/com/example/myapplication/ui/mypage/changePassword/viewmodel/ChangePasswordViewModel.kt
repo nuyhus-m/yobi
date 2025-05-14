@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.request.mypage.ChangePasswordRequest
 import com.example.myapplication.data.repository.MyPageRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ChangePasswordViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository
 ): ViewModel() {

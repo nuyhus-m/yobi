@@ -230,6 +230,12 @@
         tools:layout="@layout/fragment_my_page" />
 
     <fragment
+        android:id="@+id/dest_change_password"
+        android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
+        android:label="ChangePasswordFragment"
+        tools:layout="@layout/fragment_change_password" />
+
+    <fragment
         android:id="@+id/dest_policy"
         android:name="com.example.myapplication.ui.mypage.policy.PolicyFragment"
         android:label="PolicyFragment"
@@ -279,19 +285,6 @@
             android:name="scheduleId"
             app:argType="integer" />
     </dialog>
-    <navigation
-        android:id="@+id/navigation2"
-        app:startDestination="@id/navigation">
-        <navigation
-            android:id="@+id/navigation"
-            app:startDestination="@id/dest_change_password">
-            <fragment
-                android:id="@+id/dest_change_password"
-                android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
-                android:label="ChangePasswordFragment"
-                tools:layout="@layout/fragment_change_password" />
-        </navigation>
-    </navigation>
 
 
 </navigation>
