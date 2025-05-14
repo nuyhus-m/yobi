@@ -45,11 +45,11 @@ public class Client {
 
     @NotNull
     @Column(name = "height", nullable = false)
-    private Double height;
+    private Float height;
 
     @NotNull
     @Column(name = "weight", nullable = false)
-    private Double weight;
+    private Float weight;
 
     @Size(max = 255)
     @Column(name = "image")

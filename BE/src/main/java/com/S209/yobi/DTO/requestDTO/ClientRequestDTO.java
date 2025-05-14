@@ -30,10 +30,10 @@ public class ClientRequestDTO {
     private Integer gender;
 
     @NotNull
-    private Double height;
+    private Float height;
 
     @NotNull
-    private Double weight;
+    private Float weight;
 
     @Size(max = 100)
     @NotNull

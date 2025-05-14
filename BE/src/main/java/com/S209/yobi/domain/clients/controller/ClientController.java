@@ -42,8 +42,8 @@ public class ClientController {
             @Parameter(description = "고객 이름") @RequestParam("name") String name,
             @Parameter(description = "생년월일") @RequestParam("birth") LocalDate birth,
             @Parameter(description = "성별") @RequestParam("gender") Integer gender,
-            @Parameter(description = "키") @RequestParam("height") Double height,
-            @Parameter(description = "몸무게") @RequestParam("weight") Double weight,
+            @Parameter(description = "키") @RequestParam("height") Float height,
+            @Parameter(description = "몸무게") @RequestParam("weight") Float weight,
             @Parameter(description = "주소") @RequestParam("address") String address,
             @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
             @RequestPart(value = "image", required = false) MultipartFile image,

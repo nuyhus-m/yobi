@@ -31,8 +31,8 @@ public class ClientResponseDTO implements ApiResult {
         private String name;
         private LocalDate birth;
         private Integer gender;
-        private Double height;
-        private Double weight;
+        private Float height;
+        private Float weight;
         private String image;
         private String address;
 
