@@ -41,6 +41,19 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
                 .actionDiaryDetailFragmentToDestDeleteDairyDialog(args.scheduleId)
             findNavController().navigate(action)
         }
+
+        binding.btnEdit.setOnClickListener {
+            val daily = viewModel.dailyLog.value ?: return@setOnClickListener
+
+            val action = DiaryDetailFragmentDirections
+                .actionDestDiaryDetailFragmentToDestVisitWriteFragment(
+                    scheduleId = args.scheduleId,
+                    isEditMode = true
+                )
+
+            findNavController().navigate(action)
+        }
+
         val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
         savedStateHandle?.getLiveData<Int>(DELETE_RESULT_KEY)
             ?.observe(viewLifecycleOwner) { scheduleId ->
@@ -76,6 +89,7 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
                 tvDate.text = formattedDate
             }
         }
+
 
         viewModel.error.observe(viewLifecycleOwner) { message ->
             showToast(message)

@@ -5,8 +5,8 @@ data class ClientDetailResponse(
     val name: String,
     val birth: String,
     val gender: Int,
-    val height: Int,
-    val weight: Int,
+    val height: Float,
+    val weight: Float,
     val image: String?,
     val address: String
 )

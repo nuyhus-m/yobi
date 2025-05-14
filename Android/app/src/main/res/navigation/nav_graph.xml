@@ -136,12 +136,9 @@
             app:argType="integer" />
 
         <argument
-            android:name="name"
-            app:argType="string" />
-
-        <argument
-            android:name="date"
-            app:argType="long" />
+            android:name="isEditMode"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </fragment>
 
     <fragment
@@ -206,7 +203,8 @@
     <fragment
         android:id="@+id/dest_diary_detail_fragment"
         android:name="com.example.myapplication.ui.visitlog.diarydetail.DiaryDetailFragment"
-        android:label="DiaryDetailFragment">
+        android:label="DiaryDetailFragment"
+        tools:layout="@layout/fragment_diary_detail">
         <argument
             android:name="scheduleId"
             app:argType="integer" />
@@ -214,6 +212,9 @@
         <action
             android:id="@+id/action_diaryDetailFragment_to_dest_delete_dairy_dialog"
             app:destination="@id/dest_delete_dairy_dialog" />
+        <action
+            android:id="@+id/action_dest_diary_detail_fragment_to_dest_visit_write_fragment"
+            app:destination="@id/dest_visit_write_fragment" />
     </fragment>
 
     <fragment
@@ -221,12 +222,6 @@
         android:name="com.example.myapplication.ui.mypage.mypage.MyPageFragment"
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" />
-
-    <fragment
-        android:id="@+id/dest_change_password"
-        android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
-        android:label="ChangePasswordFragment"
-        tools:layout="@layout/fragment_change_password" />
 
     <fragment
         android:id="@+id/dest_policy"
@@ -272,11 +267,25 @@
     <dialog
         android:id="@+id/dest_delete_dairy_dialog"
         android:name="com.example.myapplication.ui.visitlog.DeleteDairyDialog"
-        android:label="DeleteDairyDialog">
+        android:label="DeleteDairyDialog"
+        tools:layout="@layout/dialog_delete">
         <argument
             android:name="scheduleId"
             app:argType="integer" />
     </dialog>
+    <navigation
+        android:id="@+id/navigation2"
+        app:startDestination="@id/navigation">
+        <navigation
+            android:id="@+id/navigation"
+            app:startDestination="@id/dest_change_password">
+            <fragment
+                android:id="@+id/dest_change_password"
+                android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
+                android:label="ChangePasswordFragment"
+                tools:layout="@layout/fragment_change_password" />
+        </navigation>
+    </navigation>
 
 
 </navigation>

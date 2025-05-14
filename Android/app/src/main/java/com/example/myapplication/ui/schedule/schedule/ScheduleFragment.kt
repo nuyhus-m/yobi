@@ -251,7 +251,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             },
             onLogCreateClick = { scheduleId, clientName, visitedDate ->
                 val action = ScheduleFragmentDirections
-                    .actionScheduleFragmentToDestVisitWrite(scheduleId, clientName, visitedDate)
+                    .actionScheduleFragmentToDestVisitWrite(scheduleId, false)
                 findNavController().navigate(action)
             },
             onLogViewClick = { scheduleId ->

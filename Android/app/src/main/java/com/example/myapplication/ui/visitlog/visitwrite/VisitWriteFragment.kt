@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -23,11 +24,15 @@ import com.example.myapplication.databinding.FragmentVisitWriteBinding
 import com.example.myapplication.ui.visitlog.visitwrite.stt.CredentialsHelper
 import com.example.myapplication.ui.visitlog.visitwrite.stt.NlpFilter
 import com.example.myapplication.ui.visitlog.visitwrite.stt.SpeechStreamManager
+import com.example.myapplication.ui.visitlog.visitwrite.viewmodel.VisitWriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val TAG = "VisitWriteFragment"
 
@@ -38,6 +43,8 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
 ) {
 
     private val args: VisitWriteFragmentArgs by navArgs()
+
+    private val viewModel: VisitWriteViewModel by viewModels()
 
     // NlP
     private lateinit var nlpFilter: NlpFilter
@@ -62,26 +69,73 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        val name = args.name
-        val fullText = "${name}님 일지"
+        if (args.isEditMode) {
+            viewModel.loadDailyLog(
+                scheduleId = args.scheduleId,
+                onSuccess = { clientName, visitedDate, logContent ->
+                    val title = SpannableString("${clientName}님 일지").apply {
+                        setSpan(
+                            RelativeSizeSpan(1.2f),
+                            0,
+                            clientName.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                        setSpan(
+                            StyleSpan(Typeface.BOLD),
+                            0,
+                            clientName.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                    binding.tvTitle.text = title
 
-        val spannable = SpannableString(fullText).apply {
-            setSpan(
-                RelativeSizeSpan(1.2f),
-                0,
-                name.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    val dateStr = SimpleDateFormat(
+                        "yyyy.MM.dd",
+                        Locale.getDefault()
+                    ).format(Date(visitedDate))
+                    binding.tvDate.text = dateStr
+
+                    binding.etContent.setText(logContent)
+                    finalBuffer.clear()
+                    finalBuffer.append(logContent)
+                    hasFinalResult = true
+                    setUiState(UiState.RECORDED)
+                }
             )
-            setSpan(
-                StyleSpan(Typeface.BOLD),
-                0,
-                name.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        } else {
+            viewModel.loadDailyLog(
+                scheduleId = args.scheduleId,
+                onSuccess = { clientName, visitedDate, logContent ->
+                    val title = SpannableString("${clientName}님 일지").apply {
+                        setSpan(
+                            RelativeSizeSpan(1.2f),
+                            0,
+                            clientName.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                        setSpan(
+                            StyleSpan(Typeface.BOLD),
+                            0,
+                            clientName.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
+                    binding.tvTitle.text = title
+
+                    val dateStr = SimpleDateFormat(
+                        "yyyy.MM.dd",
+                        Locale.getDefault()
+                    ).format(Date(visitedDate))
+                    binding.tvDate.text = dateStr
+
+                    binding.etContent.setText(logContent)
+                    finalBuffer.clear()
+                    finalBuffer.append(logContent)
+                    hasFinalResult = true
+                    setUiState(UiState.INITIAL)
+                }
             )
         }
-
-        binding.tvTitle.text = spannable
-        tvDate.text = args.date.toString()
 
         speechManager = SpeechStreamManager(requireContext())
         checkCredentialsExist()
@@ -115,6 +169,23 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     override fun onDestroy() {
         super.onDestroy()
         if (isRecording) speechManager.stopStreaming()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == recordPermissionRequestCode) {
+            val granted = grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+            binding.btnRecord.isEnabled = granted
+            showToast(
+                if (granted) "음성 녹음 권한이 허용되었습니다"
+                else "음성 녹음 권한이 거부되어 STT 기능을 사용할 수 없습니다"
+            )
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -274,14 +345,22 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
 
     private fun saveVisitLog() {
         val content = binding.etContent.text.toString().trim()
+
         if (content.isEmpty()) {
             showToast("일지 내용을 입력해주세요")
             return
         }
-        showToast("일지가 저장되었습니다")
-        Navigation.findNavController(requireView()).popBackStack()
-    }
 
+        val schedueId = args.scheduleId
+        viewModel.saveDailyLog(
+            scheduleId = schedueId,
+            content = content,
+            onSuccess = {
+                showToast("일지가 저장되었습니다 잘 갔어요.")
+                Navigation.findNavController(requireView()).popBackStack()
+            }
+        )
+    }
 
     private fun checkAudioPermission() {
         if (!hasRecordPermission())
@@ -301,20 +380,4 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == recordPermissionRequestCode) {
-            val granted = grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-            binding.btnRecord.isEnabled = granted
-            showToast(
-                if (granted) "음성 녹음 권한이 허용되었습니다"
-                else "음성 녹음 권한이 거부되어 STT 기능을 사용할 수 없습니다"
-            )
-        }
-    }
 }
