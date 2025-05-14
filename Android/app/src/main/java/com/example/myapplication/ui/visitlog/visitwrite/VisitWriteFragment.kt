@@ -81,7 +81,7 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         }
 
         binding.tvTitle.text = spannable
-        tvDate.text = args.date
+        tvDate.text = args.date.toString()
 
         speechManager = SpeechStreamManager(requireContext())
         checkCredentialsExist()
