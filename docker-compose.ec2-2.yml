@@ -8,15 +8,14 @@ services:
       context: ./AI
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - "6000:6000"
-    env_file:
-      - .env
+    ports: ["6000:6000"]
+    env_file: .env
     environment:
-      DATABASE_URL: ${DATABASE_URL} # AI에서 사용할 DATABASE_URL 설정
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${EC2_1_IP}:5432/${POSTGRES_DB}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_KEY_ID: ${AWS_SECRET_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
