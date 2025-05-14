@@ -21,8 +21,8 @@ pipeline {
         }
         stage('Load Application Config') {
             steps {
-                withCredentials([file(credentialsId: 'application-prod-yml', variable: 'APP_CONFIG')]) {
-                    sh 'mkdir -p BE/src/main/resources && cp $APP_CONFIG BE/src/main/resources/application-prod.yml'
+                withCredentials([file(credentialsId: 'application-yml', variable: 'APP_CONFIG')]) {
+                    sh 'mkdir -p BE/src/main/resources && cp $APP_CONFIG BE/src/main/resources/application.yml'
                 }
             }
         }
