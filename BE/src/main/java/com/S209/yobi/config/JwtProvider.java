@@ -1,8 +1,12 @@
 package com.S209.yobi.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
+    private static final Logger logger = Logger.getLogger(JwtProvider.class.getName());
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
@@ -29,17 +35,30 @@ public class JwtProvider {
     @Value("${jwt.refresh-expiration}")
     private Long refreshExpiration;
 
+    @Value("${jwt.secret:default_secret_key_for_initial_setup}")
+    private String secret;
+
     private Key getSigningKey() {
-        byte[] keyBytes = "default_secret_key_for_initial_setup".getBytes();
+        byte[] keyBytes = secret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public Integer extractEmployeeNumber(String token) {
-        return Integer.parseInt(extractClaim(token, claims -> claims.get("employeeNumber", String.class)));
+        try {
+            return Integer.parseInt(extractClaim(token, claims -> claims.get("employeeNumber", String.class)));
+        } catch (Exception e) {
+            logger.severe("Failed to extract employeeNumber: " + e.getMessage());
+            throw e;
+        }
     }
 
     public Integer extractUserId(String token) {
-        return Integer.parseInt(extractClaim(token, claims -> claims.get("userId", String.class)));
+        try {
+            return Integer.parseInt(extractClaim(token, claims -> claims.get("userId", String.class)));
+        } catch (Exception e) {
+            logger.severe("Failed to extract userId: " + e.getMessage());
+            throw e;
+        }
     }
 
     public Date extractExpiration(String token) {
@@ -52,15 +71,48 @@ public class JwtProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            // 공백 제거
+            token = token.replaceAll("\\s+", "");
+
+            // 기본 형식 검증
+            String[] parts = token.split("\\.");
+            if (parts.length != 3) {
+                throw new MalformedJwtException("Invalid JWT token format");
+            }
+
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (SignatureException e) {
+            logger.severe("Invalid JWT signature: " + e.getMessage());
+            throw e;
+        } catch (MalformedJwtException e) {
+            logger.severe("Invalid JWT token: " + e.getMessage());
+            throw e;
+        } catch (ExpiredJwtException e) {
+            logger.info("JWT token is expired: " + e.getMessage());
+            throw e;
+        } catch (UnsupportedJwtException e) {
+            logger.severe("JWT token is unsupported: " + e.getMessage());
+            throw e;
+        } catch (IllegalArgumentException e) {
+            logger.severe("JWT claims string is empty: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.severe("Error parsing JWT: " + e.getMessage());
+            throw e;
+        }
     }
 
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            return extractExpiration(token).before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 
     public String generateToken(Integer employeeNumber, Integer userId) {
@@ -100,20 +152,38 @@ public class JwtProvider {
     }
 
     public boolean validateToken(String token, Integer employeeNumber, Integer userId) {
-        final Integer extractedEmployeeNumber = extractEmployeeNumber(token);
-        final Integer extractedUserId = extractUserId(token);
-        return (extractedEmployeeNumber.equals(employeeNumber) && 
-                extractedUserId.equals(userId) && 
-                !isTokenExpired(token));
+        try {
+            if (token == null || token.isEmpty()) {
+                return false;
+            }
+
+            final Integer extractedEmployeeNumber = extractEmployeeNumber(token);
+            final Integer extractedUserId = extractUserId(token);
+            return (extractedEmployeeNumber.equals(employeeNumber) &&
+                    extractedUserId.equals(userId) &&
+                    !isTokenExpired(token));
+        } catch (Exception e) {
+            logger.warning("Token validation failed: " + e.getMessage());
+            return false;
+        }
     }
 
     public Boolean validateRefreshToken(String refreshToken, UserDetails userDetails, Integer employeeNumber, Integer userId) {
-        final Integer tokenEmployeeNumber = extractEmployeeNumber(refreshToken);
-        final Integer tokenUserId = extractUserId(refreshToken);
-        return (tokenEmployeeNumber.equals(employeeNumber) && 
-                tokenUserId.equals(userId) && 
-                !isTokenExpired(refreshToken) && 
-                validateRefreshTokenInRedis(userId, refreshToken));
+        try {
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return false;
+            }
+
+            final Integer tokenEmployeeNumber = extractEmployeeNumber(refreshToken);
+            final Integer tokenUserId = extractUserId(refreshToken);
+            return (tokenEmployeeNumber.equals(employeeNumber) &&
+                    tokenUserId.equals(userId) &&
+                    !isTokenExpired(refreshToken) &&
+                    validateRefreshTokenInRedis(userId, refreshToken));
+        } catch (Exception e) {
+            logger.warning("Refresh token validation failed: " + e.getMessage());
+            return false;
+        }
     }
 
     private Boolean validateRefreshTokenInRedis(Integer userId, String refreshToken) {
@@ -124,4 +194,4 @@ public class JwtProvider {
     public void deleteRefreshToken(Integer userId) {
         redisTemplate.delete(REFRESH_TOKEN_PREFIX + userId);
     }
-} 
+}

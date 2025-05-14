@@ -24,7 +24,8 @@ public enum ApiResponseCode {
     OLD_PASSWORD_WRONG("400-3", "이전 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     NEW_PASSWORD_SAME_AS_OLD("400-4", "새 비밀번호와 이전 비밀번호가 동일합니다.", HttpStatus.BAD_REQUEST),
     PASSWORD_NO_INPUT("400-5", "비밀번호가 비어 있습니다.", HttpStatus.BAD_REQUEST),
-    INVALID_PASSWORD_FORMAT("400-6", "비밀번호에는 @$!%*#?& 특수문자만 사용할 수 있습니다.", HttpStatus.BAD_REQUEST);
+    INVALID_PASSWORD_FORMAT("400-6", "비밀번호에는 @$!%*#?& 특수문자만 사용할 수 있습니다.", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED("403-1", "권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String message;
