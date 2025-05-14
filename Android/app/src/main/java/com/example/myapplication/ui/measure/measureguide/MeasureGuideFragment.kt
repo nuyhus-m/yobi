@@ -75,9 +75,4 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
             }
         }
     }
-
-    override fun onStop() {
-        super.onStop()
-        fitrusViewModel.disconnectDevice()
-    }
 }

@@ -97,4 +97,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             }
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+        fitrusViewModel.disconnectDevice()
+    }
 }
