@@ -26,7 +26,6 @@ class DatePickerDialog: DialogFragment() {
     private var _binding: DialogDatePickerBinding? = null
     private val binding get() = _binding!!
 
-    // 날짜 선택 결과 콜백
     var onDateSelected: ((LocalDate) -> Unit)? = null
 
     private var selectedDate = LocalDate.now()

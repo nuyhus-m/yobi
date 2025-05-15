@@ -21,8 +21,8 @@ interface ScheduleService  {
 
     @GET("schedules/period")
     suspend fun getPeriodSchedule(
-        @Query("start") start: Long,
-        @Query("end") end:Long
+        @Query("startDate") startDate: Long,
+        @Query("endDate") endDate:Long
     ): Response<List<PeriodScheduleResponse>>
 
     @GET("schedules/day")

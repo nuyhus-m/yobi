@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.dto.model.ScheduleItemModel
+import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.data.repository.ScheduleRepository
 import com.example.myapplication.util.TimeUtils.toEpochMillis
 import com.example.myapplication.util.TimeUtils.toLocalDate
@@ -33,49 +34,24 @@ class ScheduleViewModel @Inject constructor(
     private val loadedRanges = mutableListOf<Pair<LocalDate, LocalDate>>()
 
     // 클라이언트 아이디별 도트 색 맵핑
-    val clientColorMap = mapOf(
-        1 to "#00B383",
-        2 to "#735BF2",
-        3 to "#0095FF",
-        4 to "#EA9A86",
-        5 to "#FF5E5E",
-        6 to "#FF6AD5",
-        7 to "#946FCF",
-        8 to "#39FF14",
-        9 to "#D2691E",
-        10 to "#FFF200"
+    private val colorPool = listOf(
+        "#00B383", "#735BF2", "#0095FF", "#EA9A86", "#FF5E5E",
+        "#FF6AD5", "#946FCF", "#39FF14", "#D2691E", "#FFF200"
     )
+
+    var clientColorMap: Map<Int, String> = emptyMap()
+        private set
+
+    fun setClientColors(clients: List<ClientDetailResponse>) {
+        val map = mutableMapOf<Int, String>()
+        clients.forEachIndexed { index, client ->
+            map[client.clientId] = colorPool[index % colorPool.size]
+        }
+        clientColorMap = map
+    }
 
     init {
         selectDate(LocalDate.now())
-//        val dummyDate = LocalDate.now()
-//
-//        val dummyList = listOf(
-//            ScheduleItemModel(
-//                scheduleId = 1,
-//                clientId = 1,
-//                clientName = "김더미",
-//                visitedDate = dummyDate.toEpochDay(),
-//                date = dummyDate.toString(),
-//                timeRange = "09:00 ~ 10:00",
-//                hasLogContent = false
-//            ),
-//            ScheduleItemModel(
-//                scheduleId = 2,
-//                clientId = 2,
-//                clientName = "박더미",
-//                visitedDate = dummyDate.toEpochDay(),
-//                date = dummyDate.toString(),
-//                timeRange = "09:00 ~ 10:00",
-//                hasLogContent = true
-//            )
-//        )
-//        _scheduleList.value = dummyList
-//
-//        // ✅ 도트 데이터도 추가
-//        _dotMap.value = mapOf(
-//            dummyDate to listOf(1, 2)
-//        )
     }
 
     fun getPeriodSchedule(start: Long, end: Long) {
@@ -99,6 +75,7 @@ class ScheduleViewModel @Inject constructor(
 
                     loadedRanges.add(startDate to endDate)
                 }
+                Log.d("getPeriodSchedule", "${response.body()}")
 
             }.onFailure {
                 Log.d("getPeriodSchedule", "${it}")
