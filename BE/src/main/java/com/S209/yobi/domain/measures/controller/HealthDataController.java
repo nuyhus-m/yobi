@@ -64,4 +64,42 @@ public class HealthDataController {
         // 다른 타입의 결과인 경우 그대로 반환 (예외 케이스)
         return ResponseEntity.ok(result);
     }
+
+    @Operation(summary = "혈압 데이터 조회", description = "특정 ID의 혈압 데이터를 조회합니다.")
+    @GetMapping(value = "/blood")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "혈압 데이터 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n \"bloodId\": 1,\n \"sbp\": { \"value\": 119.8, \"level\": \"높음\" },\n \"dbp\": { \"value\": 79.8, \"level\": \"높음\" }\n}"
+                            )})),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "데이터를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json"))
+    })
+    public ResponseEntity<?> getBloodPressure(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Long bloodId
+    ) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+
+        ApiResult result = healthDataService.getBloodPressure(userId, bloodId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+
+            // 성공 코드인 경우 data만 반환
+            if (code.equals("200")) {
+                return ResponseEntity.ok(errorResult.getData());
+            }
+
+            // 오류 코드인 경우
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }
