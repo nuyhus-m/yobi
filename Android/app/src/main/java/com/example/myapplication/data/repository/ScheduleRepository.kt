@@ -2,10 +2,12 @@ package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
 import com.example.myapplication.data.dto.response.schedule.DayScheduleResponse
+import com.example.myapplication.data.dto.response.schedule.OCRScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.PeriodScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.ScheduleResponse
 import com.example.myapplication.data.remote.ScheduleService
 import jakarta.inject.Inject
+import okhttp3.MultipartBody
 import retrofit2.Response
 
 class ScheduleRepository @Inject constructor(
@@ -34,4 +36,21 @@ class ScheduleRepository @Inject constructor(
     suspend fun deleteSchedule(scheduleId: Int): Response<Unit> {
         return scheduleService.deleteSchedule(scheduleId)
     }
+
+    suspend fun registerPhotoSchedule(
+        imageFile: MultipartBody.Part,
+        year: Int,
+        month: Int,
+        timezone: String
+    ): Response<OCRScheduleResponse> {
+        return scheduleService.registerPhotoSchedule(
+            image = imageFile,
+            year = year,
+            month = month,
+            timezone = timezone
+        )
+    }
+
+
+
 }

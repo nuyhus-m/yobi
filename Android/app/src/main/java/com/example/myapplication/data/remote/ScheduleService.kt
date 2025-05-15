@@ -2,16 +2,20 @@ package com.example.myapplication.data.remote
 
 import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
 import com.example.myapplication.data.dto.response.schedule.DayScheduleResponse
+import com.example.myapplication.data.dto.response.schedule.OCRScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.PeriodScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.ScheduleResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Part
+import okhttp3.MultipartBody
 
 interface ScheduleService  {
 
@@ -41,4 +45,12 @@ interface ScheduleService  {
     @DELETE("schedules/{scheduleId}")
     suspend fun deleteSchedule(@Path("scheduleId") scheduleId: Int): Response<Unit>
 
+    @Multipart
+    @POST("schedules/ocr")
+    suspend fun registerPhotoSchedule(
+        @Part image: MultipartBody.Part,
+        @Query("year") year: Int,
+        @Query("month") month: Int,
+        @Query("timezone") timezone: String = "Asia/Seoul"
+    ): Response<OCRScheduleResponse>
 }
