@@ -3,6 +3,7 @@ package com.example.myapplication.ui.care.seven
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
@@ -18,17 +19,16 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
     R.layout.fragment_care_seven
 ) {
     private val viewModel: CareSevenViewModel by viewModels()
-    private val adapter = DailyMetricAdapter()
+    private val adapter = DailyMetricAdapter{
+        viewModel.loadMore()
+    }
 
+    private val args : CareSevenFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val clientId = 1
-        val userId= 1
-        val size = 30
-
-        viewModel.fetchMetrics(clientId, userId, size)
+        viewModel.fetchMetrics(args.clientId)
 
         binding.recyclerView.apply {
             adapter = this@CareSevenFragment.adapter
@@ -47,8 +47,8 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
                 }
             })
         }
-        viewModel.metrics.observe(viewLifecycleOwner) { metrics ->
-            adapter.submitList(metrics)
+        viewModel.metrics.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
         }
     }
 }

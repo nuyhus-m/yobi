@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.care.caremain
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -17,6 +18,8 @@ import com.example.myapplication.ui.care.caremain.viewmodel.CareMainViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val TAG = "CareMainFragment"
+
 @AndroidEntryPoint
 class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
     FragmentCareMainBinding::bind,
@@ -30,6 +33,7 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.fetchClientDetail(args.clientId)
+        Log.d(TAG, "onViewCreated: ${args.clientId}")
 
         viewModel.clientDetail.observe(viewLifecycleOwner) { detail ->
             binding.tvName.text = detail.name
@@ -54,7 +58,7 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
     }
 
     private fun setupTabLayout() {
-        val pagerAdapter = CarePagerAdapter(this)
+        val pagerAdapter = CarePagerAdapter(this, args.clientId)  // 여기서 넘겨줌
         binding.viewPager.adapter = pagerAdapter
 
         val tabTitles = listOf("일일\n건강상태", "내\n건강추이", "주간\n보고서")

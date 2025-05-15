@@ -9,12 +9,12 @@ import com.example.myapplication.data.dto.response.care.HealthResponse
 import com.example.myapplication.data.dto.response.care.MetricData
 import com.example.myapplication.data.repository.CareRepository
 import com.example.myapplication.ui.care.seven.data.DailyMetric
+import com.example.myapplication.util.TimeUtils.toEpochMillisFromMMDD
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "CareSevenViewModel"
-
 @HiltViewModel
 class CareSevenViewModel @Inject constructor(
     private val careRepository: CareRepository
@@ -23,46 +23,75 @@ class CareSevenViewModel @Inject constructor(
     private val _metrics = MutableLiveData<List<DailyMetric>>()
     val metrics: LiveData<List<DailyMetric>> = _metrics
 
-    fun fetchMetrics(clientId: Int, userId: Int, size: Int, cursorDate: String? = null) {
+    private var currentList = mutableListOf<DailyMetric>()
+    private var isLoading = false
+    private var currentClientId = -1          // ← 이후 loadMore()에서 사용
+    private val pageSize = 7                  // 고정
+
+    /** 최초 호출·추가 호출 모두 여기서 처리 */
+    fun fetchMetrics(
+        clientId: Int,
+        cursorDate: Long? = null      // null → 최신부터
+    ) {
+        if (isLoading) return
+        isLoading = true
+        currentClientId = clientId
+        Log.d(TAG, "fetchMetrics: $currentClientId")
+
         viewModelScope.launch {
             try {
-                val response = careRepository.getTotalHealth(clientId, userId, size, cursorDate)
-                if (response.isSuccessful){
-                    val body = response.body()
-                    if (body != null){
-                        _metrics.value = convertToDailyMetrics(body)
+                val res = careRepository.getTotalHealth(clientId, pageSize, cursorDate)
+                if (res.isSuccessful) {
+                    res.body()?.let { body ->
+                        val newMetrics = convertToDailyMetrics(body)
+
+                        currentList = if (cursorDate == null) {
+                            // 초기 로드
+                            newMetrics.toMutableList()
+                        } else {
+                            // 과거 데이터 prepend
+                            currentList.zip(newMetrics).map { (old, new) ->
+                                old.copy(
+                                    dates = new.dates + old.dates,
+                                    values = new.values + old.values
+                                )
+                            }.toMutableList()
+                        }
+                        _metrics.postValue(currentList)
                     }
-                    Log.d(TAG, "fetchMetrics: ${response.body()}")
-                }else{
-                    // 실패처리
-                    Log.d(TAG, "fetchMetrics: 실패")
                 }
             } catch (e: Exception) {
-                // 예외 처리
-                Log.e(TAG, "fetchMetrics: ${e.message}", e)
+                Log.e(TAG, "fetchMetrics error", e)
+            } finally {
+                isLoading = false
             }
         }
     }
 
-    private fun convertToDailyMetrics(response: HealthResponse): List<DailyMetric> {
-        fun convert(title: String, data: List<MetricData>): DailyMetric {
-            val formatter = java.text.SimpleDateFormat("MM/dd", java.util.Locale.getDefault())
-            val dates = data.map {
-                formatter.format(java.util.Date(it.date))
-            }
-            val values = data.map { it.value }
-            return DailyMetric(title, dates, values)
+    /** 차트가 왼쪽 끝에 닿을 때 호출 */
+    fun loadMore() {
+        // 현재 리스트에서 가장 오래된 날짜 추출 (MM/dd 문자열)
+        val oldestDateStr = currentList.firstOrNull()?.dates?.firstOrNull() ?: return
+        // util 함수로 epoch millis 변환
+        val oldestEpoch = oldestDateStr.toEpochMillisFromMMDD()   // ← Long
+        fetchMetrics(currentClientId, cursorDate = oldestEpoch)
+    }
+
+    /* ---------- 변환 로직 그대로 ---------- */
+    private fun convertToDailyMetrics(r: HealthResponse): List<DailyMetric> {
+        fun cv(title: String, data: List<MetricData>): DailyMetric {
+            val fmt = java.text.SimpleDateFormat("MM/dd", java.util.Locale.getDefault())
+            val dates = data.map { fmt.format(java.util.Date(it.date)) }
+            return DailyMetric(title, dates, data.map { it.value })
         }
         return listOf(
-            convert("체지방률", response.bodyComposition.bfp),
-            convert("기초대사량", response.bodyComposition.bmr),
-            convert("체내 수분", response.bodyComposition.ecf),
-            convert("단백질량", response.bodyComposition.protein),
-            convert("수축기 혈압", response.bloodPressure.sbp),
-            convert("이완기 혈압", response.bloodPressure.dbp),
-            convert("스트레스 지수", response.stress.stressValue)
+            cv("체지방률",       r.bodyComposition.bfp),
+            cv("기초대사량",     r.bodyComposition.bmr),
+            cv("체내 수분",      r.bodyComposition.ecf),
+            cv("단백질량",       r.bodyComposition.protein),
+            cv("수축기 혈압",    r.bloodPressure.sbp),
+            cv("이완기 혈압",    r.bloodPressure.dbp),
+            cv("스트레스 지수",  r.stress.stressValue)
         )
-
     }
-
 }

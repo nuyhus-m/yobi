@@ -11,32 +11,37 @@ import retrofit2.http.Path
 
 interface DailyService {
 
+    // daily-logs-controller
+
+    // 사용자의 일지 전체 리스트
+    @GET("dailylogs")
+    suspend fun getDailyHumanList(): Response<DailyHumanListResponse>
+
     // 일지 단건 조회
     @GET("dailylogs/{scheduleId}")
     suspend fun getDailyLogs(
         @Path("scheduleId") scheduleId: Int
     ): Response<DailyLogResponse>
 
-    // 특정 돌봄 대상에 대한 일지 리스트
-    @GET("clients/{clientId}/dailylogs")
-    suspend fun getDailyLogsList(
-        @Path("clientId") clientId: Int
-    ): Response<DailyLogsListResponse>
-
-    // 사용자의 일지 전체 리스트
-    @GET("dailylogs")
-    suspend fun getDailyHumanList(): Response<DailyHumanListResponse>
-
-    // 일지 작성 및 수정
-    @PATCH("dailylogs/{scheduleId}")
-    suspend fun patchDailyLogs(
-        @Path("scheduleId") scheduleId: Int,
-        @Body body: String
-    ): Response<Unit>
-
     // 일지 삭제
     @PATCH("dailylogs/{scheduleId}/delete")
     suspend fun patchDailyLogsDelete(
         @Path("scheduleId") scheduleId: Int
     ): Response<Unit>
+
+    // 일지 작성 및 수정
+    @PATCH("dailylogs/{scheduleId}/update")
+    suspend fun patchDailyLogs(
+        @Path("scheduleId") scheduleId: Int,
+        @Body body: String
+    ): Response<Unit>
+
+    // 특정 돌봄 대상에 대한 일지 리스트
+    @GET("dailylogs/client/{clientId}")
+    suspend fun getDailyLogsList(
+        @Path("clientId") clientId: Int
+    ): Response<DailyLogsListResponse>
+
+
+
 }

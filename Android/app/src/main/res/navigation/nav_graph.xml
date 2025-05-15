@@ -188,13 +188,23 @@
         android:id="@+id/dest_care_daily_fragment"
         android:name="com.example.myapplication.ui.care.daily.CareDailyFragment"
         android:label="fragment_care_daily"
-        tools:layout="@layout/fragment_care_daily" />
+        tools:layout="@layout/fragment_care_daily">
+
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_daily_detail_fragment"
         android:name="com.example.myapplication.ui.care.dailydetail.DailyDetailFragment"
         android:label="fragment_daily_detail"
-        tools:layout="@layout/fragment_daily_detail" />
+        tools:layout="@layout/fragment_daily_detail">
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
+
 
     <action
         android:id="@+id/action_global_dailyDetailFragment"
@@ -204,7 +214,12 @@
         android:id="@+id/dest_care_seven_fragment"
         android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
         android:label="fragment_care_seven"
-        tools:layout="@layout/fragment_care_seven" />
+        tools:layout="@layout/fragment_care_seven">
+
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_diary_detail_fragment"

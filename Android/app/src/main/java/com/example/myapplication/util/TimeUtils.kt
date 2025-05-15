@@ -50,4 +50,19 @@ object TimeUtils {
      */
     fun ZonedDateTime.toEpochMillis(): Long =
         this.toInstant().toEpochMilli()
+
+    /**
+     * "MM/dd" 형식(예: "05/14") → 00:00:00 기준 epoch millis
+     *  - 파싱이 실패하면 0L 반환
+     */
+    fun String.toEpochMillisFromMMDD(): Long {
+        return try {
+            val monthDayFmt = DateTimeFormatter.ofPattern("MM/dd")
+            val parsedDate  = LocalDate.parse(this, monthDayFmt)   // 올해 날짜로 해석
+            parsedDate.toEpochMillis()                             // 기존 확장함수 재활용
+        } catch (e: Exception) {
+            0L
+        }
+    }
+
 }

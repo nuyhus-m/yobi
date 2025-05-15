@@ -38,24 +38,21 @@ class VisitWriteViewModel @Inject constructor(
 
     fun loadDailyLog(
         scheduleId: Int,
-        onSuccess: (clientName: String, visitedDate: Long, logContent: String) -> Unit
+        onSuccess: (clientName: String, visitedDate: Long, logContent: String?) -> Unit
     ) {
         viewModelScope.launch {
             try {
-                val response = dailyRepository.getDailyLogs(scheduleId)
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null) {
-                        body?.logContent?.let { onSuccess(body.clientName, body.visitedDate, it) }
-                    } else {
-                        // 아무일도 일어나지 않는다.
+                val res = dailyRepository.getDailyLogs(scheduleId)
+                if (res.isSuccessful) {
+                    res.body()?.let {                      // ★ 여기
+                        Log.d(TAG, "loadDailyLog: ${it}")
+                        onSuccess(it.clientName, it.visitedDate, it.logContent)
                     }
-                } else {
-                    Log.d(TAG, "loadDailyLog: ${response.code()}")
-                }
+                } else Log.d(TAG, "loadDailyLog: ${res.code()}")
             } catch (e: Exception) {
                 Log.d(TAG, "loadDailyLog: ${e.message}")
             }
         }
     }
+
 }

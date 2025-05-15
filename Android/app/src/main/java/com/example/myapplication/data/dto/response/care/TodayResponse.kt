@@ -18,18 +18,18 @@ data class BodyCompositionDto(
 
 data class StressDto(
     val stressId: Long,
-    val stressValue: Int,
+    val stressValue: ValueLevel,
     val stressLevel: String
 )
 
 data class HeartRateDto(
     val heartId: Long,
-    val bpm: Int,
-    val oxygen: Int
+    val bpm: ValueLevel,
+    val oxygen: ValueLevel
 )
 
 data class BloodPressureDto(
     val bloodId: Long,
-    val sbp: Double,
-    val dbp: Double
+    val sbp: ValueLevel,
+    val dbp: ValueLevel
 )

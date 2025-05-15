@@ -18,7 +18,9 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 
-class DailyMetricAdapter : RecyclerView.Adapter<DailyMetricAdapter.MetricViewHolder>() {
+class DailyMetricAdapter(
+    private val onRequestMoreData: (() -> Unit)? = null
+) : RecyclerView.Adapter<DailyMetricAdapter.MetricViewHolder>() {
     private var items = mutableListOf<DailyMetric>()
 
     // chart랑 viewPager 충돌 방지 변수
@@ -118,9 +120,8 @@ class DailyMetricAdapter : RecyclerView.Adapter<DailyMetricAdapter.MetricViewHol
 
                     override fun onChartScale(me: MotionEvent?, scaleX: Float, scaleY: Float) {}
                     override fun onChartTranslate(me: MotionEvent?, dX: Float, dY: Float) {
-                        if (me?.pointerCount == 1) {
-                            parent?.requestDisallowInterceptTouchEvent(true)
-                        }
+                        val atLeft = lowestVisibleX <= 0f && dX > 0
+                        if (atLeft) onRequestMoreData?.invoke()
                     }
                 }
 
@@ -161,13 +162,12 @@ class DailyMetricAdapter : RecyclerView.Adapter<DailyMetricAdapter.MetricViewHol
                 setVisibleXRangeMinimum(visibleDataPoints)
                 setVisibleXRangeMaximum(visibleDataPoints)
 
+                // 최신 데이터 보여주기
+                if (item.dates.size > visibleDataPoints) moveViewToX(item.dates.size - visibleDataPoints)
+
+
                 // 스크롤 제한 설정 (차트 끝에서 스크롤 멈춤)
                 extraBottomOffset = 10f // X축 라벨을 위한 추가 여백
-
-                // 최신 데이터 보여주기
-                if (totalDataPoints > visibleDataPoints) {
-                    moveViewToX(totalDataPoints - visibleDataPoints)
-                }
 
                 // 애니메이션 (0.5초)
                 animateY(500)

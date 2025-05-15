@@ -16,11 +16,10 @@ class CareRepository @Inject constructor(
 
     suspend fun getTotalHealth(
         clientId: Int,
-        userId: Int,
         size: Int,
-        cursorDate: String? = null
+        cursorDate: Long? = null
     ): Response<HealthResponse> {
-        return careService.getTotalHealth(clientId, userId, size, cursorDate)
+        return careService.getTotalHealth(clientId, size, cursorDate)
     }
 
 
