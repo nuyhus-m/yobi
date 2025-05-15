@@ -35,11 +35,17 @@ POST http://localhost:8080/api/users/refresh
 Content-Type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTA2NDIsImV4cCI6MTc0OTg4MjY0Mn0.11a-ni6YXkMiMkmPdI3JAuhM1UVB1NIn2pBMq0ES5WU"
+
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTUyNzMsImV4cCI6MTc0OTg4NzI3M30.liTdq6vKRbeHiFahAeaaupK-VH5qoJuu6YOeAqdfD5A"
 }
 
 
 ### 사용자 정보 조회
 GET http://localhost:8080/api/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTA2NDIsImV4cCI6MTc0OTg4MjY0Mn0.11a-ni6YXkMiMkmPdI3JAuhM1UVB1NIn2pBMq0ES5WU
+
+### 로그아웃
+POST http://localhost:8080/api/v1/users/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTUyNzMsImV4cCI6MTc0OTg4NzI3M30.liTdq6vKRbeHiFahAeaaupK-VH5qoJuu6YOeAqdfD5A
+Content-Type: application/json
 

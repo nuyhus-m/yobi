@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
     private final AuthUtils authUtils;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Operation(summary = "사용자 회원가입", description = "이름, 사원번호, 비밀번호를 입력하여 회원가입을 진행합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -239,6 +240,44 @@ public class UserController {
         Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
         ApiResult result = userService.updatePassword(userId, request);
         return handleApiResult(result);
+    }
+
+    @Operation(summary = "로그아웃", description = "사용자의 refresh 토큰을 삭제하여 로그아웃을 처리합니다.")
+    @PostMapping("/logout")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그아웃 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponseDTO.class),
+                            examples = @ExampleObject(
+                                    value = "{\"code\":\"200\",\"message\":\"로그아웃이 완료되었습니다.\",\"data\":null}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증되지 않은 요청",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponseDTO.class),
+                            examples = @ExampleObject(
+                                    value = "{\"code\":\"401\",\"message\":\"인증되지 않은 요청입니다.\",\"data\":null}"
+                            )
+                    )
+            )
+    })
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+            jwtProvider.deleteRefreshToken(userId);
+            return ResponseEntity.ok(ApiResponseDTO.success("로그아웃이 완료되었습니다."));
+        } catch (Exception e) {
+            log.error("로그아웃 처리 중 오류 발생: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponseDTO.fail("401", "인증되지 않은 요청입니다."));
+        }
     }
 
     /**
