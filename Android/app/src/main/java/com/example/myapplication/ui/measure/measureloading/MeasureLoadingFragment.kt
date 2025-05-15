@@ -83,7 +83,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                                 )
                             } else {
                                 fitrusViewModel.setBodyCompositionResult(result)
-                                // TODO 화면 이동
+                                findNavController().navigate(R.id.action_dest_measure_loading_to_dest_measure_transition)
                             }
                         }
 

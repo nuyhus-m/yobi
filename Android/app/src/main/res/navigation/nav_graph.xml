@@ -117,6 +117,11 @@
             app:destination="@id/dest_measure_result"
             app:popUpTo="@id/dest_measure_target"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_transition"
+            app:destination="@id/dest_measure_transition"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -134,6 +139,12 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
+
+    <fragment
+        android:id="@+id/dest_measure_transition"
+        android:name="com.example.myapplication.ui.measure.measuretransition.MeasureTransitionFragment"
+        android:label="fragment_measure_transition"
+        tools:layout="@layout/fragment_measure_transition" />
 
     <fragment
         android:id="@+id/dest_visit_log_list"
@@ -316,6 +327,5 @@
             android:name="scheduleId"
             app:argType="integer" />
     </dialog>
-
 
 </navigation>
