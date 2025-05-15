@@ -45,12 +45,12 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
         JOIN blood_pressure bp on m.blood_id = bp.blood_id
         Left JOIN stress s on m.stress_id = s.stress_id
         WHERE m.client_id = :clientId
-        AND (:cursorDate IS NULL OR m.date < :cursorDate)
+        AND (:cursorDate IS NULL OR :cursorDate = 0 OR m.date < :cursorDate)
         ORDER BY m.date DESC 
         LIMIT :size
     """, nativeQuery = true)
     List<Object[]> findHealthTrendsNative(@Param("clientId") int clientId,
-                                          @Param("cursorDate") LocalDate cursorDate,
+                                          @Param("cursorDate") Long cursorDate,
                                           @Param("size") int size);
 
 

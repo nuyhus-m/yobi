@@ -121,13 +121,16 @@ public class DashboardService {
     /**
      * 건강 추이 전체 조회
      */
-    public ApiResult getTotalHealth (int userId, int clientId, int size, LocalDate cursorDate){
+    public ApiResult getTotalHealth (int userId, int clientId, int size, Long cursorDate){
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
         User user = getUser(userId);
         Client client = getClientOrReturnFail(clientId);
         if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
 
-        List<Object[]> measures = measureRepository.findHealthTrendsNative(clientId, cursorDate, size);
+        // cursorDate가 null인 경우 처리 (null을 0으로 변환하거나 적절한 기본값 설정)
+        long effectiveCursorDate = cursorDate != null ? cursorDate : 0L;
+
+        List<Object[]> measures = measureRepository.findHealthTrendsNative(clientId, effectiveCursorDate, size);
         TotalHealthResponseDTO result = healthMapperNative.totalHealthResponseDTO(clientId, measures);
         return result;
 

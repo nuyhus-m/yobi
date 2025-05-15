@@ -71,7 +71,7 @@ public class DashboardController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Integer clientId,
             @RequestParam int size,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate cursorDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Long cursorDate
     ) {
         Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
 

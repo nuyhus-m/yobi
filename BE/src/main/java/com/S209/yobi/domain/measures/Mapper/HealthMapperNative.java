@@ -30,7 +30,13 @@ public class HealthMapperNative {
 
         for(Object[] measure : measures){
 
-            long date = toEpochMilli(((java.sql.Date) measure[0]).toLocalDate());
+            long date;
+            if (measure[0] instanceof Long) {
+                date = (Long) measure[0];
+            } else {
+                // java.sql.Date로 변환 시도
+                date = toEpochMilli(((java.sql.Date) measure[0]).toLocalDate());
+            }
 
             if(measure[1] != null) bodyComposition.get("bfp").add(new GraphPointDTO(date, (Number) measure[1]));
             if(measure[2] != null) bodyComposition.get("bmr").add(new GraphPointDTO(date, (Number) measure[2]));
