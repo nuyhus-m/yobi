@@ -13,14 +13,17 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.core.view.children
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.data.dto.model.ScheduleItemModel
 import com.example.myapplication.databinding.FragmentScheduleBinding
+import com.example.myapplication.ui.MainViewModel
 import com.example.myapplication.ui.schedule.schedule.adapter.ScheduleAdapter
 import com.example.myapplication.ui.schedule.schedule.viewmodel.ScheduleViewModel
+import com.example.myapplication.util.TimeUtils.toEpochMillis
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.view.MonthDayBinder
@@ -36,11 +39,15 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     FragmentScheduleBinding::bind,
     R.layout.fragment_schedule
 ) {
-    private val viewModel: ScheduleViewModel by viewModels()
+    private val scheduleViewModel: ScheduleViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var scheduleAdapter: ScheduleAdapter
 
     private var currentMonth = YearMonth.now()
     private var selectedDate: LocalDate? = null
+
+    private val minMonth = YearMonth.of(2024, 1)
+    private val maxMonth = YearMonth.now().plusMonths(1)
 
     // 캘린더 설정 상수
     companion object {
@@ -59,7 +66,11 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         setupObservers()
         setupClickListeners()
 
-        // 이호정이 건드립니다. 저희 popbackstack 때문에!!
+        mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
+            scheduleViewModel.setClientColors(clients)
+            binding.cv.notifyCalendarChanged() // 캘린더 리프레시
+        }
+
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<Boolean>("needRefreshSchedule")
             ?.observe(viewLifecycleOwner) { need ->
@@ -70,7 +81,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                         ?.remove<Boolean>("needRefreshSchedule")
 
                     // 실제 갱신
-                    viewModel.reloadCurrentDate()
+                    scheduleViewModel.reloadCurrentDate()
                 }
             }
 
@@ -78,18 +89,29 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     override fun onResume() {
         super.onResume()
-        viewModel.selectDate(LocalDate.now())
+        scheduleViewModel.selectDate(LocalDate.now())
+
+        binding.cv.findFirstVisibleMonth()?.let { month ->
+            val start = month.weekDays.first().first().date.toEpochMillis()
+            val end = month.weekDays.last().last().date.toEpochMillis()
+
+            scheduleViewModel.getPeriodSchedule(start, end)
+        }
     }
 
 
     private fun setupObservers() {
-        viewModel.selectedDate.observe(viewLifecycleOwner) { date ->
+        scheduleViewModel.dotMap.observe(viewLifecycleOwner) {
+            binding.cv.notifyCalendarChanged()
+        }
+
+        scheduleViewModel.selectedDate.observe(viewLifecycleOwner) { date ->
             val oldDate = selectedDate
             selectedDate = date
             refreshDateAppearance(oldDate, date)
         }
 
-        viewModel.scheduleList.observe(viewLifecycleOwner) { list ->
+        scheduleViewModel.scheduleList.observe(viewLifecycleOwner) { list ->
             scheduleAdapter.submitList(list)
         }
     }
@@ -97,16 +119,20 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private fun setupClickListeners() {
         // 이전 월 버튼 클릭 이벤트
         binding.btnPrevious.setOnClickListener {
-            currentMonth = currentMonth.minusMonths(1)
-            binding.cv.smoothScrollToMonth(currentMonth)
-            updateMonthTitle(currentMonth)
+            if(currentMonth > minMonth) {
+                currentMonth = currentMonth.minusMonths(1)
+                binding.cv.smoothScrollToMonth(currentMonth)
+                updateMonthTitle(currentMonth)
+            }
         }
 
         // 다음 월 버튼 클릭 이벤트
         binding.btnNext.setOnClickListener {
-            currentMonth = currentMonth.plusMonths(1)
-            binding.cv.smoothScrollToMonth(currentMonth)
-            updateMonthTitle(currentMonth)
+            if (currentMonth < maxMonth) {
+                currentMonth = currentMonth.plusMonths(1)
+                binding.cv.smoothScrollToMonth(currentMonth)
+                updateMonthTitle(currentMonth)
+            }
         }
 
         // 일정 추가 버튼 클릭 이벤트
@@ -136,7 +162,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
                 // 날짜 클릭 리스너 설정
                 container.view.setOnClickListener {
-                    viewModel.selectDate(data.date)
+                    scheduleViewModel.selectDate(data.date)
                 }
 
                 // 일정 도트 표시
@@ -147,6 +173,10 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         calendarView.monthScrollListener = { month ->
             currentMonth = month.yearMonth
             updateMonthTitle(currentMonth)
+
+            val start = month.weekDays.first().first().date.toEpochMillis()
+            val end = month.weekDays.last().last().date.toEpochMillis()
+            scheduleViewModel.getPeriodSchedule(start, end)
         }
 
         // 캘린더 설정
@@ -158,6 +188,14 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
         // 현재 월로 스크롤
         calendarView.scrollToMonth(currentMonth)
+
+        binding.cv.post {
+            binding.cv.findFirstVisibleMonth()?.let { month ->
+                val start = month.weekDays.first().first().date.toEpochMillis()
+                val end = month.weekDays.last().last().date.toEpochMillis()
+                scheduleViewModel.getPeriodSchedule(start, end)
+            }
+        }
     }
 
     private fun updateDateAppearance(container: DayViewContainer, data: CalendarDay) {
@@ -201,7 +239,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         dotContainer.children.forEach { (it as LinearLayout).removeAllViews() }
 
         // 2. 날짜에 해당하는 클라이언트 ID 리스트 가져오기
-        val clientIds = viewModel.dotMap.value?.get(data.date) ?: emptyList()
+        val clientIds = scheduleViewModel.dotMap.value?.get(data.date) ?: emptyList()
 
         // 3. 도트 View 추가 (최대 10개, 3개씩 나눠서 row1~4에 배치)
         clientIds.take(MAX_DOTS_PER_DAY).forEachIndexed { index, clientId ->
@@ -223,7 +261,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private fun createDotView(clientId: Int): AppCompatImageView {
         return AppCompatImageView(requireContext()).apply {
             setImageResource(R.drawable.ic_schedule_dot)
-            val color = (viewModel.clientColorMap[clientId] ?: "#000000").toColorInt()
+            val color = (scheduleViewModel.clientColorMap[clientId] ?: "#000000").toColorInt()
             imageTintList = ColorStateList.valueOf(color)
             layoutParams = LinearLayout.LayoutParams(DOT_SIZE.dp, DOT_SIZE.dp).apply {
                 setMargins(DOT_MARGIN.dp, 0, DOT_MARGIN.dp, 0)
@@ -279,7 +317,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private fun setupRecyclerView() {
         scheduleAdapter = ScheduleAdapter(
             emptyList<ScheduleItemModel>(),
-            viewModel,
+            scheduleViewModel,
             onEditClick = { scheduleId ->
                 val action = ScheduleFragmentDirections
                     .actionScheduleFragmentToDestManualSchedule(scheduleId)
@@ -311,4 +349,3 @@ class DayViewContainer(view: View) : com.kizitonwose.calendar.view.ViewContainer
 // utils/DimensionUtils.kt 같은 파일에 추가해도 됨
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
-

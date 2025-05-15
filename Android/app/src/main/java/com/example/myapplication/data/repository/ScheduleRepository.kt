@@ -13,8 +13,8 @@ import retrofit2.Response
 class ScheduleRepository @Inject constructor(
     private val scheduleService: ScheduleService
 ){
-    suspend fun getPeriodSchedule(start: Long, end:Long): Response<List<PeriodScheduleResponse>> {
-        return scheduleService.getPeriodSchedule(start, end)
+    suspend fun getPeriodSchedule(startDate: Long, endDate:Long): Response<List<PeriodScheduleResponse>> {
+        return scheduleService.getPeriodSchedule(startDate, endDate)
     }
 
     suspend fun getDaySchedule(date:Long): Response<List<DayScheduleResponse>> {

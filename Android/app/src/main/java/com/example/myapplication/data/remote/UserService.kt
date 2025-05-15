@@ -6,7 +6,7 @@ import retrofit2.http.GET
 
 interface UserService {
 
-    @GET("users/")
+    @GET("users")
     suspend fun getMyInfo(): Response<UserResponse>
 
 //    // 사용자 정보를 추가한다.
