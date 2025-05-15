@@ -79,4 +79,13 @@
         app:layout_constraintTop_toBottomOf="@+id/include_5"
         app:layout_constraintWidth_percent="0.3" />
 
+    <include
+        android:id="@+id/include_8"
+        layout="@layout/layout_result_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/include_2"
+        app:layout_constraintTop_toTopOf="@id/include_7"
+        app:layout_constraintWidth_percent="0.3" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
