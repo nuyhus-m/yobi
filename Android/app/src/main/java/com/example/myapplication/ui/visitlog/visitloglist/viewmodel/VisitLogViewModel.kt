@@ -13,16 +13,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "VisitLogViewModel"
+
 @HiltViewModel
 class VisitLogViewModel @Inject constructor(
     private val repository: DailyRepository
 ) : ViewModel() {
-
-
     // 위에 이름 선택하는 부분
     private val _filterItems = MutableLiveData<List<FilterItem>>()
     val filterItems: LiveData<List<FilterItem>> = _filterItems
-
 
     // API로부터 가져온 모든 방문 기록들
     private val _allLogs = MutableLiveData<List<DailyHumanDTO>>()
@@ -46,19 +44,18 @@ class VisitLogViewModel @Inject constructor(
     private fun fetchDailyHumanList() {
         viewModelScope.launch {
             _isLoading.value = true
-
             try {
                 val response = repository.getDailyHumanList()
                 if (response.isSuccessful) {
                     val dailyHumans = response.body() ?: emptyList()
                     _allLogs.value = dailyHumans
                     Log.d(TAG, "fetchDailyHumanList: $dailyHumans")
+
                     // 필터
                     val names = dailyHumans.map { it.clientName }.distinct()
                     val filterItems = mutableListOf(FilterItem("전체", true))
                     filterItems.addAll(names.map { FilterItem(it, false) })
                     _filterItems.value = filterItems
-
                     filterLogs("전체")
                 } else {
                     Log.d(TAG, "fetchDailyHumanList: ")
@@ -72,6 +69,7 @@ class VisitLogViewModel @Inject constructor(
             }
         }
     }
+
     // 필터 선택 시 호출되는 함수
     fun selectFilter(selectedName: String) {
         _filterItems.value = _filterItems.value?.map {
@@ -90,8 +88,7 @@ class VisitLogViewModel @Inject constructor(
             }
     }
 
-    // 새로고침 기능
-    fun refresh() {
+    fun forceRefresh() {
         fetchDailyHumanList()
     }
 }

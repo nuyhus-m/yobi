@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -35,6 +36,10 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         viewModel.fetchClientDetail(args.clientId)
         Log.d(TAG, "onViewCreated: ${args.clientId}")
 
+        binding.ivBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         viewModel.clientDetail.observe(viewLifecycleOwner) { detail ->
             binding.tvName.text = detail.name
             binding.tvGender.text = when (detail.gender) {
@@ -54,9 +59,7 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
                 .into(binding.ivProfile)
 
             setupTabLayout()
-
         }
-
     }
 
     private fun setupTabLayout() {
@@ -74,7 +77,6 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
             tab.customView = customView
         }.attach()
     }
-
 
 
     private fun dpToPx(dp: Int): Int {
