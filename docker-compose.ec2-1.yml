@@ -70,3 +70,4 @@ services:
 volumes:
   postgres_data:
   jenkins_home:
+  redis_data:
