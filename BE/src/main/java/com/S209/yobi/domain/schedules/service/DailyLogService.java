@@ -35,13 +35,21 @@ public class DailyLogService {
 
         ZonedDateTime seoulTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 
+        // 따옴표 제거 로직
         if (content != null) {
+            // 앞뒤 따옴표 제거
+            content = content.trim();
+            if (content.startsWith("\"") && content.endsWith("\"")) {
+                content = content.substring(1, content.length() - 1);
+            }
+
+            // 이스케이프된 따옴표 처리
+            content = content.replace("\\\"", "\"");
+
             if (schedule.getLogCreatedAt() == null) {
-                //최초 등록이라면 created_at 삽입
                 schedule.setLogContent(content);
                 schedule.setLogCreatedAt(seoulTime.toInstant());
             } else {
-                // 수정이라면 updated_at 갱신
                 schedule.setLogContent(content);
                 schedule.setLogUpdatedAt(seoulTime.toInstant());
             }
