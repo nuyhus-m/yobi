@@ -33,4 +33,4 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # 11. FastAPI 앱 실행
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
