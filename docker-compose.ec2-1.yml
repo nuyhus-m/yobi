@@ -43,6 +43,7 @@ services:
     container_name: ocr-app
     image: ocr-app
     build: { context: ./OCR }
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
     ports: ["7000:7000"]
     env_file: .env
     environment:
