@@ -1,6 +1,7 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.data.dto.response.visitlog.DailyHumanListResponse
+import com.example.myapplication.data.dto.request.visitlog.ContentRequest
+import com.example.myapplication.data.dto.response.visitlog.DailyHumanDTO
 import com.example.myapplication.data.dto.response.visitlog.DailyLogResponse
 import com.example.myapplication.data.dto.response.visitlog.DailyLogsListResponse
 import com.example.myapplication.data.remote.DailyService
@@ -11,6 +12,11 @@ class DailyRepository @Inject constructor(
     private val dailyService: DailyService
 ) {
 
+
+    suspend fun getDailyHumanList(): Response<List<DailyHumanDTO>> {
+        return dailyService.getDailyHumanList()
+    }
+
     suspend fun getDailyLogs(scheduleId: Int): Response<DailyLogResponse> {
         return dailyService.getDailyLogs(scheduleId)
     }
@@ -19,12 +25,10 @@ class DailyRepository @Inject constructor(
         return dailyService.getDailyLogsList(clientId)
     }
 
-    suspend fun getDailyHumanList(): Response<DailyHumanListResponse> {
-        return dailyService.getDailyHumanList()
-    }
 
-    suspend fun patchDailyLogs(scheduleId: Int, body: String): Response<Unit> {
-        return dailyService.patchDailyLogs(scheduleId, body)
+    suspend fun updateDailyLog(scheduleId: Int, content: String): Response<Unit> {
+        val request = ContentRequest(content = content)
+        return dailyService.updateDailyLog(scheduleId, request)
     }
 
     suspend fun patchDailyLogsDelete(scheduleId: Int) : Response<Unit>{

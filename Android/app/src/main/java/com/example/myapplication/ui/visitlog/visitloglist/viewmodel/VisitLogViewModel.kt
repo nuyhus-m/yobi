@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.visitlog.visitloglist.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val TAG = "VisitLogViewModel"
 @HiltViewModel
 class VisitLogViewModel @Inject constructor(
     private val repository: DailyRepository
@@ -48,9 +50,9 @@ class VisitLogViewModel @Inject constructor(
             try {
                 val response = repository.getDailyHumanList()
                 if (response.isSuccessful) {
-                    val dailyHumans = response.body()?.data ?: emptyList()
+                    val dailyHumans = response.body() ?: emptyList()
                     _allLogs.value = dailyHumans
-
+                    Log.d(TAG, "fetchDailyHumanList: $dailyHumans")
                     // 필터
                     val names = dailyHumans.map { it.clientName }.distinct()
                     val filterItems = mutableListOf(FilterItem("전체", true))
@@ -59,9 +61,11 @@ class VisitLogViewModel @Inject constructor(
 
                     filterLogs("전체")
                 } else {
+                    Log.d(TAG, "fetchDailyHumanList: ")
                     _errorMessage.value = "데이터 못불러왔어요 : ${response.message()}"
                 }
             } catch (e: Exception) {
+                Log.d(TAG, "fetchDailyHumanList: ${e.message}")
                 _errorMessage.value = "데이터 못불러왔어요 catch : ${e.message}"
             } finally {
                 _isLoading.value = false

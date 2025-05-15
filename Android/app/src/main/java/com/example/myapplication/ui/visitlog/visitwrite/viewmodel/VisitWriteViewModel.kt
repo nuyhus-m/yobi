@@ -23,7 +23,7 @@ class VisitWriteViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val response = dailyRepository.patchDailyLogs(scheduleId, content)
+                val response = dailyRepository.updateDailyLog(scheduleId, content)
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
@@ -33,7 +33,6 @@ class VisitWriteViewModel @Inject constructor(
                 Log.d(TAG, "saveDailyLog: ${e.message}")
             }
         }
-
     }
 
     fun loadDailyLog(
