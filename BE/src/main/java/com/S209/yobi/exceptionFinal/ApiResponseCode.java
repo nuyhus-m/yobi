@@ -16,6 +16,8 @@ public enum ApiResponseCode {
     NOT_FOUND_USER("404-2", "유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_CLIENT("404-4", "해당하는 클라이언트가 없습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_REPORT("404-5", "해당하는 리포트가 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_BODY_COMPOSITION("404-6", "체성분 데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_RESOURCE("404-7", "연결된 측정 데이터를 찾을 수 없음", HttpStatus.NOT_FOUND),
     DUPLICATE_MEASURE("409", "이미 오늘 측정이 완료되었습니다.", HttpStatus.CONFLICT),
     IMAGE_SERVER_ERROR("500-1", "이미지 업로드 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     CREATE_CLIENT_ERROR("500-2", "고객 생성 중 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),

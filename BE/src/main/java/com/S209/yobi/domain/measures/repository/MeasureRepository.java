@@ -1,6 +1,7 @@
 package com.S209.yobi.domain.measures.repository;
 
 import com.S209.yobi.domain.clients.entity.Client;
+import com.S209.yobi.domain.measures.entity.BodyComposition;
 import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.users.entity.User;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface MeasureRepository extends JpaRepository<Measure, Long> {
+    Optional<Measure> findByBody(BodyComposition body);
 
     @Query("""
     SELECT  m
