@@ -38,11 +38,14 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initNextButton()
-        initSpinner(mainViewModel.clientList.value ?: emptyList())
+        mainViewModel.clientList.value?.let {
+            if (it.isNotEmpty()) {
+                initSpinner(it)
+                selectedClient = it[0]
+                initNextButton()
+            }
+        }
         observeMeasureStatus()
-        selectedClient = mainViewModel.clientList.value?.get(0)
-            ?: ClientDetailResponse(-1, "김할아버지", "1930-01-01", 0, 170f, 70f, null, "")
     }
 
     private fun initNextButton() {
