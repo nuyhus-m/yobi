@@ -5,6 +5,7 @@ import com.example.myapplication.data.remote.CareService
 import com.example.myapplication.data.remote.ClientService
 import com.example.myapplication.data.remote.DailyService
 import com.example.myapplication.data.remote.MeasureService
+import com.example.myapplication.data.remote.MyPageService
 import com.example.myapplication.data.remote.ScheduleService
 import com.example.myapplication.data.remote.UserService
 import dagger.Module
@@ -58,4 +59,8 @@ object ApiModule {
     fun provideScheduleService(retrofit: Retrofit): ScheduleService =
         retrofit.create(ScheduleService::class.java)
 
+    @Provides
+    @Singleton
+    fun provideMyPageService(retrofit: Retrofit): MyPageService =
+        retrofit.create(MyPageService::class.java)
 }
