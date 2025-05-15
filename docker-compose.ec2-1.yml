@@ -39,7 +39,8 @@ services:
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
     depends_on: [postgres, redis]
 
-  ocr:
+  ocr-app:
+    container_name: ocr-app
     image: ocr-app
     build: { context: ./OCR }
     ports: ["7000:7000"]
