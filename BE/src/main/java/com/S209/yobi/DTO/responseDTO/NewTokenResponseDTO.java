@@ -1,4 +1,4 @@
-package com.S209.yobi.DTO;
+package com.S209.yobi.DTO.responseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenDTO {
+public class NewTokenResponseDTO {
     private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-} 
+}

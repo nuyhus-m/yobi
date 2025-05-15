@@ -1,6 +1,6 @@
 package com.S209.yobi.domain.users.service;
 
-import com.S209.yobi.DTO.TokenDTO;
+import com.S209.yobi.DTO.responseDTO.TokenResponseDTO;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
@@ -12,7 +12,6 @@ import com.S209.yobi.domain.users.repository.UserRepository;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -179,7 +178,7 @@ public class UserService implements UserDetailsService {
         String accessToken = jwtProvider.generateToken(user.getEmployeeNumber(), user.getId());
         String refreshToken = jwtProvider.generateRefreshToken(user.getEmployeeNumber(), user.getId());
 
-        TokenDTO tokenDTO = TokenDTO.builder()
+        TokenResponseDTO tokenDTO = TokenResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
