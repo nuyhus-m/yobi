@@ -136,6 +136,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/dest_measure_transition"
+        android:name="com.example.myapplication.ui.measure.measuretransition.MeasureTransitionFragment"
+        android:label="fragment_measure_transition"
+        tools:layout="@layout/fragment_measure_transition" />
+
+    <fragment
         android:id="@+id/dest_visit_log_list"
         android:name="com.example.myapplication.ui.visitlog.visitloglist.VisitLogListFragment"
         android:label="fragment_visit_log_list"
@@ -316,6 +322,5 @@
             android:name="scheduleId"
             app:argType="integer" />
     </dialog>
-
 
 </navigation>
