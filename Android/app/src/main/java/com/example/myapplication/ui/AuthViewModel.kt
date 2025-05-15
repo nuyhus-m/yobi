@@ -26,6 +26,7 @@ class AuthViewModel @Inject constructor(
             runCatching {
                 authRepository.login(employeeNumber, password)
             }.onSuccess { response ->
+                Log.d("login-success", "${response.body()}")
                 val body = response.body()
                 val isValid = response.isSuccessful && body != null
 
@@ -35,10 +36,9 @@ class AuthViewModel @Inject constructor(
                         _loginSuccess.value = true
                     }
                 } else {
-                    Log.d("login", "${response}")
+                    Log.d("login-fail", "${response.body()}")
                     _loginSuccess.value = false
                 }
-
             }.onFailure {
                 _loginSuccess.value = false
             }

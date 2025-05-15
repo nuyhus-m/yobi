@@ -65,4 +65,11 @@ object TimeUtils {
         }
     }
 
+
+    /**
+     * LocalDate + LocalTime → UTC millis
+     * ex: 2025-05-14 + 10:00 → 1742864400000
+     */
+    fun toEpochMillis(date: LocalDate, time: LocalTime): Long =
+        date.atTime(time).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
