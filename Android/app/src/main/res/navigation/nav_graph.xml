@@ -117,6 +117,11 @@
             app:destination="@id/dest_measure_result"
             app:popUpTo="@id/dest_measure_target"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_transition"
+            app:destination="@id/dest_measure_transition"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
