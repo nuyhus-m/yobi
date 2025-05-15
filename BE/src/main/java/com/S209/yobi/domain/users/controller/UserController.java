@@ -1,6 +1,7 @@
 package com.S209.yobi.domain.users.controller;
 
-import com.S209.yobi.DTO.TokenDTO;
+import com.S209.yobi.DTO.responseDTO.TokenResponseDTO;
+import com.S209.yobi.DTO.responseDTO.NewTokenResponseDTO;
 import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
 import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
 import com.S209.yobi.DTO.requestDTO.RefreshTokenRequest;
@@ -32,7 +33,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.S209.yobi.DTO.TokenDTO;
 
 @RestController
 @RequestMapping("/users")
@@ -182,8 +182,9 @@ public class UserController {
             
             if (jwtProvider.validateRefreshToken(refreshToken, userDetails, employeeNumber, userId)) {
                 String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
-                String newRefreshToken = jwtProvider.generateRefreshToken(employeeNumber, userId);
-                return handleApiResult(ApiResponseDTO.success(new TokenDTO(newAccessToken, newRefreshToken, "Bearer")));
+                // String newRefreshToken = jwtProvider.generateRefreshToken(employeeNumber, userId);
+                // return handleApiResult(ApiResponseDTO.success(new TokenDTO(newAccessToken, newRefreshToken, "Bearer")));
+                return handleApiResult(ApiResponseDTO.success(new NewTokenResponseDTO(newAccessToken)));
             }
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -225,7 +226,7 @@ public class UserController {
                     description = "비밀번호 변경 성공 및 새 토큰 발급",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = TokenDTO.class),
+                            schema = @Schema(implementation = TokenResponseDTO.class),
                             examples = @ExampleObject(
                                     value = "{\"accessToken\":\"eyJhbGciOiJIUzI1NiJ9...\",\"refreshToken\":\"eyJhbGciOiJIUzI1NiJ9...\",\"tokenType\":\"Bearer\"}"
                             )
