@@ -45,7 +45,7 @@ pipeline {
                     # 기존 컨테이너 중지 및 삭제
                     docker stop redis postgres ocr-app be-spring-container || true
                     docker rm redis postgres ocr-app be-spring-container || true
-
+                    # 
                     # 기존 네트워크와 orphan 컨테이너 정리
                     docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE down --remove-orphans
 
