@@ -35,16 +35,9 @@ public class DailyLogService {
 
         ZonedDateTime seoulTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 
-        // 따옴표 제거 로직
         if (content != null) {
-            // 앞뒤 따옴표 제거
-            content = content.trim();
-            if (content.startsWith("\"") && content.endsWith("\"")) {
-                content = content.substring(1, content.length() - 1);
-            }
-
-            // 이스케이프된 따옴표 처리
-            content = content.replace("\\\"", "\"");
+            // 문자열 정제 로직 추가
+            content = cleanupJsonString(content);
 
             if (schedule.getLogCreatedAt() == null) {
                 schedule.setLogContent(content);
@@ -58,6 +51,28 @@ public class DailyLogService {
         return null;
     }
 
+    // 문자열 정제를 위한 헬퍼 메서드
+    private String cleanupJsonString(String input) {
+        if (input == null) return null;
+
+        // 정규식을 사용하여 패턴 "\\\\"(...)\\\\" 제거
+        if (input.matches("^\"\\\\\\\\\".*\\\\\\\\\"\"$")) {
+            input = input.substring(4, input.length() - 4);
+        }
+        // 또는 "\"...\""와 같은 패턴 처리
+        else if (input.matches("^\"\\\\\".*\\\\\"\"$")) {
+            input = input.substring(3, input.length() - 3);
+        }
+        // 기본 "..." 패턴 처리
+        else if (input.startsWith("\"") && input.endsWith("\"")) {
+            input = input.substring(1, input.length() - 1);
+        }
+
+        // 이스케이프된 따옴표 처리
+        input = input.replace("\\\\", "\\").replace("\\\"", "\"");
+
+        return input;
+    }
     // 일지 삭제
     @Transactional
     public ApiResult deleteDailyLog(Integer scheduleId) {

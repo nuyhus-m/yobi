@@ -1,5 +1,6 @@
 package com.S209.yobi.domain.schedules.controller;
 
+import com.S209.yobi.DTO.requestDTO.DailyLogRequestDTO;
 import com.S209.yobi.DTO.responseDTO.DailyLogResponseDTO;
 import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.domain.schedules.service.DailyLogService;
@@ -36,9 +37,9 @@ public class DailyLogsController {
     })
     public ResponseEntity<?> updateDailyLog(
             @PathVariable Integer scheduleId,
-            @Valid @RequestBody String content
+            @Valid @RequestBody DailyLogRequestDTO request
     ) {
-        ApiResult result = dailyLogService.updateDailyLog(scheduleId, content);
+        ApiResult result = dailyLogService.updateDailyLog(scheduleId, request.getContent());
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
