@@ -6,149 +6,239 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.example.myapplication.R
-import com.example.myapplication.base.BaseFragment
-import com.example.myapplication.databinding.FragmentManualScheduleBinding
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.myapplication.R
+import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
 import com.example.myapplication.data.dto.response.care.ClientDetailResponse
+import com.example.myapplication.databinding.FragmentManualScheduleBinding
+import com.example.myapplication.ui.MainViewModel
 import com.example.myapplication.ui.schedule.DatePickerDialog
 import com.example.myapplication.ui.schedule.TimePickerDialog
 import com.example.myapplication.ui.schedule.manualschedule.viewmodel.ManualScheduleViewModel
-import com.example.myapplication.ui.MainViewModel
 import com.example.myapplication.util.TimeUtils.toEpochMillis
+import com.example.myapplication.util.TimeUtils.toLocalDate
+import com.example.myapplication.util.TimeUtils.toLocalTime
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
-class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
+class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
     FragmentManualScheduleBinding::bind,
     R.layout.fragment_manual_schedule
 ) {
+    // Constants
+    companion object {
+        private const val INVALID_SCHEDULE_ID = -1
+        private val TIME_FORMATTER = DateTimeFormatter.ofPattern("a h:mm")
+    }
 
+    // View Models & Arguments
     private val args: ManualScheduleFragmentArgs by navArgs()
     private val manualScheduleViewModel: ManualScheduleViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
-
+    // State Variables
     private var selectedClientId: Int? = null
     private var selectedDate: LocalDate? = null
     private var startTime: LocalTime? = null
     private var endTime: LocalTime? = null
-
+    private val isEditMode: Boolean by lazy { args.scheduleId != INVALID_SCHEDULE_ID }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mainViewModel.fetchClients()
-        setupScheduleSpinner()
-        setupUI()
+        initUI()
         setupListeners()
+        setupObservers()
 
-    }
-
-    private fun setupUI() {
-        val scheduleId = args.scheduleId
-        val isEditMode = scheduleId != -1
-
+        mainViewModel.fetchClients()
         if (isEditMode) {
-            binding.tvTitle.text = "일정 수정"
-            binding.btnDelete.visibility = View.VISIBLE
-            binding.btnRegister.text = "일정 수정하기"
-
-            // 수정 모드일 때 데이터 로드
-            loadScheduleData(scheduleId)
-        } else {
-            binding.tvTitle.text = "일정 등록"
-            binding.btnDelete.visibility = View.GONE
-            binding.btnRegister.text = "일정 등록하기"
+            loadScheduleData(args.scheduleId)
         }
     }
 
-    private fun loadScheduleData(scheduleId: Int) {
+    private fun initUI() {
+        with(binding) {
+            tvTitle.text = if (isEditMode) "일정 수정" else "일정 등록"
+            btnDelete.visibility = if (isEditMode) View.VISIBLE else View.GONE
+            btnRegister.text = if (isEditMode) "일정 수정하기" else "일정 등록하기"
+            btnRegister.isEnabled = false
+        }
+    }
 
+    private fun setupObservers() {
+        mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
+            setupClientSpinner(clients)
+        }
+    }
+
+    private fun setupClientSpinner(clients: List<ClientDetailResponse>) {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_spinner,
+            clients
+        ).apply {
+            setDropDownViewResource(R.layout.item_spinner_dropdown)
+        }
+
+        binding.tvSpinnerClient.apply {
+            this.adapter = adapter
+            onItemSelectedListener = createClientSelectionListener()
+        }
+    }
+
+    private fun createClientSelectionListener() = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            val selected = parent.getItemAtPosition(position) as ClientDetailResponse
+            selectedClientId = selected.clientId
+            validateForm()
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>) {
+            selectedClientId = null
+            validateForm()
+        }
     }
 
     private fun setupListeners() {
+        with(binding) {
+            btnBack.setOnClickListener { findNavController().popBackStack() }
 
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+            etDate.setOnClickListener { showDatePicker() }
+            tvStartTime.setOnClickListener { showTimePicker(isStartTime = true) }
+            tvEndTime.setOnClickListener { showTimePicker(isStartTime = false) }
+
+            btnRegister.setOnClickListener { handleScheduleRegistration() }
+            btnDelete.setOnClickListener { handleScheduleDeletion() }
         }
+    }
 
-        binding.etDate.setOnClickListener {
-            val dialog = DatePickerDialog()
-            dialog.onDateSelected = { date ->
+    private fun showDatePicker() {
+        DatePickerDialog().apply {
+            onDateSelected = { date ->
                 selectedDate = date
                 binding.etDate.setText(date.toString())
-                checkValid()
+                validateForm()
             }
-            dialog.show(parentFragmentManager, "DatePickerDialog")
+        }.show(parentFragmentManager, "DatePickerDialog")
+    }
+
+    private fun showTimePicker(isStartTime: Boolean) {
+        TimePickerDialog().apply {
+            onTimeSelected = { time ->
+                if (isStartTime) {
+                    startTime = time
+                    binding.tvStartTime.setText(formatTime(time))
+                } else {
+                    endTime = time
+                    binding.tvEndTime.setText(formatTime(time))
+                }
+                validateForm()
+            }
+        }.show(parentFragmentManager, "TimePickerDialog")
+    }
+
+    private fun handleScheduleRegistration() {
+        val clientId = selectedClientId ?: run {
+            showToast("클라이언트를 선택해주세요.")
+            return
         }
 
-        binding.tvStartTime.setOnClickListener {
-            val dialog = TimePickerDialog()
-            dialog.onTimeSelected = { time ->
-                startTime = time
-                binding.tvStartTime.setText(formatTime(time))
-                checkValid()
-            }
-            dialog.show(parentFragmentManager, "StartTimeDialog")
+        val visitedDate = selectedDate?.toEpochMillis()
+        val startAt = selectedDate?.let { date -> startTime?.let { time -> toEpochMillis(date, time) } }
+        val endAt = selectedDate?.let { date -> endTime?.let { time -> toEpochMillis(date, time) } }
+
+        if (visitedDate == null || startAt == null || endAt == null) {
+            showToast("날짜와 시간을 모두 선택해주세요.")
+            return
         }
 
-        binding.tvEndTime.setOnClickListener {
-            val dialog = TimePickerDialog()
-            dialog.onTimeSelected = { time ->
-                endTime = time
-                binding.tvEndTime.setText(formatTime(time))
-                checkValid()
-            }
-            dialog.show(parentFragmentManager, "EndTimeDialog")
+        if (startAt >= endAt) {
+            showToast("시작 시간은 종료 시간보다 빨라야 합니다.")
+            return
         }
 
-        binding.btnRegister.setOnClickListener {
-            selectedClientId?.let { clientId ->
-                val visitedDate = selectedDate?.toEpochMillis()
-                val startAt = selectedDate?.let { date -> startTime?.let { time -> toEpochMillis(date, time) } }
-                val endAt = selectedDate?.let { date -> endTime?.let { time -> toEpochMillis(date, time) } }
+        val request = ScheduleRequest(
+            clientId = clientId,
+            visitedDate = visitedDate,
+            startAt = startAt,
+            endAt = endAt
+        )
 
-                if (visitedDate == null || startAt == null || endAt == null) {
-                    showToast("날짜와 시간을 모두 선택해주세요.")
-                    return@setOnClickListener
+        if (isEditMode) {
+            updateSchedule(args.scheduleId, request)
+        } else {
+            createSchedule(request)
+        }
+    }
+
+    private fun createSchedule(request: ScheduleRequest) {
+        manualScheduleViewModel.registerSchedule(
+            request,
+            onSuccess = {
+                showToast("일정이 등록되었습니다.")
+                findNavController().popBackStack()
+            },
+            onError = {
+                showToast("일정 등록에 실패했습니다.")
+            }
+        )
+    }
+
+    private fun updateSchedule(scheduleId: Int, request: ScheduleRequest) {
+        manualScheduleViewModel.editSchedule(
+            scheduleId,
+            request,
+            onSuccess = {
+                showToast("일정이 수정되었습니다.")
+                findNavController().popBackStack()
+            },
+            onError = {
+                showToast("일정 수정에 실패했습니다.")
+            }
+        )
+    }
+
+    private fun handleScheduleDeletion() {
+        manualScheduleViewModel.deleteSchedule(
+            args.scheduleId,
+            onSuccess = {
+                showToast("일정이 삭제되었습니다.")
+                findNavController().popBackStack()
+            },
+            onError = {
+                showToast("일정 삭제에 실패했습니다.")
+            }
+        )
+    }
+
+    private fun loadScheduleData(scheduleId: Int) {
+        manualScheduleViewModel.getSchedule(
+            scheduleId,
+            onSuccess = { schedule ->
+                selectedClientId = schedule.clientId
+                selectedDate = schedule.visitedDate.toLocalDate()
+                startTime = schedule.startAt.toLocalTime()
+                endTime = schedule.endAt.toLocalTime()
+
+                with(binding) {
+                    etDate.setText(selectedDate.toString())
+                    tvStartTime.setText(formatTime(startTime!!))
+                    tvEndTime.setText(formatTime(endTime!!))
                 }
 
-                if (startAt >= endAt) {
-                    showToast("시작 시간은 종료 시간보다 빨라야 합니다.")
-                    return@setOnClickListener
-                }
-
-                val request = ScheduleRequest(
-                    clientId = clientId,
-                    visitedDate = visitedDate,
-                    startAt = startAt,
-                    endAt = endAt
-                )
-
-                manualScheduleViewModel.registerSchedule(request,
-                    onSuccess = {
-                        showToast("일정이 등록되었습니다.")
-                        findNavController().popBackStack()
-                    },
-                    onError = {
-                        showToast("일정 등록에 실패했습니다.")
-                    }
-                )
-            } ?: showToast("클라이언트를 선택해주세요.")
-        }
-
-        binding.btnDelete.setOnClickListener{
-            // 삭제 구현
-            showToast("일정이 삭제되었습니다.")
-            findNavController().popBackStack()
-        }
-
+                selectClientInSpinner(schedule.clientId)
+                validateForm()
+            },
+            onError = {
+                showToast("일정 정보를 불러오지 못했습니다.")
+                findNavController().popBackStack()
+            }
+        )
     }
 
     private fun selectClientInSpinner(clientId: Int) {
@@ -162,8 +252,7 @@ class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
         }
     }
 
-
-    private fun checkValid() {
+    private fun validateForm() {
         val hasClient = selectedClientId != null
         val hasDate = binding.etDate.text?.toString()?.isNotBlank() == true
         val hasStart = binding.tvStartTime.text?.isNotBlank() == true
@@ -172,34 +261,7 @@ class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
         binding.btnRegister.isEnabled = hasClient && hasDate && hasStart && hasEnd
     }
 
-    private fun setupScheduleSpinner() {
-        mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
-            val adapter = ArrayAdapter(
-                requireContext(),
-                R.layout.item_spinner,
-                clients
-            )
-            adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
-            binding.tvSpinnerClient.adapter = adapter
-
-            binding.tvSpinnerClient.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                    val selected = parent.getItemAtPosition(position) as ClientDetailResponse
-                    selectedClientId = selected.clientId
-                    checkValid()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    selectedClientId = null
-                    checkValid()
-                }
-            }
-        }
-    }
-
     private fun formatTime(time: LocalTime): String {
-        val formatter = DateTimeFormatter.ofPattern("a h:mm") // 예: 오후 3:00
-        return time.format(formatter)
+        return time.format(TIME_FORMATTER)
     }
-
 }
