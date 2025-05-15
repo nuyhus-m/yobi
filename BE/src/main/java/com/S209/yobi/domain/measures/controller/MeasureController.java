@@ -1,6 +1,7 @@
 package com.S209.yobi.domain.measures.controller;
 
 import com.S209.yobi.DTO.requestDTO.*;
+import com.S209.yobi.DTO.responseDTO.MeasureResponseDTO;
 import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.domain.measures.service.MeasureService;
 import com.S209.yobi.exceptionFinal.ApiResult;
@@ -9,6 +10,7 @@ import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,11 @@ public class MeasureController {
     @PostMapping(value = "/base/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "필수 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"bodyId\": 4,\n  \"bloodId\": 4\n}"
+                            )}))
     })
     public ResponseEntity<?> saveBaseElement(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -50,16 +56,22 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/base/" + clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "피트러스 심박 측정 저장", description = "피트러스 심박 데이터를 저장합니다")
     @PostMapping(value = "/heart-rate/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "심박 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"heartRateId\": 3\n}"
+                            )}))
     })
     public  ResponseEntity<?> saveHeartRate(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -75,15 +87,22 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/heart-rate/" + clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "피트러스 스트레스 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
     @PostMapping(value = "/stress/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "스트레스 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"stressId\": 3\n}"
+                            )}))
     })
     public ResponseEntity<?> saveStress(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -99,15 +118,22 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/stress/" + clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "피트러스 체온 데이터 저장", description = "피트러스 스트레스 데이터를 저장합니다")
     @PostMapping(value = "/temperature/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "체온 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"temperatureId\": 3\n}"
+                            )}))
     })
     public ResponseEntity<?> saveStress(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -123,15 +149,22 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/temperature/"+ clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "피트러스 체성분 데이터 저장(재측정)", description = "재측정된 피트러스 체성분 데이터를 저장합니다")
     @PostMapping(value = "/body/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "체성분 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"bodyId\": 3\n}"
+                            )}))
     })
     public ResponseEntity<?> saveStress(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -147,8 +180,11 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/body/" + clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
 
@@ -156,7 +192,11 @@ public class MeasureController {
     @PostMapping(value = "/blood-pressure/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "혈압 데이터 저장 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n  \"bloodId\": 3\n}"
+                            )}))
     })
     public ResponseEntity<?> saveStress(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -172,8 +212,11 @@ public class MeasureController {
             return ResponseEntity.status(status).body(errorResult);
         }
 
-        URI location = URI.create("/blood-pressure/" + clientId + userId);
-        return ResponseEntity.created(location).build();
+        if (result instanceof MeasureResponseDTO responseDTO) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO.getIds());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
 

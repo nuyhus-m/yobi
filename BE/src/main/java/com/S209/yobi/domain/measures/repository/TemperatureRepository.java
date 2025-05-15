@@ -1,4 +1,7 @@
 package com.S209.yobi.domain.measures.repository;
 
-public interface TemperatureRepository {
+import com.S209.yobi.domain.measures.entity.Temperature;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TemperatureRepository extends JpaRepository<Temperature, Long> {
 }

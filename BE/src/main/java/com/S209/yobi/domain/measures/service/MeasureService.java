@@ -2,15 +2,14 @@ package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.requestDTO.*;
 import com.S209.yobi.DTO.responseDTO.CheckBaseResultDTO;
+import com.S209.yobi.DTO.responseDTO.MeasureResponseDTO;
 import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.measures.entity.*;
-import com.S209.yobi.domain.measures.repository.BodyCompositionRepository;
-import com.S209.yobi.domain.measures.repository.MeasureRepository;
+import com.S209.yobi.domain.measures.repository.*;
 import com.S209.yobi.exceptionFinal.ApiResult;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
-import com.S209.yobi.domain.measures.repository.BloodPressureRepository;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -34,8 +35,10 @@ public class MeasureService {
     private final BodyCompositionRepository bodyCompositionRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
-
+    private final HeartRateRepository heartRateRepository;
+    private final StressRepository stressRepository;
     private final HealthRangeAsyncService healthRangeAsyncService;
+    private final TemperatureRepository temperatureRepository;
 
 
 
@@ -64,8 +67,10 @@ public class MeasureService {
         log.info("범위 계산 전");
         healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
 
-        return null;
-
+        return MeasureResponseDTO.createWithBaseIds(
+                measure.getBody().getId(),
+                measure.getBlood().getId()
+        );
     }
 
     /**
@@ -82,11 +87,23 @@ public class MeasureService {
         Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
         if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
-        // HeartRate 엔티티 생성 및 저장
-        HeartRate heart = HeartRate.fromDTO(requestDTO);
-        measure.setHeartRate(heart);
+        HeartRate oldHeart = measure.getHeart();
+        measure.setHeartRate(null);  // 현재 연결 해제
+        measureRepository.saveAndFlush(measure);  // 변경사항 즉시 저장
 
-        return null;
+        // HeartRate 엔티티 생성
+        HeartRate heart = HeartRate.fromDTO(requestDTO);
+
+        // 별도의 저장소(Repository)를 사용하여 먼저 HeartRate 저장
+        // HeartRateRepository heartRateRepository가 필요합니다
+        heartRateRepository.save(heart);
+
+        // 저장된 HeartRate 연결 및 measure 업데이트
+        measure.setHeartRate(heart);
+        measureRepository.save(measure);
+
+        // 결과 반환
+        return MeasureResponseDTO.createWithSingleId("heartRateId", heart.getId());
     }
 
     /**
@@ -103,12 +120,22 @@ public class MeasureService {
         Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
         if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
-        // Stress 엔티티 생성 및 저장
+        Stress oldStress = measure.getStress();
+        measure.setStress(null);  // 현재 연결 해제
+        measureRepository.saveAndFlush(measure);  // 변경사항 즉시 저장
+
+        // Stress 엔티티 생성
         Stress stress = Stress.fromDTO(requestDTO);
+
+        // 별도의 저장소(Repository)를 사용하여 먼저 Stress 저장 (추가 필요)
+        stressRepository.save(stress);
+
+        // 저장된 Stress 연결 및 measure 업데이트
         measure.setStress(stress);
+        measureRepository.save(measure);
 
-        return null;
-
+        // 결과 반환
+        return MeasureResponseDTO.createWithSingleId("stressId", stress.getId());
     }
 
 
@@ -125,12 +152,22 @@ public class MeasureService {
         Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
         if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
-        // Temperature 엔티티 생성 및 저장
+        Temperature oldTemperature = measure.getTemperature();
+        measure.setTemperature(null);  // 현재 연결 해제
+        measureRepository.saveAndFlush(measure);  // 변경사항 즉시 저장
+
+        // Temperature 엔티티 생성
         Temperature temperature = Temperature.fromDTO(requestDTO);
+
+        // 별도의 저장소(Repository)를 사용하여 먼저 Temperature 저장 (추가 필요)
+        temperatureRepository.save(temperature);
+
+        // 저장된 Temperature 연결 및 measure 업데이트
         measure.setTemperature(temperature);
+        measureRepository.save(measure);
 
-        return null;
-
+        // 결과 반환
+        return MeasureResponseDTO.createWithSingleId("temperatureId", temperature.getId());
     }
 
     /**
@@ -147,17 +184,30 @@ public class MeasureService {
         Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
         if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
-        // Temperature 엔티티 생성 및 저장
-        BodyComposition bodyComposition = BodyComposition.fromReDTO(requestDTO);
-        measure.setBody(bodyComposition);
+        // 새 BodyComposition 엔티티 생성
+        BodyComposition newBodyComposition = BodyComposition.fromReDTO(requestDTO);
+
+        // bodyCompositionRepository 저장
+        bodyCompositionRepository.save(newBodyComposition);
+
+        // 이전 BodyComposition ID 저장 (나중에 삭제용)
+        Long oldBodyId = measure.getBody().getId();
+
+        // 새 BodyComposition 연결
+        measure.setBody(newBodyComposition);
+        measureRepository.save(measure);
+
+        // 이전 BodyComposition 삭제 (선택적)
+        if (oldBodyId != null) {
+            bodyCompositionRepository.deleteById(oldBodyId);
+        }
 
         // 범위 계산 및 저장 로직 : 비동기로 호출
         log.info("범위 계산 전");
-        healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
+        healthRangeAsyncService.calculateAndSaveToRedis(user, client, newBodyComposition);
 
-
-        return null;
-
+        // 결과 반환
+        return MeasureResponseDTO.createWithSingleId("bodyId", newBodyComposition.getId());
     }
 
     /**
@@ -174,12 +224,26 @@ public class MeasureService {
         Measure measure = getTodayMeasureOrReturnFail(userId, clientId);
         if (measure == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_MEASURE);
 
-        // Temperature 엔티티 생성 및 저장
-        BloodPressure bloodPressure = BloodPressure.fromReDTO(requestDTO);
-        measure.setBlood(bloodPressure);
+        // 새 BloodPressure 엔티티 생성
+        BloodPressure newBloodPressure = BloodPressure.fromReDTO(requestDTO);
 
-        return null;
+        // bloodPressureRepository 저장
+        bloodPressureRepository.save(newBloodPressure);
 
+        // 이전 BloodPressure ID 저장 (나중에 삭제용)
+        Long oldBloodId = measure.getBlood().getId();
+
+        // 새 BloodPressure 연결
+        measure.setBlood(newBloodPressure);
+        measureRepository.save(measure);
+
+        // 이전 BloodPressure 삭제 (선택적)
+        if (oldBloodId != null) {
+            bloodPressureRepository.deleteById(oldBloodId);
+        }
+
+        // 결과 반환
+        return MeasureResponseDTO.createWithSingleId("bloodId", newBloodPressure.getId());
     }
 
     /**
