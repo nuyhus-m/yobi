@@ -58,7 +58,7 @@ class ScheduleViewModel @Inject constructor(
         val startDate = start.toLocalDate()
         val endDate = end.toLocalDate()
 
-        if (loadedRanges.any { it.contains(startDate, endDate) }) return
+//        if (loadedRanges.any { it.contains(startDate, endDate) }) return
 
         viewModelScope.launch {
             kotlin.runCatching {
@@ -117,37 +117,10 @@ class ScheduleViewModel @Inject constructor(
         return this.first <= start && this.second >= end
     }
 
-    fun updateDotMap(date: LocalDate, clientIds: List<Int>) {
-        val currentMap = _dotMap.value.orEmpty().toMutableMap()
-        if (clientIds.isEmpty()) {
-            currentMap.remove(date) // 일정이 없어지면 도트 제거
-        } else {
-            currentMap[date] = clientIds // 일정이 있으면 도트 추가/갱신
-        }
-        _dotMap.value = currentMap
-    }
-
-    fun refreshDotMapForRange(startDate: LocalDate, endDate: LocalDate, newData: Map<LocalDate, List<Int>>) {
-        val currentMap = _dotMap.value.orEmpty().toMutableMap()
-
-        // 해당 범위의 기존 데이터 제거
-        currentMap.keys.toList().forEach { date ->
-            if (date in startDate..endDate) {
-                currentMap.remove(date)
-            }
-        }
-
-        // 새 데이터 추가
-        currentMap.putAll(newData)
-        _dotMap.value = currentMap
-    }
-
-    // popBackStack 후 호출할 ‘새로고침’ 함수
     fun reloadCurrentDate() {
         selectedDate.value?.let { date ->
-            getDaySchedule(date.toEpochMillis())   // ← 이미 있는 함수 재사용
+            getDaySchedule(date.toEpochMillis())
         }
     }
 
 }
-

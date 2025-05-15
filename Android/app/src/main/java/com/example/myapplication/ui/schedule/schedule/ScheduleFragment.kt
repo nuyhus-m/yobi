@@ -90,6 +90,13 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     override fun onResume() {
         super.onResume()
         scheduleViewModel.selectDate(LocalDate.now())
+
+        binding.cv.findFirstVisibleMonth()?.let { month ->
+            val start = month.weekDays.first().first().date.toEpochMillis()
+            val end = month.weekDays.last().last().date.toEpochMillis()
+
+            scheduleViewModel.getPeriodSchedule(start, end)
+        }
     }
 
 
@@ -338,4 +345,3 @@ class DayViewContainer(view: View) : com.kizitonwose.calendar.view.ViewContainer
 // utils/DimensionUtils.kt 같은 파일에 추가해도 됨
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
-
