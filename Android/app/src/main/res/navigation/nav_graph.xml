@@ -111,7 +111,13 @@
         android:id="@+id/dest_measure_loading"
         android:name="com.example.myapplication.ui.measure.measureloading.MeasureLoadingFragment"
         android:label="fragment_measure_loading"
-        tools:layout="@layout/fragment_measure_loading" />
+        tools:layout="@layout/fragment_measure_loading">
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_result"
+            app:destination="@id/dest_measure_result"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_measure_result"

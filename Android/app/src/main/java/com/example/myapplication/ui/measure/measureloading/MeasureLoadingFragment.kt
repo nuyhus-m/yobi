@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
+import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.model.BloodPressureResult
 import com.example.myapplication.data.dto.model.BodyCompositionResult
 import com.example.myapplication.data.dto.model.HeartRateResult
@@ -82,6 +83,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                                 )
                             } else {
                                 fitrusViewModel.setBodyCompositionResult(result)
+                                // TODO 화면 이동
                             }
                         }
 
@@ -133,8 +135,16 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.healthDataResponse.collect {
                     fitrusViewModel.setHealthDataResponse(it)
-                    // 화면 이동
+                    if (!fitrusViewModel.isMeasured && fitrusViewModel.measureType == HealthDataType.BLOOD_PRESSURE) {
+                        val action =
+                            MeasureLoadingFragmentDirections.actionDestMeasureLoadingToDestMeasureResult(
+                                true
+                            )
+                        findNavController().navigate(action)
 
+                    } else {
+                        findNavController().navigate(R.id.action_dest_measure_loading_to_dest_measure_result)
+                    }
                 }
             }
         }
