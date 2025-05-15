@@ -30,6 +30,7 @@
 
     <!-- 건강 지표 항목 이름 -->
     <string name="bfp">체지방률</string>
+    <string name="bfm">체지방량</string>
     <string name="protein">단백질량</string>
     <string name="smm">근육량</string>
     <string name="mineral">무기질량</string>
@@ -49,7 +50,7 @@
     <string name="unit_kg">kg</string>
     <string name="unit_kcal">kcal</string>
     <string name="unit_age">세</string>
-    <string name="unit_mmhg">mmHg</string>
+    <string name="unit_mmHg">mmHg</string>
     <string name="unit_bpm">bpm</string>
     <string name="unit_celsius">°C</string>
 

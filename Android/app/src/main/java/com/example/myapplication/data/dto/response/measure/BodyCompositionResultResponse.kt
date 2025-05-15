@@ -10,4 +10,4 @@ data class BodyCompositionResultResponse(
     val mineral: Mineral,
     val protein: Protein,
     val smm: Smm
-)
+) : HealthDataResultResponse()

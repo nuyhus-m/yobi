@@ -4,4 +4,4 @@ data class HeartRateResultResponse(
     val bpm: Bpm,
     val heartId: Int,
     val oxygen: Oxygen
-)
+) : HealthDataResultResponse()
