@@ -1,6 +1,7 @@
 package com.example.myapplication.data.remote
 
-import com.example.myapplication.data.dto.response.visitlog.DailyHumanListResponse
+import com.example.myapplication.data.dto.request.visitlog.ContentRequest
+import com.example.myapplication.data.dto.response.visitlog.DailyHumanDTO
 import com.example.myapplication.data.dto.response.visitlog.DailyLogResponse
 import com.example.myapplication.data.dto.response.visitlog.DailyLogsListResponse
 import retrofit2.Response
@@ -15,7 +16,7 @@ interface DailyService {
 
     // 사용자의 일지 전체 리스트
     @GET("dailylogs")
-    suspend fun getDailyHumanList(): Response<DailyHumanListResponse>
+    suspend fun getDailyHumanList(): Response<List<DailyHumanDTO>>
 
     // 일지 단건 조회
     @GET("dailylogs/{scheduleId}")
@@ -31,9 +32,9 @@ interface DailyService {
 
     // 일지 작성 및 수정
     @PATCH("dailylogs/{scheduleId}/update")
-    suspend fun patchDailyLogs(
+    suspend fun updateDailyLog(
         @Path("scheduleId") scheduleId: Int,
-        @Body body: String
+        @Body body: ContentRequest
     ): Response<Unit>
 
     // 특정 돌봄 대상에 대한 일지 리스트
