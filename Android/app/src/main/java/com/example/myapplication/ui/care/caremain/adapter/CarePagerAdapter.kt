@@ -7,25 +7,19 @@ import com.example.myapplication.ui.care.daily.CareDailyFragment
 import com.example.myapplication.ui.care.report.CareReportFragment
 import com.example.myapplication.ui.care.seven.CareSevenFragment
 
-class CarePagerAdapter(private val fragment: Fragment) : FragmentStateAdapter(fragment) {
-    override fun getItemCount(): Int {
-        return 3
-    }
+class CarePagerAdapter(
+    private val fragment: Fragment,
+    private val clientId: Int
+) : FragmentStateAdapter(fragment) {
+    override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
-        val args = (fragment as? com.example.myapplication.ui.care.caremain.CareMainFragment)?.let {
-            val name = it.requireArguments().getString("name", "")
-            bundleOf("name" to name)
-        } ?: bundleOf()
+        val bundle = bundleOf("clientId" to clientId)
 
-        return when (position){
-            0 -> CareDailyFragment()
-            1 -> CareSevenFragment()
-            2 -> {
-                CareReportFragment().apply {
-                    arguments = args
-                }
-            }
+        return when (position) {
+            0 -> CareDailyFragment().apply { arguments = bundle }
+            1 -> CareSevenFragment().apply { arguments = bundle }
+            2 -> CareReportFragment().apply { arguments = bundle }
             else -> throw IllegalArgumentException("없는 탭")
         }
     }

@@ -59,6 +59,21 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         setupObservers()
         setupClickListeners()
 
+        // 이호정이 건드립니다. 저희 popbackstack 때문에!!
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Boolean>("needRefreshSchedule")
+            ?.observe(viewLifecycleOwner) { need ->
+                if (need == true) {
+                    // 플래그 삭제 (재진입 중복 호출 방지)
+                    findNavController().currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.remove<Boolean>("needRefreshSchedule")
+
+                    // 실제 갱신
+                    viewModel.reloadCurrentDate()
+                }
+            }
+
     }
 
     // view created 끝
@@ -101,7 +116,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         val calendarView = binding.cv
 
         // 월 제목 초기화
-       updateMonthTitle(currentMonth)
+        updateMonthTitle(currentMonth)
 
         // 날짜 셀 바인더 설정
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
@@ -148,13 +163,30 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         when {
             data.date == selectedDate -> {
                 textView.setBackgroundResource(R.drawable.bg_purple_radius_12)
-                textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                textView.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        android.R.color.white
+                    )
+                )
             }
+
             data.position.name == "MonthDate" -> {
-                textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                textView.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        android.R.color.black
+                    )
+                )
             }
+
             else -> {
-                textView.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+                textView.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        android.R.color.darker_gray
+                    )
+                )
             }
         }
     }

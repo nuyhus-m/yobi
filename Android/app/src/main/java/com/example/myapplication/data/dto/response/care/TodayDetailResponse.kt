@@ -16,7 +16,7 @@ data class TodayBodyComposition(
     val bfm: ValueLevel,
     val smm: ValueLevel,
     val bmr: ValueLevel,
-    val tbw: ValueLevel,
+    val ecf: ValueLevel,
     val protein: ValueLevel,
     val mineral: ValueLevel,
     val bodyAge: Int
@@ -24,23 +24,23 @@ data class TodayBodyComposition(
 
 data class Temperature(
     val temperatureId: Int,
-    val temperature: Double
+    val temperature: ValueLevel
 )
 
 data class TodayBloodPressure(
     val bloodId: Int,
-    val sbp: Double,
-    val dbp: Double
+    val sbp: ValueLevel,
+    val dbp: ValueLevel
 )
 
 data class HeartRate(
     val heartId: Int,
-    val bpm: Int,
-    val oxygen: Int
+    val bpm: ValueLevel,
+    val oxygen: ValueLevel
 )
 
 data class TodayStress(
     val stressId: Int,
-    val stressValue: Int,
+    val stressValue: ValueLevel,
     val stressLevel: String
 )

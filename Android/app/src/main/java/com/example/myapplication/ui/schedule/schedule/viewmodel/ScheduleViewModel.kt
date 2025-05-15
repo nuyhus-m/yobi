@@ -165,5 +165,12 @@ class ScheduleViewModel @Inject constructor(
         _dotMap.value = currentMap
     }
 
+    // popBackStack 후 호출할 ‘새로고침’ 함수
+    fun reloadCurrentDate() {
+        selectedDate.value?.let { date ->
+            getDaySchedule(date.toEpochMillis())   // ← 이미 있는 함수 재사용
+        }
+    }
+
 }
 

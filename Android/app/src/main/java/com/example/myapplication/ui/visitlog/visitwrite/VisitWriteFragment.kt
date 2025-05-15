@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -94,10 +95,11 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                         Locale.getDefault()
                     ).format(Date(visitedDate))
                     binding.tvDate.text = dateStr
+                    val content = logContent ?: ""
 
-                    binding.etContent.setText(logContent)
+                    binding.etContent.setText(content)
                     finalBuffer.clear()
-                    finalBuffer.append(logContent)
+                    finalBuffer.append(content)
                     hasFinalResult = true
                     setUiState(UiState.RECORDED)
                 }
@@ -127,10 +129,11 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                         Locale.getDefault()
                     ).format(Date(visitedDate))
                     binding.tvDate.text = dateStr
+                    val content = logContent ?: ""
 
-                    binding.etContent.setText(logContent)
+                    binding.etContent.setText(content)
                     finalBuffer.clear()
-                    finalBuffer.append(logContent)
+                    finalBuffer.append(content)
                     hasFinalResult = true
                     setUiState(UiState.INITIAL)
                 }
@@ -162,8 +165,6 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
         btnComplete.setOnClickListener {
             saveVisitLog()
         }
-
-        setUiState(UiState.INITIAL)
     }
 
     override fun onDestroy() {
@@ -356,6 +357,10 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             scheduleId = schedueId,
             content = content,
             onSuccess = {
+                findNavController().previousBackStackEntry
+                    ?.savedStateHandle
+                    ?.set("needRefreshSchedule", true)
+
                 showToast("일지가 저장되었습니다 잘 갔어요.")
                 Navigation.findNavController(requireView()).popBackStack()
             }
