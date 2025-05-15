@@ -31,7 +31,7 @@ class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
             val bundle = Bundle().apply {
                 putString("name", name)
                 putString("dateRange", convertMillisToRange(report.createdAt))
-                putInt("reportId", report.reportId)
+                putLong("reportId", report.reportId)
 
             }
             findNavController().navigate(R.id.dest_report_detail_fragment, bundle)
@@ -50,8 +50,8 @@ class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
     private fun convertMillisToRange(millis: Long): String {
         val formatter = java.text.SimpleDateFormat("yyyy/MM/dd", java.util.Locale.KOREA)
         val date = java.util.Date(millis)
-        val start = formatter.format(date)
-        val end = formatter.format(java.util.Date(millis + 6 * 24 * 60 * 60 * 1000)) // 6일 후
+        val start = formatter.format(java.util.Date(millis - 6 * 24 * 60 * 60 * 1000)) // 6일 전
+        val end = formatter.format(date)
         return "$start - $end"
     }
 }

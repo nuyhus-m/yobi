@@ -52,13 +52,17 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
                 .load(detail.image)
                 .transform(CenterCrop(), RoundedCorners(dpToPx(12)))
                 .into(binding.ivProfile)
+
+            setupTabLayout()
+
         }
-        setupTabLayout()
 
     }
 
     private fun setupTabLayout() {
-        val pagerAdapter = CarePagerAdapter(this, args.clientId)  // 여기서 넘겨줌
+        val detail = viewModel.clientDetail.value
+        val pagerAdapter = detail?.name?.let { CarePagerAdapter(this, args.clientId, it) }
+
         binding.viewPager.adapter = pagerAdapter
 
         val tabTitles = listOf("일일\n건강상태", "내\n건강추이", "주간\n보고서")
@@ -70,6 +74,8 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
             tab.customView = customView
         }.attach()
     }
+
+
 
     private fun dpToPx(dp: Int): Int {
         val density = resources.displayMetrics.density

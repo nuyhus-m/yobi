@@ -44,25 +44,32 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
         // 데이터 바인딩
         viewModel.report.observe(viewLifecycleOwner) { report ->
             binding.apply {
-                // log_summary: 주간 요약
-                tvSummary.text = report.log_summary
+                tvSummary.text = parseSection(report.reportContent, "주간 요약")
+                tvVariation.text = parseSection(report.reportContent, "특이 변동")
+                tvOverall.text = parseSection(report.reportContent, "총평")
+                tvRecommendation.text = parseSection(report.reportContent, "추천 식단")
 
-                tvVariation.text = parseSection(report.report_content, "특이 변동")
-                tvOverall.text = parseSection(report.report_content, "총평")
-                tvRecommendation.text = parseSection(report.report_content, "추천 식단")
+                // log_summary: 주간 요약
+                tvWeekLog.text = report.logSummery
             }
         }
     }
 
     // 예시: report_content 문자열을 파싱해서 각 섹션별 내용만 추출
-    private fun parseSection(content: String, sectionTitle: String): String {
+    private fun parseSection(content: String?, sectionTitle: String): String {
+        if (content.isNullOrBlank()) return ""
+
         val lines = content.split("\n")
-        val startIndex = lines.indexOfFirst { it.trim() == "• $sectionTitle" }
+        val startIndex = lines.indexOfFirst {
+            val line = it.trim()
+            line.removePrefix("•").trim() == sectionTitle
+        }
         if (startIndex == -1) return ""
 
         val result = StringBuilder()
         for (i in startIndex + 1 until lines.size) {
-            if (lines[i].startsWith("•")) break
+            val line = lines[i].trim()
+            if (line.startsWith("•")) break
             result.appendLine(lines[i])
         }
         return result.toString().trim()
