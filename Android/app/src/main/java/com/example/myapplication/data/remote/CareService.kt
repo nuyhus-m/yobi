@@ -38,15 +38,15 @@ interface CareService {
     // report-controller
 
     // 주간 보고서 리스트 불러오기
-    @GET("reports/{clientId}")
+    @GET("report/{clientId}")
     suspend fun getWeeklyReportList(
         @Path("clientId") clientId: Int
     ): Response<ClientReportResponse>
 
     // 주간 보고서 단건 조회
-    @GET("reports/detail/{reportId}")
+    @GET("report/detail/{reportId}")
     suspend fun getReportDetail(
-        @Path("reportId") reportId: Int
+        @Path("reportId") reportId: Long
     ):Response<ReportDetailDto>
 
 }

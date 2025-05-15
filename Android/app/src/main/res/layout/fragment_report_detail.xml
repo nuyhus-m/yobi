@@ -120,6 +120,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tv_week_log"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"

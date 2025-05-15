@@ -9,12 +9,17 @@ import com.example.myapplication.ui.care.seven.CareSevenFragment
 
 class CarePagerAdapter(
     private val fragment: Fragment,
-    private val clientId: Int
+    private val clientId: Int,
+    private val name: String
+
 ) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
-        val bundle = bundleOf("clientId" to clientId)
+        val bundle = bundleOf(
+            "clientId" to clientId,
+            "name" to name
+        )
 
         return when (position) {
             0 -> CareDailyFragment().apply { arguments = bundle }

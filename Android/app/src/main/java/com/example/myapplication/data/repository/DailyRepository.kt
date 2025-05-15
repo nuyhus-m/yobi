@@ -12,7 +12,6 @@ class DailyRepository @Inject constructor(
     private val dailyService: DailyService
 ) {
 
-
     suspend fun getDailyHumanList(): Response<List<DailyHumanDTO>> {
         return dailyService.getDailyHumanList()
     }

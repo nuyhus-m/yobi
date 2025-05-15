@@ -43,7 +43,7 @@ class CareRepository @Inject constructor(
     }
 
     suspend fun getReportDetail(
-        reportId :Int
+        reportId :Long
     ):Response<ReportDetailDto>{
         return careService.getReportDetail(reportId)
     }
