@@ -19,6 +19,8 @@ services:
     restart: always
     command: ["redis-server", "--requirepass", "${SPRING_REDIS_PASSWORD}"]
     ports: ["6379:6379"]
+    volumes:
+      - redis_data:/data
 
   backend:
     image: be-spring-image
