@@ -70,6 +70,10 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.ivBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         if (args.isEditMode) {
             viewModel.loadDailyLog(
                 scheduleId = args.scheduleId,

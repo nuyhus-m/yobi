@@ -19,8 +19,8 @@ class VisitLogListFragment : BaseFragment<FragmentVisitLogListBinding>(
     FragmentVisitLogListBinding::bind,
     R.layout.fragment_visit_log_list
 ) {
-
     private val viewModel: VisitLogViewModel by viewModels()
+    private val REFRESH_KEY = "refresh_logs"
 
     private val logAdapter = VisitLogAdapter { selectedLog ->
         val action = VisitLogListFragmentDirections
@@ -34,13 +34,37 @@ class VisitLogListFragment : BaseFragment<FragmentVisitLogListBinding>(
         viewModel.selectFilter(selected)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
-        super.onViewCreated(view, savedInstanceState)
-        rvFilter.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-        rvFilter.adapter = filterAdapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        rvLog.layoutManager = LinearLayoutManager(context)
-        rvLog.adapter = logAdapter
+        // 새로고침 플래그 관찰 설정
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>(
+                REFRESH_KEY
+            )
+            ?.observe(this) { shouldRefresh ->
+                if (shouldRefresh == true) {
+                    // 서버에서 최신 데이터 강제로 다시 로드
+                    viewModel.forceRefresh()
+                    // 플래그 초기화
+                    findNavController().currentBackStackEntry?.savedStateHandle?.set(
+                        REFRESH_KEY,
+                        false
+                    )
+                }
+            }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.apply {
+            rvFilter.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            rvFilter.adapter = filterAdapter
+            rvLog.layoutManager = LinearLayoutManager(context)
+            rvLog.adapter = logAdapter
+        }
 
         viewModel.filterItems.observe(viewLifecycleOwner) {
             filterAdapter.submitList(it)

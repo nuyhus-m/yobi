@@ -8,12 +8,14 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentReportDetailBinding
 import com.example.myapplication.ui.care.reportdetail.viewmodel.ReportDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
 @AndroidEntryPoint
 class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
     FragmentReportDetailBinding::bind,
@@ -37,6 +39,10 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
         }
         binding.tvTitle.text = spannable
         binding.tvDateRange.text = dateRange
+
+        binding.ivBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
         // 데이터 요청
         viewModel.fetchReportDetail(reportId)

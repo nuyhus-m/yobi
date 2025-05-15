@@ -23,11 +23,11 @@ import java.util.Locale
 class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
     FragmentDiaryDetailBinding::bind,
     R.layout.fragment_diary_detail
-
 ) {
-
     private val args: DiaryDetailFragmentArgs by navArgs()
     private val viewModel: DiaryDetailViewModel by viewModels()
+    private val LIST_DEST = R.id.dest_visit_log_list   // ← 자신의 destination id
+    val REFRESH_KEY = "refresh_logs"
 
     companion object {
         private const val DELETE_RESULT_KEY = "delete_confirmed"
@@ -36,6 +36,10 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.ivBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         binding.btnDelete.setOnClickListener {
             val action = DiaryDetailFragmentDirections
                 .actionDiaryDetailFragmentToDestDeleteDairyDialog(args.scheduleId)
@@ -43,8 +47,6 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
         }
 
         binding.btnEdit.setOnClickListener {
-            val daily = viewModel.dailyLog.value ?: return@setOnClickListener
-
             val action = DiaryDetailFragmentDirections
                 .actionDestDiaryDetailFragmentToDestVisitWriteFragment(
                     scheduleId = args.scheduleId,
@@ -54,6 +56,7 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
             findNavController().navigate(action)
         }
 
+        // 삭제 다이얼로그의 결과 관찰
         val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
         savedStateHandle?.getLiveData<Int>(DELETE_RESULT_KEY)
             ?.observe(viewLifecycleOwner) { scheduleId ->
@@ -61,7 +64,7 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
                 viewModel.deleteDailyLog(scheduleId)
             }
 
-
+        // ViewModel의 데이터 관찰
         viewModel.dailyLog.observe(viewLifecycleOwner) { daily ->
             binding.apply {
                 val name = daily.clientName
@@ -90,18 +93,27 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
             }
         }
 
-
+        // 에러 메시지 관찰
         viewModel.error.observe(viewLifecycleOwner) { message ->
             showToast(message)
         }
+
+        // 삭제 성공 관찰 - 여기를 수정합니다
         viewModel.deleted.observe(viewLifecycleOwner) { success ->
             if (success) {
                 showToast("삭제되었습니다.")
+
+                // 중요: 리스트 프래그먼트에 새로고침 플래그 설정
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                    REFRESH_KEY,
+                    true
+                )
+
                 findNavController().popBackStack()
             }
         }
+
+        // 데이터 로드
         viewModel.loadDailyLog(args.scheduleId)
     }
-
-
 }

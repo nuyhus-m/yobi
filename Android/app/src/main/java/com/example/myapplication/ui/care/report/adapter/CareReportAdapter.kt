@@ -60,8 +60,8 @@ class CareReportAdapter(
 
     private fun convertMillisToRange(millis: Long): String {
         val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.KOREA)
-        val start = Date(millis)
-        val end = Date(millis + 6 * 24 * 60 * 60 * 1000) // 6일 뒤
+        val start = Date(millis - 6 * 24 * 60 * 60 * 1000)
+        val end = Date(millis)
         return "${formatter.format(start)} - ${formatter.format(end)}"
     }
 }
