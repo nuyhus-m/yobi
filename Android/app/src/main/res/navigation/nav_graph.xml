@@ -117,7 +117,17 @@
         android:id="@+id/dest_measure_result"
         android:name="com.example.myapplication.ui.measure.measureresult.MeasureResultFragment"
         android:label="fragment_measure_result"
-        tools:layout="@layout/fragment_measure_result" />
+        tools:layout="@layout/fragment_measure_result">
+        <action
+            android:id="@+id/action_dest_measure_result_to_dest_measure_target"
+            app:destination="@id/dest_measure_target"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="isRequiredBodyComp"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
 
     <fragment
         android:id="@+id/dest_visit_log_list"

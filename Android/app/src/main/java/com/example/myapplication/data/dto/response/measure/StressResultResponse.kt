@@ -4,4 +4,4 @@ data class StressResultResponse(
     val stressId: Int,
     val stressLevel: String,
     val stressValue: StressValue
-)
+) : HealthDataResultResponse()
