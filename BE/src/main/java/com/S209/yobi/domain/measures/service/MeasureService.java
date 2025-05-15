@@ -2,6 +2,7 @@ package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.requestDTO.*;
 import com.S209.yobi.DTO.responseDTO.CheckBaseResultDTO;
+import com.S209.yobi.DTO.responseDTO.MeasureResponseDTO;
 import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
 import com.S209.yobi.domain.measures.entity.*;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -64,7 +67,13 @@ public class MeasureService {
         log.info("범위 계산 전");
         healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
 
-        return null;
+        Map<String, Integer> idInfo = new HashMap<>();
+        idInfo.put("bodyId", measure.getBody().getId().intValue());
+        idInfo.put("bloodId", measure.getBlood().getId().intValue());
+
+        MeasureResponseDTO responseDTO = new MeasureResponseDTO();
+        responseDTO.setIds(idInfo);
+        return responseDTO;
 
     }
 
