@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -268,10 +269,20 @@ public class UserController {
                     )
             )
     })
-    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
         try {
             Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+            
+            // Refresh 토큰 삭제
             jwtProvider.deleteRefreshToken(userId);
+            
+            // Access 토큰 블랙리스트에 추가
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String accessToken = authHeader.substring(7);
+                jwtProvider.addToAccessTokenBlacklist(accessToken);
+            }
+            
             return ResponseEntity.ok(ApiResponseDTO.success("로그아웃이 완료되었습니다."));
         } catch (Exception e) {
             log.error("로그아웃 처리 중 오류 발생: {}", e.getMessage());

@@ -28,6 +28,7 @@ public class JwtProvider {
     private static final Logger logger = Logger.getLogger(JwtProvider.class.getName());
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final String ACCESS_TOKEN_BLACKLIST_PREFIX = "access_token_blacklist:";
 
     @Value("${jwt.expiration}")
     private Long expiration;
@@ -157,6 +158,11 @@ public class JwtProvider {
                 return false;
             }
 
+            // 블랙리스트 체크 추가
+            if (isAccessTokenBlacklisted(token)) {
+                return false;
+            }
+
             final Integer extractedEmployeeNumber = extractEmployeeNumber(token);
             final Integer extractedUserId = extractUserId(token);
             return (extractedEmployeeNumber.equals(employeeNumber) &&
@@ -193,5 +199,32 @@ public class JwtProvider {
 
     public void deleteRefreshToken(Integer userId) {
         redisTemplate.delete(REFRESH_TOKEN_PREFIX + userId);
+    }
+
+    public void addToAccessTokenBlacklist(String accessToken) {
+        try {
+            Date expiration = extractExpiration(accessToken);
+            long ttl = expiration.getTime() - System.currentTimeMillis();
+            
+            if (ttl > 0) {
+                redisTemplate.opsForValue().set(
+                    ACCESS_TOKEN_BLACKLIST_PREFIX + accessToken,
+                    "blacklisted",
+                    ttl,
+                    TimeUnit.MILLISECONDS
+                );
+            }
+        } catch (Exception e) {
+            logger.severe("Failed to add access token to blacklist: " + e.getMessage());
+        }
+    }
+
+    public boolean isAccessTokenBlacklisted(String accessToken) {
+        try {
+            return Boolean.TRUE.equals(redisTemplate.hasKey(ACCESS_TOKEN_BLACKLIST_PREFIX + accessToken));
+        } catch (Exception e) {
+            logger.severe("Failed to check access token blacklist: " + e.getMessage());
+            return false;
+        }
     }
 }
