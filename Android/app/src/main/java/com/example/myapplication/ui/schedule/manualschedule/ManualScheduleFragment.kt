@@ -4,74 +4,94 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentManualScheduleBinding
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
+import com.example.myapplication.data.dto.response.care.ClientDetailResponse
 import com.example.myapplication.ui.schedule.DatePickerDialog
 import com.example.myapplication.ui.schedule.TimePickerDialog
+import com.example.myapplication.ui.schedule.manualschedule.viewmodel.ManualScheduleViewModel
+import com.example.myapplication.ui.MainViewModel
+import com.example.myapplication.util.TimeUtils.toEpochMillis
+import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-
+@AndroidEntryPoint
 class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
     FragmentManualScheduleBinding::bind,
     R.layout.fragment_manual_schedule
 ) {
 
     private val args: ManualScheduleFragmentArgs by navArgs()
+    private val manualScheduleViewModel: ManualScheduleViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
+
+
+    private var selectedClientId: Int? = null
+    private var selectedDate: LocalDate? = null
+    private var startTime: LocalTime? = null
+    private var endTime: LocalTime? = null
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mainViewModel.fetchClients()
         setupScheduleSpinner()
+        setupUI()
+        setupListeners()
 
+    }
+
+    private fun setupUI() {
         val scheduleId = args.scheduleId
         val isEditMode = scheduleId != -1
 
         if (isEditMode) {
-            // 수정 모드
             binding.tvTitle.text = "일정 수정"
             binding.btnDelete.visibility = View.VISIBLE
+            binding.btnRegister.text = "일정 수정하기"
 
-            // TODO: scheduleId를 기반으로 ViewModel 또는 Repository에서 해당 데이터를 가져와서 세팅
-
-
+            // 수정 모드일 때 데이터 로드
+            loadScheduleData(scheduleId)
         } else {
-            // 등록 모드
             binding.tvTitle.text = "일정 등록"
             binding.btnDelete.visibility = View.GONE
+            binding.btnRegister.text = "일정 등록하기"
         }
+    }
 
-        // 버튼 클릭: 이전 화면으로
+    private fun loadScheduleData(scheduleId: Int) {
+
+    }
+
+    private fun setupListeners() {
+
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
         binding.etDate.setOnClickListener {
             val dialog = DatePickerDialog()
-            dialog.onDateSelected = { selectedDate ->
-                binding.etDate.setText(selectedDate.toString()) // 포맷 조정 가능
+            dialog.onDateSelected = { date ->
+                selectedDate = date
+                binding.etDate.setText(date.toString())
                 checkValid()
             }
             dialog.show(parentFragmentManager, "DatePickerDialog")
         }
 
-        // 등록 버튼 클릭 시
-        binding.btnRegister.setOnClickListener {
-            showToast("일정이 등록되었습니다.")
-            findNavController().popBackStack()
-        }
-
-        binding.btnDelete.setOnClickListener{
-            showToast("일정이 삭제되었습니다.")
-            findNavController().popBackStack()
-        }
-
         binding.tvStartTime.setOnClickListener {
             val dialog = TimePickerDialog()
             dialog.onTimeSelected = { time ->
+                startTime = time
                 binding.tvStartTime.setText(formatTime(time))
                 checkValid()
             }
@@ -81,47 +101,99 @@ class ManualScheduleFragment: BaseFragment<FragmentManualScheduleBinding>(
         binding.tvEndTime.setOnClickListener {
             val dialog = TimePickerDialog()
             dialog.onTimeSelected = { time ->
+                endTime = time
                 binding.tvEndTime.setText(formatTime(time))
                 checkValid()
             }
             dialog.show(parentFragmentManager, "EndTimeDialog")
         }
+
+        binding.btnRegister.setOnClickListener {
+            selectedClientId?.let { clientId ->
+                val visitedDate = selectedDate?.toEpochMillis()
+                val startAt = selectedDate?.let { date -> startTime?.let { time -> toEpochMillis(date, time) } }
+                val endAt = selectedDate?.let { date -> endTime?.let { time -> toEpochMillis(date, time) } }
+
+                if (visitedDate == null || startAt == null || endAt == null) {
+                    showToast("날짜와 시간을 모두 선택해주세요.")
+                    return@setOnClickListener
+                }
+
+                if (startAt >= endAt) {
+                    showToast("시작 시간은 종료 시간보다 빨라야 합니다.")
+                    return@setOnClickListener
+                }
+
+                val request = ScheduleRequest(
+                    clientId = clientId,
+                    visitedDate = visitedDate,
+                    startAt = startAt,
+                    endAt = endAt
+                )
+
+                manualScheduleViewModel.registerSchedule(request,
+                    onSuccess = {
+                        showToast("일정이 등록되었습니다.")
+                        findNavController().popBackStack()
+                    },
+                    onError = {
+                        showToast("일정 등록에 실패했습니다.")
+                    }
+                )
+            } ?: showToast("클라이언트를 선택해주세요.")
+        }
+
+        binding.btnDelete.setOnClickListener{
+            // 삭제 구현
+            showToast("일정이 삭제되었습니다.")
+            findNavController().popBackStack()
+        }
+
     }
 
-    private fun checkValid() {
-//        val name = binding.tvSpinnerClient.text?.toString()?.isNotBlank() == true
-        val date = binding.etDate.text?.toString()?.isNotBlank() == true
-        val start = binding.tvStartTime.text?.isNotBlank() == true
-        val end = binding.tvEndTime.text?.isNotBlank() == true
+    private fun selectClientInSpinner(clientId: Int) {
+        val adapter = binding.tvSpinnerClient.adapter
+        for (i in 0 until adapter.count) {
+            val client = adapter.getItem(i) as? ClientDetailResponse
+            if (client?.clientId == clientId) {
+                binding.tvSpinnerClient.setSelection(i)
+                break
+            }
+        }
+    }
 
-//        binding.btnRegister.isEnabled = name && date && start && end
-        binding.btnRegister.isEnabled = date && start && end
+
+    private fun checkValid() {
+        val hasClient = selectedClientId != null
+        val hasDate = binding.etDate.text?.toString()?.isNotBlank() == true
+        val hasStart = binding.tvStartTime.text?.isNotBlank() == true
+        val hasEnd = binding.tvEndTime.text?.isNotBlank() == true
+
+        binding.btnRegister.isEnabled = hasClient && hasDate && hasStart && hasEnd
     }
 
     private fun setupScheduleSpinner() {
-        val tempStrings = listOf("이서현", "이호정", "박진현")
+        mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.item_spinner,
+                clients
+            )
+            adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
+            binding.tvSpinnerClient.adapter = adapter
 
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner,
-            tempStrings
-        )
+            binding.tvSpinnerClient.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    val selected = parent.getItemAtPosition(position) as ClientDetailResponse
+                    selectedClientId = selected.clientId
+                    checkValid()
+                }
 
-        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
-        binding.tvSpinnerClient.adapter = adapter
-
-        binding.tvSpinnerClient.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selected = parent.getItemAtPosition(position).toString()
-                // TODO 스케줄 등록 및 수정 대상 선택
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    selectedClientId = null
+                    checkValid()
+                }
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 

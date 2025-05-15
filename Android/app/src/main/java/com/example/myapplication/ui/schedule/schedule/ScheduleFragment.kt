@@ -76,7 +76,11 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     }
 
-    // view created 끝
+    override fun onResume() {
+        super.onResume()
+        viewModel.selectDate(LocalDate.now())
+    }
+
 
     private fun setupObservers() {
         viewModel.selectedDate.observe(viewLifecycleOwner) { date ->

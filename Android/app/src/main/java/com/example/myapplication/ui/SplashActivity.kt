@@ -5,6 +5,7 @@ import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -64,6 +65,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
     private fun checkAutoLogin() {
         val accessToken = sharedPreferencesUtil.getAccessToken()
         val nextActivity = if (!accessToken.isNullOrBlank()) {
+            Log.d("login-success", "accessToken: ${accessToken}")
             MainActivity::class.java
         } else {
             AuthActivity::class.java

@@ -1,9 +1,12 @@
 package com.example.myapplication.data.remote
 
+import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
 import com.example.myapplication.data.dto.response.schedule.DayScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.PeriodScheduleResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface ScheduleService  {
@@ -18,6 +21,9 @@ interface ScheduleService  {
     suspend fun getDaySchedule(
         @Query("date") date:Long
     ): Response<List<DayScheduleResponse>>
+
+    @POST("schedules")
+    suspend fun postSchedule(@Body request: ScheduleRequest): Response<Unit>
 
 
 }
