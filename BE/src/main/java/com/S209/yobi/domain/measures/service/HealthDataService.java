@@ -1,8 +1,11 @@
 package com.S209.yobi.domain.measures.service;
 
+import com.S209.yobi.DTO.responseDTO.BloodResponseDTO;
 import com.S209.yobi.DTO.responseDTO.BodyCompositionResponseDTO; // 패키지 경로 확인
+import com.S209.yobi.domain.measures.entity.BloodPressure;
 import com.S209.yobi.domain.measures.entity.BodyComposition;
 import com.S209.yobi.domain.measures.entity.Measure;
+import com.S209.yobi.domain.measures.repository.BloodPressureRepository;
 import com.S209.yobi.domain.measures.repository.BodyCompositionRepository;
 import com.S209.yobi.domain.measures.repository.MeasureRepository;
 import com.S209.yobi.domain.users.entity.User;
@@ -32,6 +35,7 @@ public class HealthDataService {
     private final MeasureRepository measureRepository;
     private final UserRepository userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final BloodPressureRepository bloodPressureRepository;
 
     /**
      * 체성분 데이터 ID로 조회
@@ -64,6 +68,36 @@ public class HealthDataService {
 
         // DTO 변환 및 ApiResponseDTO로 래핑하여 반환
         BodyCompositionResponseDTO responseDTO = BodyCompositionResponseDTO.of(bodyComposition, healthLevels);
+        return ApiResponseDTO.success(responseDTO);
+    }
+
+    /**
+     * 혈압 데이터 ID로 조회
+     */
+    public ApiResult getBloodPressure(Integer userId, Long bloodId) {
+        // 사용자 확인
+        User user = getUser(userId);
+
+        // 혈압 데이터 조회
+        Optional<BloodPressure> bloodPressureOptional = bloodPressureRepository.findById(bloodId);
+        if (bloodPressureOptional.isEmpty()) {
+            log.info("혈압 데이터를 찾을 수 없음 [bloodId: {}]", bloodId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        BloodPressure bloodPressure = bloodPressureOptional.get();
+
+        // 해당 혈압이 특정 Measure에 속하는지 확인하여 클라이언트 ID 찾기
+        Optional<Measure> measureOptional = measureRepository.findByBlood(bloodPressure);
+        if (measureOptional.isEmpty()) {
+            log.info("혈압에 연결된 측정 데이터를 찾을 수 없음 [bloodId: {}]", bloodId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        // 혈압 데이터를 DTO로 변환
+        BloodResponseDTO responseDTO = BloodResponseDTO.of(bloodPressure);
+
+        // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
 
