@@ -14,7 +14,6 @@ class MyApplication : Application() {
     }
 
     companion object {
-//        const val BASE_URL = "http://k12s209.p.ssafy.io:8081/api/"
-        const val BASE_URL = "http://192.168.0.52:8080/api/"
+        const val BASE_URL = "http://k12s209.p.ssafy.io:8081/api/"
     }
 }
