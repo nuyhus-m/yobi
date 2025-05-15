@@ -1,10 +1,7 @@
 package com.S209.yobi.domain.measures.repository;
 
 import com.S209.yobi.domain.clients.entity.Client;
-import com.S209.yobi.domain.measures.entity.BloodPressure;
-import com.S209.yobi.domain.measures.entity.BodyComposition;
-import com.S209.yobi.domain.measures.entity.HeartRate;
-import com.S209.yobi.domain.measures.entity.Measure;
+import com.S209.yobi.domain.measures.entity.*;
 import com.S209.yobi.domain.users.entity.User;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +17,8 @@ public interface MeasureRepository extends JpaRepository<Measure, Long> {
     Optional<Measure> findByBody(BodyComposition body);
     Optional<Measure> findByBlood(BloodPressure blood);
     Optional<Measure> findByHeart(HeartRate heart);
+    Optional<Measure> findByStress(Stress stress);
+    Optional<Measure> findByTemperature(Temperature temperature);
 
     @Query("""
     SELECT  m

@@ -1,16 +1,8 @@
 package com.S209.yobi.domain.measures.service;
 
-import com.S209.yobi.DTO.responseDTO.BloodResponseDTO;
-import com.S209.yobi.DTO.responseDTO.BodyCompositionResponseDTO; // 패키지 경로 확인
-import com.S209.yobi.DTO.responseDTO.HeartRateResponseDTO;
-import com.S209.yobi.domain.measures.entity.BloodPressure;
-import com.S209.yobi.domain.measures.entity.BodyComposition;
-import com.S209.yobi.domain.measures.entity.HeartRate;
-import com.S209.yobi.domain.measures.entity.Measure;
-import com.S209.yobi.domain.measures.repository.BloodPressureRepository;
-import com.S209.yobi.domain.measures.repository.BodyCompositionRepository;
-import com.S209.yobi.domain.measures.repository.HeartRateRepository;
-import com.S209.yobi.domain.measures.repository.MeasureRepository;
+import com.S209.yobi.DTO.responseDTO.*;
+import com.S209.yobi.domain.measures.entity.*;
+import com.S209.yobi.domain.measures.repository.*;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
@@ -40,6 +32,8 @@ public class HealthDataService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final BloodPressureRepository bloodPressureRepository;
     private final HeartRateRepository heartRateRepository;
+    private final StressRepository stressRepository;
+    private final TemperatureRepository temperatureRepository;
 
     /**
      * 체성분 데이터 ID로 조회
@@ -108,7 +102,7 @@ public class HealthDataService {
     /**
      * 심박 데이터 ID로 조회
      */
-    public ApiResult getHeartRateById(Integer userId, Long heartRateId) {
+    public ApiResult getHeartRate(Integer userId, Long heartRateId) {
         // 사용자 확인
         User user = getUser(userId);
 
@@ -130,6 +124,66 @@ public class HealthDataService {
 
         // 심박 데이터를 DTO로 변환
         HeartRateResponseDTO responseDTO = HeartRateResponseDTO.of(heartRate);
+
+        // 성공 응답 생성
+        return ApiResponseDTO.success(responseDTO);
+    }
+
+    /**
+     * 스트레스 데이터 ID로 조회
+     */
+    public ApiResult getStress(Integer userId, Long stressId) {
+        // 사용자 확인
+        User user = getUser(userId);
+
+        // 스트레스 데이터 조회
+        Optional<Stress> stressOptional = stressRepository.findById(stressId);
+        if (stressOptional.isEmpty()) {
+            log.info("스트레스 데이터를 찾을 수 없음 [stressId: {}]", stressId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        Stress stress = stressOptional.get();
+
+        // 해당 스트레스가 특정 Measure에 속하는지 확인
+        Optional<Measure> measureOptional = measureRepository.findByStress(stress);
+        if (measureOptional.isEmpty()) {
+            log.info("스트레스에 연결된 측정 데이터를 찾을 수 없음 [stressId: {}]", stressId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        // 스트레스 데이터를 DTO로 변환
+        StressResponseDTO responseDTO = StressResponseDTO.of(stress);
+
+        // 성공 응답 생성
+        return ApiResponseDTO.success(responseDTO);
+    }
+
+    /**
+     * 체온 데이터 ID로 조회
+     */
+    public ApiResult getTemperature(Integer userId, Long temperatureId) {
+        // 사용자 확인
+        User user = getUser(userId);
+
+        // 체온 데이터 조회
+        Optional<Temperature> temperatureOptional = temperatureRepository.findById(temperatureId);
+        if (temperatureOptional.isEmpty()) {
+            log.info("체온 데이터를 찾을 수 없음 [temperatureId: {}]", temperatureId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        Temperature temperature = temperatureOptional.get();
+
+        // 해당 체온이 특정 Measure에 속하는지 확인
+        Optional<Measure> measureOptional = measureRepository.findByTemperature(temperature);
+        if (measureOptional.isEmpty()) {
+            log.info("체온에 연결된 측정 데이터를 찾을 수 없음 [temperatureId: {}]", temperatureId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        // 체온 데이터를 DTO로 변환
+        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.of(temperature);
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
