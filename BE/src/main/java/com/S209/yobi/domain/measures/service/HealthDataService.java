@@ -2,11 +2,14 @@ package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.responseDTO.BloodResponseDTO;
 import com.S209.yobi.DTO.responseDTO.BodyCompositionResponseDTO; // 패키지 경로 확인
+import com.S209.yobi.DTO.responseDTO.HeartRateResponseDTO;
 import com.S209.yobi.domain.measures.entity.BloodPressure;
 import com.S209.yobi.domain.measures.entity.BodyComposition;
+import com.S209.yobi.domain.measures.entity.HeartRate;
 import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.measures.repository.BloodPressureRepository;
 import com.S209.yobi.domain.measures.repository.BodyCompositionRepository;
+import com.S209.yobi.domain.measures.repository.HeartRateRepository;
 import com.S209.yobi.domain.measures.repository.MeasureRepository;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
@@ -36,6 +39,7 @@ public class HealthDataService {
     private final UserRepository userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final BloodPressureRepository bloodPressureRepository;
+    private final HeartRateRepository heartRateRepository;
 
     /**
      * 체성분 데이터 ID로 조회
@@ -100,6 +104,39 @@ public class HealthDataService {
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
+
+    /**
+     * 심박 데이터 ID로 조회
+     */
+    public ApiResult getHeartRateById(Integer userId, Long heartRateId) {
+        // 사용자 확인
+        User user = getUser(userId);
+
+        // 심박 데이터 조회
+        Optional<HeartRate> heartRateOptional = heartRateRepository.findById(heartRateId);
+        if (heartRateOptional.isEmpty()) {
+            log.info("심박 데이터를 찾을 수 없음 [heartRateId: {}]", heartRateId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        HeartRate heartRate = heartRateOptional.get();
+
+        // 해당 심박이 특정 Measure에 속하는지 확인
+        Optional<Measure> measureOptional = measureRepository.findByHeart(heartRate);
+        if (measureOptional.isEmpty()) {
+            log.info("심박에 연결된 측정 데이터를 찾을 수 없음 [heartRateId: {}]", heartRateId);
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        // 심박 데이터를 DTO로 변환
+        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.of(heartRate);
+
+        // 성공 응답 생성
+        return ApiResponseDTO.success(responseDTO);
+    }
+
+
+
 
     /**
      * Redis에서 건강 범위 정보 조회
