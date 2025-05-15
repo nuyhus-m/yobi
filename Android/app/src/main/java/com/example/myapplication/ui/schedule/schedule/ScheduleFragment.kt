@@ -101,6 +101,10 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
 
     private fun setupObservers() {
+        scheduleViewModel.dotMap.observe(viewLifecycleOwner) {
+            binding.cv.notifyCalendarChanged()
+        }
+
         scheduleViewModel.selectedDate.observe(viewLifecycleOwner) { date ->
             val oldDate = selectedDate
             selectedDate = date
