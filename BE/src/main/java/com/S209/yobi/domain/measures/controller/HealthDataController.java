@@ -115,7 +115,7 @@ public class HealthDataController {
     ) {
         Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
 
-        ApiResult result = healthDataService.getHeartRateById(userId, heartRateId);
+        ApiResult result = healthDataService.getHeartRate(userId, heartRateId);
 
         if (result instanceof ApiResponseDTO<?> errorResult) {
             String code = errorResult.getCode();
@@ -133,6 +133,72 @@ public class HealthDataController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "스트레스 데이터 조회", description = "특정 ID의 스트레스 데이터를 조회합니다.")
+    @GetMapping(value = "/stress")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "스트레스 데이터 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n \"stressId\": 1,\n \"stressValue\": { \"value\": 5, \"level\": \"높음\" },\n \"stressLevel\": \"낮음\"\n}"
+                            )}))
+    })
+    public ResponseEntity<?> getStress(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Long stressId
+    ) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
 
+        ApiResult result = healthDataService.getStress(userId, stressId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+
+            // 성공 코드인 경우 data만 반환
+            if (code.equals("200")) {
+                return ResponseEntity.ok(errorResult.getData());
+            }
+
+            // 오류 코드인 경우
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "체온 데이터 조회", description = "특정 ID의 체온 데이터를 조회합니다.")
+    @GetMapping(value = "/temperature")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "체온 데이터 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = {@ExampleObject(
+                                    name = "기본 응답",
+                                    value = "{\n \"temperatureId\": 1,\n \"temperature\": { \"value\": 36.7, \"level\": \"높음\" }\n}"
+                            )}))
+    })
+    public ResponseEntity<?> getTemperature(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam Long temperatureId
+    ) {
+        Integer userId = authUtils.getUserIdFromUserDetails(userDetails);
+
+        ApiResult result = healthDataService.getTemperature(userId, temperatureId);
+
+        if (result instanceof ApiResponseDTO<?> errorResult) {
+            String code = errorResult.getCode();
+
+            // 성공 코드인 경우 data만 반환
+            if (code.equals("200")) {
+                return ResponseEntity.ok(errorResult.getData());
+            }
+
+            // 오류 코드인 경우
+            HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
+            return ResponseEntity.status(status).body(errorResult);
+        }
+
+        return ResponseEntity.ok(result);
+    }
 
 }
