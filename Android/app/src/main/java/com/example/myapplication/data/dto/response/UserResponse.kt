@@ -1,9 +1,9 @@
 package com.example.myapplication.data.dto.response
 
 data class UserResponse(
+    val userId: Int,
     val name: String,
-    val employee_number: Int,
-    val password: String,
-    val consent: Boolean,
-    val image: String?
+    val employeeNumber: Int,
+    val image: String?,
+    val consent: Boolean
 )

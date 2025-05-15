@@ -52,11 +52,12 @@ class MainViewModel @Inject constructor(
                     response.body()?.let {
                         _userInfo.value = it
                     }
+                    Log.d("loadUserInfo", "onSuccess: ${response}")
                 } else {
-                    Log.d("MainViewModel", "loadUserInfo: ${response}")
+                    Log.d("loadUserInfo", "onFailure: ${response}")
                 }
             }.onFailure { e ->
-                Log.d("MainViewModel", "loadUserInfo: ${e.message}")
+                Log.d("loadUserInfo", "onFailure: ${e.message}")
             }
 
         }
