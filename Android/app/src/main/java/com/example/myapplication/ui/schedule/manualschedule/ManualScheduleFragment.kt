@@ -166,12 +166,6 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             return
         }
 
-        if (endAt - startAt < 10 * 60 * 1000) {
-            showToast("일정은 최소 10분 이상이어야 합니다.")
-            return
-        }
-
-
         val request = ScheduleRequest(
             clientId = clientId,
             visitedDate = visitedDate,
