@@ -7,8 +7,9 @@ pipeline {
         DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
     }
 
-
     stages {
+
+        // ✅ [1] 현재 브랜치가 ai-dev 인지 체크 (아니면 빌드 중단)
         stage('Branch Check') {
             steps {
                 script {
@@ -26,12 +27,14 @@ pipeline {
             }
         }
 
+        // ✅ [2] GitLab 저장소 Checkout (코드 가져오기)
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
+        // ✅ [3] Jenkins Credentials에 있는 .env 파일 로드 (.env로 복사)
         stage('Load .env File') {
             steps {
                 withCredentials([file(credentialsId: 'ai-env-secret', variable: 'LOADED_ENV')]) {
@@ -40,6 +43,7 @@ pipeline {
             }
         }
 
+        // ✅ [4] 모델 파일이 없는 경우 HuggingFace에서 다운로드 후 저장
         stage('Check & Download Mistral LoRA') {
             steps {
                 script {
@@ -62,12 +66,14 @@ pipeline {
             }
         }
 
+        // ✅ [5] Docker 이미지 빌드 (AI App 기준)
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t your-dockerhub-id/ai-app:latest .'
             }
         }
 
+        // ✅ [6] 빌드한 Docker 이미지를 DockerHub에 Push
         stage('Push Docker Image to Docker Hub') {
             steps {
                 sh """
@@ -78,6 +84,7 @@ pipeline {
             }
         }
 
+        // ✅ [7] 2번 서버(AI 서버)에 접속 → 최신 이미지 pull → docker-compose로 배포
         stage('Deploy to AI Server (2번 서버)') {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
