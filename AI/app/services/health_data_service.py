@@ -36,9 +36,24 @@ class HealthDataProcessor:
     def __init__(self, db: Session):
         self.db = db
 
+
+        # 모델 경로 (환경변수 또는 기본값 사용)
+        self.model_path = os.getenv("BASE_MODEL_PATH", "/srv/models/base")
+        self.adapter_path = os.getenv("ADAPTER_PATH", "/srv/models/mistral_lora_adapter")
+
+        # 모델 로딩
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
+        base_model = AutoModelForCausalLM.from_pretrained(
+            self.model_path,
+            device_map="auto",
+            torch_dtype=torch.float16  # 또는 bfloat16, 환경에 따라 조절
+        )
+        self.model = PeftModel.from_pretrained(base_model, self.adapter_path)
+        self.model.eval()  # 평가 모드
+
         # 비동기 OpenAI 클라이언트
         self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-        self.internal_ai_url = settings.INTERNAL_AI_URL
+        # self.internal_ai_url = settings.INTERNAL_AI_URL
 
          # 배치 작업용 설정
         self.batch_mode = False
@@ -125,8 +140,9 @@ class HealthDataProcessor:
     
 
     async def call_internal_ai(self, health_data: Dict) -> Dict:
-        """내부 AI 서비스 호출"""
-        input_payload = {
+        """HuggingFace Mistral 모델(EC2에 저장 중)로 직접 추론"""
+
+        prompt = {
             "input": (
                 "### 질문:\n" + json.dumps(health_data, ensure_ascii=False) + 
                 "\n### 지시사항:\n1) 주간 평균·최소·최댓값을 **wsum** 필드에 작성하고\n"
@@ -141,6 +157,27 @@ class HealthDataProcessor:
                 "(그 외 필드는 작성하지 마세요)\n### 답변:\n"
             )
         }
+
+        # 🔹 Tokenize & Model Inference
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+
+        with torch.no_grad():
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=512,
+                do_sample=False,
+                temperature=0.7
+            )
+
+        output_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+         # 🔹 JSON 부분만 파싱
+        try:
+            json_part = output_text.strip()
+            return json.loads(json_part)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"모델 추론 결과 파싱 실패: {str(e)}")
+
         
          # 배치 모드에서는 세션 재사용
         if self.batch_mode and self.aiohttp_session:

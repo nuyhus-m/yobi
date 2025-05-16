@@ -11,19 +11,21 @@
 #     ports: 
 #       - "6000:6000"
 #     volumes:
-#       - ./model_cache:/app/models
+#       - /srv/models:/srv/models        # ✅ 모델 저장소를 EC2에서 마운트
 #       - ./logs:/app/logs
-#       - ./.env:/app/.env
+
 #     environment:
-#       # 기존 PostgreSQL 서버에 연결
 #       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${EC2_1_IP}:5432/${POSTGRES_DB}
 #       OPENAI_API_KEY: ${OPENAI_API_KEY}
-#       INTERNAL_AI_URL: ${INTERNAL_AI_URL}
-#       HF_CACHE_DIR: /app/models
-#       # 시간대 설정 추가 (KST 적용)
+
+#       HF_CACHE_DIR: /srv/models/cache  # ✅ 모델 캐시 디렉토리
+#       BASE_MODEL_PATH: /srv/models/base
+#       ADAPTER_PATH: /srv/models/mistral_lora_adapter
 #       TZ: Asia/Seoul
+
 #     networks:
-#       - givu_ai-network
+#       - ai-network
+
 #     healthcheck:
 #       test: ["CMD", "curl", "-f", "http://localhost:6000/health"]
 #       interval: 30s
