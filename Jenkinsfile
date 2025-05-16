@@ -2,10 +2,28 @@ pipeline {
     agent any
     environment {
         COMPOSE_FILE_1 = "docker-compose.ec2-1.yml"
-        COMPOSE_FILE_2 = "docker-compose.ec2-2.yml"
+        // COMPOSE_FILE_2 = "docker-compose.ec2-2.yml"
         ENV_FILE = ".env"
         REMOTE_PATH = "/home/ubuntu/S12P31S209"
     }
+
+    stages {
+        stage('Branch Check') {
+            steps {
+                script {
+                    echo "현재 브랜치: ${env.BRANCH_NAME}"
+
+                    if (!env.BRANCH_NAME || !env.BRANCH_NAME.contains('backend-dev')) {
+                        echo "❌ 이 잡은 backend-dev 브랜치에서만 동작합니다. 현재 브랜치: ${env.BRANCH_NAME}"
+                        currentBuild.result = 'SUCCESS'
+                        error('브랜치가 backend-dev가 아니므로 빌드를 중단합니다.')
+                    } else {
+                        echo "✅ backend-dev 브랜치 감지됨. 계속 진행합니다."
+                    }
+                }
+            }
+        }
+
     stages {
         stage('Checkout') {
             steps {
