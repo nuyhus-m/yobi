@@ -30,11 +30,11 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
         viewModel.fetchTodayDetailData(args.clientId)
 
         viewModel.todayDetailData.observe(viewLifecycleOwner) { data ->
-            data ?: return@observe          // null 방어
+            data ?: return@observe
 
             // 최소 0.5초는 로딩 애니 유지
             binding.shimmerLayout.postDelayed({
-                bindBody(data)              // 기존 with(binding){ ... } 블록 → 함수로 분리
+                bindBody(data)
                 showSkeletonView(false)
             }, 500)
         }
@@ -42,7 +42,6 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
         binding.ivBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
     }
 
-    /** 기존 with(binding){ ... } 내용 전부 옮김 */
     private fun bindBody(it: TodayDetailResponse) = with(binding) {
         val bc = it.bodyComposition
         // ===== 레벨 아이콘 =====
