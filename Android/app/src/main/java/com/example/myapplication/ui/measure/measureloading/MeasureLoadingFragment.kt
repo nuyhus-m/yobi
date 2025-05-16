@@ -47,6 +47,8 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
         startMeasure()
         observeMeasureResult()
         observeHealthDataResponse()
+        observeConnectState()
+        observeToastMessage()
     }
 
     private fun initButton() {
@@ -145,6 +147,28 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                     } else {
                         findNavController().navigate(R.id.action_dest_measure_loading_to_dest_measure_result)
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeConnectState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.isConnected.collect {
+                    if (!it) {
+                        findNavController().navigate(R.id.action_dest_measure_loading_to_dest_device_connect)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collect {
+                    showToast(it)
                 }
             }
         }

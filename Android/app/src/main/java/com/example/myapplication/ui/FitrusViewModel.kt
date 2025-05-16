@@ -53,6 +53,9 @@ class FitrusViewModel @Inject constructor(
     private val _measureResult = MutableSharedFlow<MeasureResult>()
     val measureResult: SharedFlow<MeasureResult> = _measureResult
 
+    private val _toastMessage = MutableSharedFlow<String>()
+    val toastMessage: SharedFlow<String> = _toastMessage
+
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected
 
@@ -126,46 +129,55 @@ class FitrusViewModel @Inject constructor(
     }
 
     fun startMeasure() {
-        when (measureType) {
-            HealthDataType.BODY_COMPOSITION -> {
-                Log.d(TAG, "startMeasure: 체성분")
-                manager.startFitrusCompMeasure(
-                    if (client.gender == 0) {
-                        Gender.MALE
-                    } else {
-                        Gender.FEMALE
-                    },
-                    client.height,
-                    client.weight,
-                    CommonUtils.convertDateFormat(client.birth),
-                    0f,
-                )
-            }
+        if (manager.fitrusConnectionState) {
+            when (measureType) {
+                HealthDataType.BODY_COMPOSITION -> {
+                    Log.d(TAG, "startMeasure: 체성분")
+                    manager.startFitrusCompMeasure(
+                        if (client.gender == 0) {
+                            Gender.MALE
+                        } else {
+                            Gender.FEMALE
+                        },
+                        client.height,
+                        client.weight,
+                        CommonUtils.convertDateFormat(client.birth),
+                        0f,
+                    )
+                }
 
-            HealthDataType.HEART_RATE -> {
-                Log.d(TAG, "startMeasure: 심박")
-                manager.startFitrusHeartRateMeasure()
-            }
+                HealthDataType.HEART_RATE -> {
+                    Log.d(TAG, "startMeasure: 심박")
+                    manager.startFitrusHeartRateMeasure()
+                }
 
-            HealthDataType.BLOOD_PRESSURE -> {
-                Log.d(TAG, "startMeasure: 혈압")
-                manager.StartFitrusBloodPressure(120f, 80f)
-            }
+                HealthDataType.BLOOD_PRESSURE -> {
+                    Log.d(TAG, "startMeasure: 혈압")
+                    manager.StartFitrusBloodPressure(120f, 80f)
+                }
 
-            HealthDataType.STRESS -> {
-                Log.d(TAG, "startMeasure: 스트레스")
-                manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
-            }
+                HealthDataType.STRESS -> {
+                    Log.d(TAG, "startMeasure: 스트레스")
+                    manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
+                }
 
-            HealthDataType.TEMPERATURE -> {
-                Log.d(TAG, "startMeasure: 체온")
-                manager.startFitrusTempBodyMeasure()
+                HealthDataType.TEMPERATURE -> {
+                    Log.d(TAG, "startMeasure: 체온")
+                    manager.startFitrusTempBodyMeasure()
+                }
             }
+        } else {
+            Log.d(TAG, "startMeasure: off")
+            _isConnected.value = false
         }
     }
 
     override fun fitrusDispatchError(error: String) {
         Log.e(TAG, "fitrusDispatchError: $error")
+        viewModelScope.launch {
+            _toastMessage.emit("측정에 실패하였습니다. 다시 시도해주세요😭😭")
+        }
+        disconnectDevice()
     }
 
     override fun handleFitrusBatteryInfo(result: Map<String, Any>) {
