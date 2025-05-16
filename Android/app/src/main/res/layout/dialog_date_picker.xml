@@ -63,7 +63,7 @@
     <com.kizitonwose.calendar.view.CalendarView
         android:id="@+id/cv"
         android:layout_width="match_parent"
-        android:layout_height="245dp"
+        android:layout_height="280dp"
         app:cv_dayViewResource="@layout/calendar_day_picker"
         app:layout_constraintTop_toBottomOf="@+id/ll_calender_header"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +76,7 @@
         style="@style/ButtonTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_40dp"
+        android:layout_marginTop="@dimen/space_20dp"
         android:layout_marginEnd="@dimen/space_4dp"
         android:background="@drawable/bg_white_stroke_purple_radius_8"
         android:text="@string/no"
