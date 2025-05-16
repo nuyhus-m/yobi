@@ -1,64 +1,89 @@
-// pipeline {
-//     agent any
+pipeline {
+    agent any
 
-//     environment {
-//         # 고정값 (민감하지 않은 값)
-//         POSTGRES_USER = 's209'
-//         POSTGRES_DB = 'yobi'
-//         TZ = 'Asia/Seoul'
-//         SPRING_REDIS_HOST = 'redis'
-//         SPRING_REDIS_PORT = '6379'
-//         SPRING_REDIS_DB = '0'
-//         REDIS_HOST = 'redis'
-//         REDIS_PORT = '6379'
-//         REDIS_DB = '0'
-//         DATABASE_URL = 'postgresql://postgres:s209password@localhost:5432/S209'
-//         INTERNAL_AI_URL = 'http://localhost:8001/ai/analyze'
-//         BASE_MODEL_PATH = '/srv/models/base'
-//         ADAPTER_PATH = '/srv/models/mistral_lora_adapter'
-//         MERGED_MODEL_PATH = '/srv/models/merged'
-//         HF_CACHE_DIR = '/srv/models/cache'
-//         BATCH_MAX_WORKERS = '20'
-//         BATCH_MAX_CONCURRENT = '10'
-//         LOG_LEVEL = 'INFO'
-//         LOG_PATH = '/app/logs'
+    environment {
+        # 고정값 (민감하지 않은 값)
+        POSTGRES_USER = 's209'
+        POSTGRES_DB = 'yobi'
+        TZ = 'Asia/Seoul'
+        SPRING_REDIS_HOST = 'redis'
+        SPRING_REDIS_PORT = '6379'
+        SPRING_REDIS_DB = '0'
+        REDIS_HOST = 'redis'
+        REDIS_PORT = '6379'
+        REDIS_DB = '0'
+        DATABASE_URL = 'postgresql://postgres:s209password@localhost:5432/S209'
+        INTERNAL_AI_URL = 'http://localhost:8001/ai/analyze'
+        BASE_MODEL_PATH = '/srv/models/base'
+        ADAPTER_PATH = '/srv/models/mistral_lora_adapter'
+        MERGED_MODEL_PATH = '/srv/models/merged'
+        HF_CACHE_DIR = '/srv/models/cache'
+        BATCH_MAX_WORKERS = '20'
+        BATCH_MAX_CONCURRENT = '10'
+        LOG_LEVEL = 'INFO'
+        LOG_PATH = '/app/logs'
 
-//         # 민감정보 (Jenkins Credentials에서 가져오기)
-//         HF_TOKEN = credentials('hf_token')
-//         OPENAI_API_KEY = credentials('openai_api_key')
-//         POSTGRES_PASSWORD = credentials('postgres_password')
-//         SPRING_REDIS_PASSWORD = credentials('redis_password')
-//         REDIS_PASSWORD = credentials('redis_password')
-//     }
+        # 민감정보 (Jenkins Credentials에서 가져오기)
+        HF_TOKEN = credentials('hf_token')
+        OPENAI_API_KEY = credentials('openai_api_key')
+        POSTGRES_PASSWORD = credentials('postgres_password')
+        SPRING_REDIS_PASSWORD = credentials('redis_password')
+        REDIS_PASSWORD = credentials('redis_password')
+        DOCKERHUB_USER = credentials('docker-hub-user')
+        DOCKERHUB_PASS = credentials('docker-hub-pass')
+    }
 
-//     stages {
-//         stage('Check & Download Mistral LoRA') {
-//             steps {
-//                 script {
-//                     def modelCheck = sh(script: "[ -f ${BASE_MODEL_PATH}/config.json ] && [ -f ${ADAPTER_PATH}/adapter_model.bin ]", returnStatus: true)
+    stages {
+        stage('Check & Download Mistral LoRA') {
+            steps {
+                script {
+                    def modelCheck = sh(script: "[ -f ${BASE_MODEL_PATH}/config.json ] && [ -f ${ADAPTER_PATH}/adapter_model.bin ]", returnStatus: true)
 
-//                     if (modelCheck != 0) {
-//                         echo "🔍 모델이 없음. download_models.py 실행"
-//                         sh """
-//                         // Jenkins가 넘긴 HF_TOKEN를 현재 쉘 환경변수로 등록
-//                             export HF_TOKEN=${HF_TOKEN}
-//                             export BASE_MODEL_PATH=${BASE_MODEL_PATH}
-//                             export ADAPTER_PATH=${ADAPTER_PATH}
-//                             export HF_HOME=${HF_CACHE_DIR}
-//                             export TEST_MODEL_LOADING=true
-//                             python3 scripts/download_models.py
-//                         """
-//                     } else {
-//                         echo "✅ 모델이 이미 존재합니다. 다운로드 스킵"
-//                     }
-//                 }
-//             }
-//         }
+                    if (modelCheck != 0) {
+                        echo "🔍 모델이 없음. download_models.py 실행"
+                        sh """
+                            export HF_TOKEN=${HF_TOKEN}
+                            export BASE_MODEL_PATH=${BASE_MODEL_PATH}
+                            export ADAPTER_PATH=${ADAPTER_PATH}
+                            export HF_HOME=${HF_CACHE_DIR}
+                            export TEST_MODEL_LOADING=true
+                            python3 scripts/download_models.py
+                        """
+                    } else {
+                        echo "✅ 모델이 이미 존재합니다. 다운로드 스킵"
+                    }
+                }
+            }
+        }
 
-//         stage('Build & Deploy AI App') {
-//             steps {
-//                 sh 'docker-compose -f docker-compose.yml up -d --build'
-//             }
-//         }
-//     }
-// }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t your-dockerhub-id/ai-app:latest .'
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                sh """
+                    echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                    docker push your-dockerhub-id/ai-app:latest
+                    docker logout
+                """
+            }
+        }
+
+        stage('Deploy to AI Server (2번 서버)') {
+            steps {
+                sshagent (credentials: ['ec2-2-pem-key-id']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@ai번서버IP '
+                            docker pull your-dockerhub-id/ai-app:latest &&
+                            cd /home/ubuntu/your-app-directory &&
+                            docker-compose -f docker-compose.ec2-2.yml up -d
+                        '
+                    """
+                }
+            }
+        }
+    }
+}

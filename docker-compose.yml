@@ -1,38 +1,38 @@
-# version: "3.8"
+version: "3.8"
 
-# services:
-#   ai:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     image: ai-app
-#     container_name: ai-app
-#     restart: always
-#     ports: 
-#       - "6000:6000"
-#     volumes:
-#       - /srv/models:/srv/models        # ✅ 모델 저장소를 EC2에서 마운트
-#       - ./logs:/app/logs
+services:
+  ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-app
+    container_name: ai-app
+    restart: always
+    ports: 
+      - "6000:6000"
+    volumes:
+      - /srv/models:/srv/models        # ✅ 모델 저장소를 EC2에서 마운트
+      - ./logs:/app/logs
 
-#     environment:
-#       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${EC2_1_IP}:5432/${POSTGRES_DB}
-#       OPENAI_API_KEY: ${OPENAI_API_KEY}
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${EC2_1_IP}:5432/${POSTGRES_DB}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
 
-#       HF_CACHE_DIR: /srv/models/cache  # ✅ 모델 캐시 디렉토리
-#       BASE_MODEL_PATH: /srv/models/base
-#       ADAPTER_PATH: /srv/models/mistral_lora_adapter
-#       TZ: Asia/Seoul
+      HF_CACHE_DIR: /srv/models/cache  # ✅ 모델 캐시 디렉토리
+      BASE_MODEL_PATH: /srv/models/base
+      ADAPTER_PATH: /srv/models/mistral_lora_adapter
+      TZ: Asia/Seoul
 
-#     networks:
-#       - ai-network
+    networks:
+      - ai-network
 
-#     healthcheck:
-#       test: ["CMD", "curl", "-f", "http://localhost:6000/health"]
-#       interval: 30s
-#       timeout: 10s
-#       retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-# networks:
-#   givu_ai-network:
-#     name: givu_ai-network
-#     external: true
+networks:
+  givu_ai-network:
+    name: givu_ai-network
+    external: true
