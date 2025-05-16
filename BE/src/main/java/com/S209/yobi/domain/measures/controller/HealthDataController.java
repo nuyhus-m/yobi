@@ -140,7 +140,7 @@ public class HealthDataController {
                     content = @Content(mediaType = "application/json",
                             examples = {@ExampleObject(
                                     name = "기본 응답",
-                                    value = "{\n \"stressId\": 1,\n \"stressValue\": { \"value\": 5, \"level\": \"높음\" },\n \"stressLevel\": \"낮음\"\n}"
+                                    value = "{\n \"stressId\": 1,\n \"stressValue\": 5,\n \"stressLevel\": \"낮음\"\n}"
                             )}))
     })
     public ResponseEntity<?> getStress(

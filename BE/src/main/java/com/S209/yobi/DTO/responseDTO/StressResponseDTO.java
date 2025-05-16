@@ -9,13 +9,13 @@ import lombok.Getter;
 @Builder
 public class StressResponseDTO {
     private Long stressId;
-    private MeasureWithLevel stressValue;
+    private Short stressValue;
     private String stressLevel;
 
     public static StressResponseDTO of(Stress stress){
         return StressResponseDTO.builder()
                 .stressId(stress.getId())
-                .stressValue(new MeasureWithLevel(stress.getStressValue(), "높음"))
+                .stressValue(stress.getStressValue())
                 .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
                 .build();
     }
