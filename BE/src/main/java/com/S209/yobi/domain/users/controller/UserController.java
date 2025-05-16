@@ -70,7 +70,7 @@ public class UserController {
     public ResponseEntity<?> signUp(
         @Parameter(description = "사용자 이름") @RequestParam("name") String name,
         @Parameter(description = "사원 번호") @RequestParam("employeeNumber") Integer employeeNumber,
-        @Parameter(description = "비밀번호") @RequestParam("password") String password,
+        @Parameter(description = "비밀번호(특수문자 포함 8~15자)") @RequestParam("password") String password,
         @Parameter(description = "프로필 이미지", content = @Content(mediaType = "multipart/form-data"))
         @RequestPart(value = "image", required = false) MultipartFile image
     ) {

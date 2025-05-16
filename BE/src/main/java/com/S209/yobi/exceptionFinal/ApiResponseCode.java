@@ -29,6 +29,8 @@ public enum ApiResponseCode {
     PASSWORD_NO_INPUT("400-5", "비밀번호가 비어 있습니다.", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD_FORMAT("400-6", "비밀번호에는 @$!%*#?& 특수문자만 사용할 수 있습니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_EMPLOYEE_NUMBER("400-7", "이미 존재하는 사번입니다.", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD_FORMAT("400-8", "비밀번호에는 영문, 숫자, 특수문자가 1개 이상 포함되어야 합니다.", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD_LENGTH("400-9", "비밀번호는 8자 이상 15자 이하만 입력 가능합니다.", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED("403-1", "권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 
     private final String code;
