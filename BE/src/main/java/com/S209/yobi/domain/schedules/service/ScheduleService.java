@@ -81,6 +81,16 @@ public class ScheduleService {
             throw new IllegalArgumentException("종료 시간이 시작 시간보다 빠를 수 없음.");
         }
 
+        // 일정 중복 검사
+        ApiResult overlapResult = checkScheduleOverlap(userId, null, requestDto.getVisitedDate(),
+                requestDto.getStartAt(), requestDto.getEndAt(), requestDto.getClientId());
+        if (overlapResult instanceof ApiResponseDTO) {
+            ApiResponseDTO<?> responseDTO = (ApiResponseDTO<?>) overlapResult;
+            if (!"200".equals(responseDTO.getCode())) {
+                return overlapResult; // 중복 일정 에러 반환
+            }
+        }
+
         Schedule schedule = Schedule.builder()
                 .user(user)
                 .client(client)
@@ -143,7 +153,13 @@ public class ScheduleService {
         }
 
         // 3. 일정 중복 검사
-        checkScheduleOverlap(currentUserId, scheduleId, visitedDate, startAt, endAt);
+        ApiResult overlapResult = checkScheduleOverlap(currentUserId, scheduleId, visitedDate, startAt, endAt, client.getId());
+        if (overlapResult instanceof ApiResponseDTO) {
+            ApiResponseDTO<?> responseDTO = (ApiResponseDTO<?>) overlapResult;
+            if (!"200".equals(responseDTO.getCode())) {
+                return overlapResult; // 중복 일정 에러 반환
+            }
+        }
 
         return ScheduleResponseDTO.fromSchedule(schedule);
     }
@@ -168,9 +184,8 @@ public class ScheduleService {
     }
 
     // 일정 중복 검사 메소드
-    private void checkScheduleOverlap(Integer userId, Integer scheduleId, long visitedDateTimestamp, long startAtTimestamp, long endAtTimestamp) {
+    private ApiResult checkScheduleOverlap(Integer userId, Integer scheduleId, long visitedDateTimestamp, long startAtTimestamp, long endAtTimestamp, Integer clientId) {
         // 해당 날짜의 시작과 끝 타임스탬프 계산
-        // 주어진 visitedDateTimestamp에서 해당 날짜의 시작(00:00:00)과 끝(23:59:59) 타임스탬프 계산
         LocalDate date = Instant.ofEpochMilli(visitedDateTimestamp).atZone(DEFAULT_ZONE).toLocalDate();
         long dayStart = date.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
         long dayEnd = date.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
@@ -179,9 +194,22 @@ public class ScheduleService {
         List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateWithClient(
                 userId, dayStart, dayEnd);
 
+        // 1. 같은 날짜, 같은 클라이언트 체크
+        List<Schedule> sameClientSchedules = overlappingSchedules.stream()
+                .filter(s -> scheduleId == null || !s.getId().equals(scheduleId))
+                .filter(s -> s.getClient().getId().equals(clientId))
+                .collect(Collectors.toList());
+
+        if (!sameClientSchedules.isEmpty()) {
+            log.error("같은 날짜에 같은 클라이언트 일정이 이미 존재합니다. 날짜: {}, 클라이언트ID: {}",
+                    date, clientId);
+            return ApiResponseDTO.fail(ApiResponseCode.DUPLICATE_DATE_CLIENT);
+        }
+
+        // 2. 시간 중복 체크 (기존 로직)
         List<Schedule> conflicts = overlappingSchedules.stream()
-                .filter(s -> !s.getId().equals(scheduleId)) // 해당 스케줄 자기 자신 제외
-                .filter(s -> isTimeOverlapping(s.getStartAt(), s.getEndAt(), startAtTimestamp, endAtTimestamp)) // 시간 중복 확인
+                .filter(s -> scheduleId == null || !s.getId().equals(scheduleId))
+                .filter(s -> isTimeOverlapping(s.getStartAt(), s.getEndAt(), startAtTimestamp, endAtTimestamp))
                 .collect(Collectors.toList());
 
         if (!conflicts.isEmpty()) {
@@ -190,8 +218,12 @@ public class ScheduleService {
                     formatTimestamp(startAtTimestamp), formatTimestamp(endAtTimestamp),
                     formatTimestamp(conflict.getStartAt()), formatTimestamp(conflict.getEndAt()),
                     conflict.getClient().getName());
-            throw new IllegalArgumentException(errorMessage);
+
+            log.error("일정 등록 중 에러: {}", errorMessage);
+            return ApiResponseDTO.fail(ApiResponseCode.DUPLICATE_SCHEDULE_TIME);
         }
+
+        return ApiResponseDTO.success(null);
     }
 
     // 타임스탬프를 HH:mm:ss 형식으로 포맷팅
@@ -374,25 +406,25 @@ public class ScheduleService {
                         long startAtTimestamp = startZdt.toInstant().toEpochMilli();
                         long endAtTimestamp = endZdt.toInstant().toEpochMilli();
 
-                        // 중복 일정 확인 (수정된 레포지토리 메서드 사용)
-                        boolean hasOverlap = false;
-                        try {
-                            // 해당 날짜의 시작과 끝 타임스탬프
-                            long dayStart = localDate.atStartOfDay(DEFAULT_ZONE).toInstant().toEpochMilli();
-                            long dayEnd = localDate.atTime(23, 59, 59).atZone(DEFAULT_ZONE).toInstant().toEpochMilli();
-
-                            List<Schedule> overlappingSchedules = scheduleRepository.findByUserIdAndVisitedDateAndTimeOverlapping(
-                                    userId, dayStart, dayEnd, startAtTimestamp, endAtTimestamp);
-                            hasOverlap = !overlappingSchedules.isEmpty();
-                        } catch (Exception e) {
-                            log.warn("중복 일정 확인 중 오류: {}", e.getMessage());
-                            // 중복 확인 실패해도 일정 등록은 진행
-                        }
-
-                        if (hasOverlap) {
-                            failCount++;
-                            failureReasons.add(String.format("중복 일정: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
-                            continue;
+                        // 중복 일정 확인
+                        ApiResult overlapResult = checkScheduleOverlap(userId, null, visitedDateTimestamp,
+                                startAtTimestamp, endAtTimestamp, client.getId());
+                        if (overlapResult instanceof ApiResponseDTO) {
+                            ApiResponseDTO<?> responseDTO = (ApiResponseDTO<?>) overlapResult;
+                            if (!"200".equals(responseDTO.getCode())) {
+                                // 중복 일정이 있는 경우
+                                failCount++;
+                                String reason;
+                                if (responseDTO.getCode().equals(ApiResponseCode.DUPLICATE_DATE_CLIENT.getCode())) {
+                                    reason = String.format("같은 날짜에 같은 클라이언트 일정 중복: %s일 %s님",
+                                            item.getDay(), item.getClientName());
+                                } else {
+                                    reason = String.format("시간 중복 일정: %s일 %s~%s",
+                                            item.getDay(), item.getStartAt(), item.getEndAt());
+                                }
+                                failureReasons.add(reason);
+                                continue;
+                            }
                         }
 
                         // Schedule 객체 생성 및 저장

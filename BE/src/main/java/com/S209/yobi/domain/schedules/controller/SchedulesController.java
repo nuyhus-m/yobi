@@ -68,7 +68,13 @@ public class SchedulesController {
     @PostMapping
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 등록 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "일정 등록 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "시간 중복", value = "{\"code\":\"400-10\",\"message\":\"해당 시간에 이미 일정이 있습니다.\",\"data\":null}"),
+                                    @ExampleObject(name = "날짜/클라이언트 중복", value = "{\"code\":\"400-11\",\"message\":\"해당 날짜, 해당 클라이언트 조합의 일정이 이미 있습니다.\",\"data\":null}")
+                            }))
     })
     public ResponseEntity<?> createSchedule(
             @Valid @RequestBody ScheduleCreateRequestDTO requestDTO,
@@ -92,7 +98,13 @@ public class SchedulesController {
     @PatchMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 수정 성공",
-                    content = @Content(mediaType = "application/json"))
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "일정 수정 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "시간 중복", value = "{\"code\":\"400-10\",\"message\":\"해당 시간에 이미 일정이 있습니다.\",\"data\":null}"),
+                                    @ExampleObject(name = "날짜/클라이언트 중복", value = "{\"code\":\"400-11\",\"message\":\"해당 날짜, 해당 클라이언트 조합의 일정이 이미 있습니다.\",\"data\":null}")
+                            }))
     })
     public ResponseEntity<?> updateSchedule(
             @PathVariable Integer scheduleId,
@@ -230,7 +242,13 @@ public class SchedulesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OCR 일정 등록 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"successCount\":3,\"failCount\":2,\"failureReasons\":[\"클라이언트 찾기 실패: '김영희'\",\"시간 형식 오류: 15일 9:00~8:00\"]}")))
+                            examples = @ExampleObject(value = "{\"successCount\":3,\"failCount\":2,\"failureReasons\":[\"클라이언트 찾기 실패: '김영희'\",\"시간 형식 오류: 15일 9:00~8:00\"]}"))),
+            @ApiResponse(responseCode = "400", description = "OCR 일정 등록 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "시간 중복", value = "{\"code\":\"400-10\",\"message\":\"해당 시간에 이미 일정이 있습니다.\",\"data\":null}"),
+                                    @ExampleObject(name = "날짜/클라이언트 중복", value = "{\"code\":\"400-11\",\"message\":\"해당 날짜, 해당 클라이언트 조합의 일정이 이미 있습니다.\",\"data\":null}")
+                            }))
     })
     public ResponseEntity<?> registerScheduleByOcr(
             @RequestParam("image") MultipartFile image,
