@@ -49,7 +49,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private val minMonth = YearMonth.of(2024, 1)
     private val maxMonth = YearMonth.now().plusMonths(1)
 
-    // 캘린더 설정 상수
     companion object {
         private val START_MONTH = YearMonth.of(2024, 1)
         private const val MAX_DOTS_PER_DAY = 10
@@ -66,21 +65,29 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         setupObservers()
         setupClickListeners()
 
+        val thisMonth = YearMonth.now()
+        val prevMonth = thisMonth.minusMonths(1)
+        val nextMonth = thisMonth.plusMonths(1)
+
+        listOf(prevMonth, thisMonth, nextMonth).forEach { month ->
+            val start = month.atDay(1).toEpochMillis()
+            val end = month.atEndOfMonth().toEpochMillis()
+            scheduleViewModel.getPeriodSchedule(start, end)
+        }
+
         mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
             scheduleViewModel.setClientColors(clients)
-            binding.cv.notifyCalendarChanged() // 캘린더 리프레시
+            binding.cv.notifyCalendarChanged()
         }
 
         findNavController().currentBackStackEntry?.savedStateHandle
             ?.getLiveData<Boolean>("needRefreshSchedule")
             ?.observe(viewLifecycleOwner) { need ->
                 if (need == true) {
-                    // 플래그 삭제 (재진입 중복 호출 방지)
                     findNavController().currentBackStackEntry
                         ?.savedStateHandle
                         ?.remove<Boolean>("needRefreshSchedule")
 
-                    // 실제 갱신
                     scheduleViewModel.reloadCurrentDate()
                 }
             }
@@ -117,7 +124,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     }
 
     private fun setupClickListeners() {
-        // 이전 월 버튼 클릭 이벤트
         binding.btnPrevious.setOnClickListener {
             if(currentMonth > minMonth) {
                 currentMonth = currentMonth.minusMonths(1)
@@ -126,7 +132,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             }
         }
 
-        // 다음 월 버튼 클릭 이벤트
         binding.btnNext.setOnClickListener {
             if (currentMonth < maxMonth) {
                 currentMonth = currentMonth.plusMonths(1)
@@ -135,7 +140,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             }
         }
 
-        // 일정 추가 버튼 클릭 이벤트
         binding.btnScheduleAdd.setOnClickListener {
             findNavController().navigate(R.id.dest_schedule_register_dialog)
         }
@@ -145,10 +149,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private fun setupCalendar() {
         val calendarView = binding.cv
 
-        // 월 제목 초기화
         updateMonthTitle(currentMonth)
 
-        // 날짜 셀 바인더 설정
         calendarView.dayBinder = object : MonthDayBinder<DayViewContainer> {
             override fun create(view: View) = DayViewContainer(view)
 
@@ -157,15 +159,12 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                 val textView = container.textView
                 textView.text = data.date.dayOfMonth.toString()
 
-                // 날짜 표시 스타일 설정
                 updateDateAppearance(container, data)
 
-                // 날짜 클릭 리스너 설정
                 container.view.setOnClickListener {
                     scheduleViewModel.selectDate(data.date)
                 }
 
-                // 일정 도트 표시
                 updateScheduleDots(container, data)
             }
         }
@@ -177,6 +176,15 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             val start = month.weekDays.first().first().date.toEpochMillis()
             val end = month.weekDays.last().last().date.toEpochMillis()
             scheduleViewModel.getPeriodSchedule(start, end)
+
+            val prefetchBefore = month.yearMonth.minusMonths(2)
+            val prefetchAfter = month.yearMonth.plusMonths(2)
+
+            listOf(prefetchBefore, prefetchAfter).forEach { preMonth ->
+                val preStart = preMonth.atDay(1).toEpochMillis()
+                val preEnd = preMonth.atEndOfMonth().toEpochMillis()
+                scheduleViewModel.getPeriodSchedule(preStart, preEnd)
+            }
         }
 
         // 캘린더 설정
@@ -186,7 +194,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             daysOfWeek().first()            // 주 시작 요일 (일요일)
         )
 
-        // 현재 월로 스크롤
         calendarView.scrollToMonth(currentMonth)
 
         binding.cv.post {
@@ -270,7 +277,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     }
 
     private fun refreshDateAppearance(oldDate: LocalDate?, newDate: LocalDate?) {
-        // 날짜 변경 시 뷰 갱신
         if (oldDate != null) {
             binding.cv.notifyDateChanged(oldDate)
         }
@@ -279,17 +285,14 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             binding.cv.notifyDateChanged(newDate)
         }
 
-        // 월 경계에 있는 날짜인 경우 해당 월들도 갱신
         refreshMonthsIfNeeded(oldDate, newDate)
     }
 
     private fun refreshMonthsIfNeeded(oldDate: LocalDate?, newDate: LocalDate?) {
         val currentCalendarMonth = binding.cv.findFirstVisibleMonth()?.yearMonth ?: return
 
-        // 현재 표시 중인 월 갱신
         binding.cv.notifyMonthChanged(currentCalendarMonth)
 
-        // 이전/다음 월에 선택된 날짜가 있는 경우 해당 월도 갱신
         val nextMonth = currentCalendarMonth.plusMonths(1)
         val prevMonth = currentCalendarMonth.minusMonths(1)
 
@@ -306,8 +309,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         return date?.let { it.month == month.month } == true
     }
 
-
-    // 월 제목 업데이트 함수
     private fun updateMonthTitle(yearMonth: YearMonth) {
         val year = yearMonth.year
         val month = yearMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
@@ -346,6 +347,5 @@ class DayViewContainer(view: View) : com.kizitonwose.calendar.view.ViewContainer
     lateinit var day: CalendarDay
 }
 
-// utils/DimensionUtils.kt 같은 파일에 추가해도 됨
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()

@@ -10,6 +10,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.NumberPicker
 import com.example.myapplication.R
+import java.util.Locale
+import kotlin.math.ceil
 
 class TimePickerDialog: DialogFragment() {
     private var _binding: DialogTimePickerBinding? = null
@@ -40,18 +42,20 @@ class TimePickerDialog: DialogFragment() {
         hourPicker.maxValue = 23
         hourPicker.wrapSelectorWheel = true
 
-        minutePicker.minValue = 0
-        minutePicker.maxValue = 59
-        minutePicker.wrapSelectorWheel = true
+        val values = Array(12) { i -> String.format(Locale.getDefault(), "%02d", i * 5) }
 
-        // 현재 시간으로 초기화
+        minutePicker.minValue = 0
+        minutePicker.maxValue = 11
+        minutePicker.displayedValues = values
+
         val now = LocalTime.now()
         hourPicker.value = now.hour
-        minutePicker.value = now.minute
+        val adjustedMinuteIndex = ceil(now.minute / 5.0).toInt()
+        minutePicker.value = adjustedMinuteIndex
 
         binding.btnYes.setOnClickListener {
             val selectedHour = hourPicker.value
-            val selectedMinute = minutePicker.value
+            val selectedMinute = minutePicker.value * 5
             onTimeSelected?.invoke(LocalTime.of(selectedHour, selectedMinute))
             dismiss()
         }

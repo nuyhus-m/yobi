@@ -50,11 +50,9 @@ class PhotoScheduleViewModel @Inject constructor(
                     _ocrResult.value = response.body()
                 } else {
                     Log.d("registerPhotoSchedule", "${response.body()}")
-                    _ocrError.value = "등록에 실패했습니다. 다시 시도해 주세요."
                 }
             }.onFailure {
                 Log.d("registerPhotoSchedule", "${it}")
-                _ocrError.value = "등록에 실패했습니다. 다시 시도해 주세요."
             }.also {
                 _isLoading.value = false
             }

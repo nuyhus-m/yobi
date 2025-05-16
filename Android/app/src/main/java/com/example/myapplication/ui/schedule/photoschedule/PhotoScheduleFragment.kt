@@ -112,20 +112,18 @@ class PhotoScheduleFragment: BaseFragment<FragmentPhotoScheduleBinding>(
         }
 
         photoScheduleViewModel.ocrResult.observe(viewLifecycleOwner) { result ->
-            val message = buildString {
-                append("등록 완료!\n")
-                append("성공: ${result.successCount}건\n")
-                append("실패: ${result.failCount}건")
-                if (result.failureReasons.isNotEmpty()) {
-                    append("\n사유:\n")
-                    result.failureReasons.forEach { append("- $it\n") }
-                }
-            }
+            val success = result.successCount
+            val fail = result.failCount
+
+            val toastMsg = "일정 ${success}건 등록 완료 (실패 ${fail}건))"
+
+            showToast(toastMsg)
             findNavController().popBackStack()
         }
 
         photoScheduleViewModel.ocrError.observe(viewLifecycleOwner) { errorMsg ->
-            showToast(errorMsg)
+            showToast("등록에 실패했습니다. 다시 시도해 주세요.")
+            findNavController().popBackStack()
         }
     }
 
