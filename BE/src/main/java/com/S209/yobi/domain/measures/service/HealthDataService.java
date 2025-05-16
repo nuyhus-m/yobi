@@ -34,6 +34,7 @@ public class HealthDataService {
     private final HeartRateRepository heartRateRepository;
     private final StressRepository stressRepository;
     private final TemperatureRepository temperatureRepository;
+    private final HealthLevelService healthLevelService;
 
     /**
      * 체성분 데이터 ID로 조회
@@ -62,7 +63,7 @@ public class HealthDataService {
         Integer clientId = measure.getClient().getId();
 
         // Redis에서 건강 범위 정보 조회
-        Map<String, String> healthLevels = getHealthLevelsFromRedis(userId, clientId);
+        Map<String, String> healthLevels = healthLevelService.getBodyCompositionLevels(userId, clientId);
 
         // DTO 변환 및 ApiResponseDTO로 래핑하여 반환
         BodyCompositionResponseDTO responseDTO = BodyCompositionResponseDTO.of(bodyComposition, healthLevels);
@@ -92,8 +93,22 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        // 혈압 데이터를 DTO로 변환
-        BloodResponseDTO responseDTO = BloodResponseDTO.of(bloodPressure);
+        Measure measure = measureOptional.get();
+        Integer clientId = measure.getClient().getId();
+
+        // Redis에서 혈압 level 정보 조회 (HealthLevelService 사용)
+        Map<String, String> bloodLevels = healthLevelService.getBloodPressureLevels(userId, clientId);
+
+        // 소수점 첫째자리로 반올림
+        float roundedSbp = Math.round(bloodPressure.getSbp() * 10) / 10.0f;
+        float roundedDbp = Math.round(bloodPressure.getDbp() * 10) / 10.0f;
+
+        // BloodResponseDTO 생성 시 Redis에서 가져온 level 사용
+        BloodResponseDTO responseDTO = BloodResponseDTO.builder()
+                .bloodId(bloodPressure.getId())
+                .sbp(new MeasureWithLevel(roundedSbp, bloodLevels.getOrDefault("sbp", "보통")))
+                .dbp(new MeasureWithLevel(roundedDbp, bloodLevels.getOrDefault("dbp", "보통")))
+                .build();
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
@@ -122,8 +137,18 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        // 심박 데이터를 DTO로 변환
-        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.of(heartRate);
+        Measure measure = measureOptional.get();
+        Integer clientId = measure.getClient().getId();
+
+        // Redis에서 심박수 level 정보 조회 (HealthLevelService 사용)
+        Map<String, String> heartRateLevels = healthLevelService.getHeartRateLevels(userId, clientId);
+
+        // 심박수 데이터를 DTO로 변환
+        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.builder()
+                .heartId(heartRate.getId())
+                .bpm(new MeasureWithLevel(heartRate.getBpm(), heartRateLevels.getOrDefault("bpm", "정상")))
+                .oxygen(new MeasureWithLevel(heartRate.getOxygen(), heartRateLevels.getOrDefault("oxygen", "정상")))
+                .build();
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
@@ -152,8 +177,18 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
+        Measure measure = measureOptional.get();
+        Integer clientId = measure.getClient().getId();
+
+        // Redis에서 스트레스 level 정보 조회 (HealthLevelService 사용)
+        Map<String, String> stressLevels = healthLevelService.getStressLevels(userId, clientId);
+
         // 스트레스 데이터를 DTO로 변환
-        StressResponseDTO responseDTO = StressResponseDTO.of(stress);
+        StressResponseDTO responseDTO = StressResponseDTO.builder()
+                .stressId(stress.getId())
+                .stressValue(new MeasureWithLevel(stress.getStressValue(), stressLevels.getOrDefault("stressValue", "보통")))
+                .stressLevel(stress.getStressLevel() != null ? stress.getStressLevel().toString() : "보통")
+                .build();
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
@@ -182,56 +217,21 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
+        Measure measure = measureOptional.get();
+        Integer clientId = measure.getClient().getId();
+
+        // Redis에서 체온 level 정보 조회 (HealthLevelService 사용)
+        Map<String, String> temperatureLevels = healthLevelService.getTemperatureLevels(userId, clientId);
+
         // 체온 데이터를 DTO로 변환
-        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.of(temperature);
+        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.builder()
+                .temperatureId(temperature.getId())
+                .temperature(new MeasureWithLevel(temperature.getTemperature(),
+                        temperatureLevels.getOrDefault("temperature", "정상")))
+                .build();
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
-    }
-
-
-
-
-    /**
-     * Redis에서 건강 범위 정보 조회
-     */
-    private Map<String, String> getHealthLevelsFromRedis(Integer userId, Integer clientId) {
-        try {
-            // Redis 키 생성 (HealthRangeAsyncService와 동일한 형식)
-            String redisKey = "range" + userId + ":" + clientId + ":" + LocalDate.now();
-
-            // Redis에서 데이터 조회
-            Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
-
-            if (entries == null || entries.isEmpty()) {
-                log.info("Redis에서 건강 범위 정보를 찾을 수 없음 [userId: {}, clientId: {}]", userId, clientId);
-                return createDefaultLevels();
-            }
-
-            // Object 타입 맵을 String 타입 맵으로 변환
-            Map<String, String> levels = new HashMap<>();
-            entries.forEach((k, v) -> levels.put(k.toString(), v.toString()));
-
-            return levels;
-        } catch (Exception e) {
-            log.error("Redis에서 건강 범위 정보를 가져오는 중 오류 발생", e);
-            return createDefaultLevels();
-        }
-    }
-
-    /**
-     * 기본 건강 범위 정보 생성 (Redis에서 데이터를 찾을 수 없는 경우 사용)
-     */
-    private Map<String, String> createDefaultLevels() {
-        Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("bfp", "보통");
-        defaultLevels.put("bfm", "보통");
-        defaultLevels.put("smm", "보통");
-        defaultLevels.put("bmr", "보통");
-        defaultLevels.put("ecf", "보통");
-        defaultLevels.put("protein", "보통");
-        defaultLevels.put("mineral", "보통");
-        return defaultLevels;
     }
 
     // 사용자 조회 유틸리티 메서드

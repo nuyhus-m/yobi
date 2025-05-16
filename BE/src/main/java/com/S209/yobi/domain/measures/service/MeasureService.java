@@ -66,6 +66,7 @@ public class MeasureService {
         // 범위 계산 및 저장 로직 : 비동기로 호출
         log.info("범위 계산 전");
         healthRangeAsyncService.calculateAndSaveToRedis(user, client, measure.getBody());
+        healthRangeAsyncService.calculateAndSaveBloodPressureLevels(user, client, measure.getBlood());
 
         return MeasureResponseDTO.createWithBaseIds(
                 measure.getBody().getId(),
@@ -102,6 +103,8 @@ public class MeasureService {
         measure.setHeartRate(heart);
         measureRepository.save(measure);
 
+        healthRangeAsyncService.calculateAndSaveHeartRateLevels(user, client, heart);
+
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("heartRateId", heart.getId());
     }
@@ -134,6 +137,8 @@ public class MeasureService {
         measure.setStress(stress);
         measureRepository.save(measure);
 
+        healthRangeAsyncService.calculateAndSaveStressLevels(user, client, stress);
+
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("stressId", stress.getId());
     }
@@ -165,6 +170,8 @@ public class MeasureService {
         // 저장된 Temperature 연결 및 measure 업데이트
         measure.setTemperature(temperature);
         measureRepository.save(measure);
+
+        healthRangeAsyncService.calculateAndSaveTemperatureLevels(user, client, temperature);
 
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("temperatureId", temperature.getId());
@@ -241,6 +248,9 @@ public class MeasureService {
         if (oldBloodId != null) {
             bloodPressureRepository.deleteById(oldBloodId);
         }
+
+        healthRangeAsyncService.calculateAndSaveBloodPressureLevels(user, client, newBloodPressure);
+
 
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("bloodId", newBloodPressure.getId());
