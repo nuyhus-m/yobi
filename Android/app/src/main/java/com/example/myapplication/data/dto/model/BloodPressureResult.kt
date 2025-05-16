@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class BloodPressureResult(
     @SerialName("FitrusDevice") val device: String,
     @SerialName("FirmwareVersion") val firmware: String,
-    val dbp: Float,
-    val sbp: Float,
-    val baseSBP: Float,
-    val baseDBP: Float
+    val DBP: Float,
+    val SBP: Float,
+    val BaseSBP: Float,
+    val BaseDBP: Float
 ) : MeasureResult()

@@ -11,6 +11,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.base.GradeType
+import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.data.dto.response.measure.BloodPressureResponse
 import com.example.myapplication.data.dto.response.measure.BloodPressureResultResponse
 import com.example.myapplication.data.dto.response.measure.BodyCompositionResponse
@@ -47,7 +48,7 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
 
         initBackButton()
         setCompleteButton()
-        setMeasureTypeText()
+        setText()
         observeHealthDataResult()
         getResultData(fitrusViewModel.healthDataResponse)
     }
@@ -72,8 +73,13 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
         }
     }
 
-    private fun setMeasureTypeText() {
-        binding.tvMeasureItem.text = getString(fitrusViewModel.measureType.resId)
+    private fun setText() {
+        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.client.name)
+        if (args.isRequiredBodyComp) {
+            binding.tvMeasureItem.text = getString(HealthDataType.BODY_COMPOSITION.resId)
+        } else {
+            binding.tvMeasureItem.text = getString(fitrusViewModel.measureType.resId)
+        }
     }
 
     private fun getResultData(healthDataResponse: HealthDataResponse) {
@@ -221,7 +227,7 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
             itemEightBinding,
             getString(R.string.body_age),
             result.bodyAge.toString(),
-            getString(R.string.unit_kg),
+            getString(R.string.unit_age),
             ""
         )
     }

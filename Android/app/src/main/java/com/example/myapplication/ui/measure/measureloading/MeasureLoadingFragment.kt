@@ -170,8 +170,8 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
 
     private fun BloodPressureResult.toRequest(): BloodPressureRequest {
         return BloodPressureRequest(
-            dbp = dbp,
-            sbp = sbp
+            dbp = DBP,
+            sbp = SBP
         )
     }
 
