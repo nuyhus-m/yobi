@@ -92,24 +92,16 @@ public class HealthRangeAsyncService {
 
     /**
      * 혈압 값에 따라 level 계산
-     *
-     * 참고: 미국 심장협회(AHA) 기준
      */
     private String calculateBpLevel(float bp, boolean isSystolic) {
         if (isSystolic) {  // 수축기 혈압 (SBP)
             if (bp < 90) return "낮음";       // 저혈압
-            if (bp < 120) return "정상";      // 정상
-            if (bp < 130) return "주의";      // 상승
-            if (bp < 140) return "경계성";    // 고혈압 1기 경계
-            if (bp < 180) return "높음";      // 고혈압 1기, 2기
-            return "위험";                    // 고혈압 위기
+            if (bp < 130) return "보통";      // 정상 ~ 상승
+            return "높음";                   // 고혈압
         } else {  // 이완기 혈압 (DBP)
             if (bp < 60) return "낮음";       // 저혈압
-            if (bp < 80) return "정상";       // 정상
-            if (bp < 85) return "주의";       // 상승
-            if (bp < 90) return "경계성";     // 고혈압 1기 경계
-            if (bp < 120) return "높음";      // 고혈압 1기, 2기
-            return "위험";                    // 고혈압 위기
+            if (bp < 85) return "보통";       // 정상 ~ 상승
+            return "높음";                   // 고혈압
         }
     }
 
@@ -144,15 +136,11 @@ public class HealthRangeAsyncService {
 
     /**
      * 스트레스 값에 따라 level 계산
-     *
-     * @param stressValue 스트레스 값
-     * @return 스트레스 레벨
      */
     private String calculateStressValueLevel(float stressValue) {
         if (stressValue < 30) return "낮음";     // 낮은 스트레스
-        if (stressValue < 60) return "보통";     // 보통 스트레스
-        if (stressValue < 80) return "높음";     // 높은 스트레스
-        return "매우 높음";                      // 매우 높은 스트레스
+        if (stressValue < 70) return "보통";     // 보통 스트레스
+        return "높음";                          // 높은 스트레스
     }
 
 
@@ -190,27 +178,20 @@ public class HealthRangeAsyncService {
 
     /**
      * 심박수에 따라 level 계산
-     *
-     * @param bpm 심박수 (beats per minute)
-     * @return 심박수 레벨
      */
     private String calculateBpmLevel(float bpm) {
         if (bpm < 60) return "낮음";      // 서맥
-        if (bpm <= 100) return "정상";    // 정상
+        if (bpm <= 100) return "보통";    // 정상
         return "높음";                   // 빈맥
     }
 
     /**
      * 산소포화도에 따라 level 계산
-     *
-     * @param oxygen 산소포화도 (%)
-     * @return 산소포화도 레벨
      */
     private String calculateOxygenLevel(float oxygen) {
-        if (oxygen < 90) return "위험";      // 위험 수준
-        if (oxygen < 95) return "낮음";      // 낮은 수준
-        if (oxygen <= 100) return "정상";    // 정상
-        return "비정상";                     // 100%를 초과하는 경우 (측정 오류)
+        if (oxygen < 90) return "낮음";      // 위험 ~ 낮은 수준
+        if (oxygen < 98) return "보통";      // 정상 범위 내 낮은 수준
+        return "높음";                      // 정상 범위 내 높은 수준
     }
 
     /**
@@ -246,17 +227,11 @@ public class HealthRangeAsyncService {
 
     /**
      * 체온 값에 따라 level 계산
-     *
-     * @param temp 체온 (°C)
-     * @return 체온 레벨
      */
     private String calculateTemperatureLevel(float temp) {
-        if (temp < 35.0) return "위험 저체온";    // 위험한 저체온
-        if (temp < 36.0) return "저체온";         // 저체온
-        if (temp <= 37.5) return "정상";          // 정상 체온
-        if (temp <= 38.3) return "미열";          // 미열
-        if (temp <= 39.5) return "고열";          // 고열
-        return "위험 고열";                      // 위험한 고열
+        if (temp < 36.0) return "낮음";    // 저체온
+        if (temp <= 37.5) return "보통";   // 정상 체온
+        return "높음";                    // 고열
     }
 
 }
