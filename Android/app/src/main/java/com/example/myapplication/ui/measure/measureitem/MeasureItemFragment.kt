@@ -3,6 +3,9 @@ package com.example.myapplication.ui.measure.measureitem
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -10,6 +13,7 @@ import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.databinding.FragmentMeasureItemBinding
 import com.example.myapplication.ui.FitrusViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
@@ -51,6 +55,18 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
         binding.tvBodyTemp.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.TEMPERATURE)
             findNavController().navigate(R.id.dest_device_connect)
+        }
+
+        observeToastMessage()
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collect {
+                    showToast(it)
+                }
+            }
         }
     }
 }

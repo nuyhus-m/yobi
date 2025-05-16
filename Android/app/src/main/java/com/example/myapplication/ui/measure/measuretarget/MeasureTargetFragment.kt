@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.measure.measuretarget
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -82,6 +83,7 @@ class MeasureTargetFragment : BaseFragment<FragmentMeasureTargetBinding>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isMeasured.collectLatest {
+                    Log.d(TAG, "observeMeasureStatus: $it")
                     fitrusViewModel.setClient(selectedClient)
                     fitrusViewModel.setMeasureStatus(it)
                     if (it) {

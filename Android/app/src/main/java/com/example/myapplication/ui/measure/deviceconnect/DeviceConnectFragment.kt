@@ -28,6 +28,7 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
         setTitle()
         initButtons()
         observeConnectState()
+        observeToastMessage()
 
         fitrusViewModel.tryConnectDevice()
     }
@@ -53,6 +54,16 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
                     if (it) {
                         findNavController().navigate(R.id.action_dest_device_connect_to_dest_measure_guide)
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collect {
+                    showToast(it)
                 }
             }
         }

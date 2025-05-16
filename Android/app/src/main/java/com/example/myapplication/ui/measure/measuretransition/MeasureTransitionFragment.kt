@@ -3,6 +3,9 @@ package com.example.myapplication.ui.measure.measuretransition
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -10,6 +13,7 @@ import com.example.myapplication.base.HealthDataType
 import com.example.myapplication.databinding.FragmentMeasureTransitionBinding
 import com.example.myapplication.ui.FitrusViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MeasureTransitionFragment : BaseFragment<FragmentMeasureTransitionBinding>(
@@ -25,6 +29,7 @@ class MeasureTransitionFragment : BaseFragment<FragmentMeasureTransitionBinding>
         initBackButton()
         setTitle()
         initNextButton()
+        observeToastMessage()
     }
 
     private fun initBackButton() {
@@ -41,6 +46,16 @@ class MeasureTransitionFragment : BaseFragment<FragmentMeasureTransitionBinding>
         binding.btnNext.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.BLOOD_PRESSURE)
             findNavController().navigate(R.id.dest_measure_guide)
+        }
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collect {
+                    showToast(it)
+                }
+            }
         }
     }
 }

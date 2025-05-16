@@ -98,6 +98,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (fitrusViewModel.isMeasuring) {
+            showToast("기기를 한 번 껐다가 다시 켠 후, 측정을 다시 시도해 주세요.")
+            val currentDestination = navController.currentDestination?.id
+            if (currentDestination == R.id.dest_measure_loading) {
+                navController.navigate(R.id.action_dest_measure_loading_to_dest_measure_target)
+            }
+            fitrusViewModel.setMeasuringStatus(false)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         fitrusViewModel.disconnectDevice()

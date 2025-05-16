@@ -51,6 +51,7 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
         setText()
         observeHealthDataResult()
         getResultData(fitrusViewModel.healthDataResponse)
+        fitrusViewModel.disconnectDevice()
     }
 
     private fun initBackButton() {
@@ -155,168 +156,178 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
     }
 
     private fun setBodyComposition(result: BodyCompositionResultResponse) {
-        val viewStub = binding.vsResultEight.inflate()
-        val resultBinding = LayoutResultEightBinding.bind(viewStub)
+        if (binding.vsResultEight.parent != null) {
+            val viewStub = binding.vsResultEight.inflate()
+            val resultBinding = LayoutResultEightBinding.bind(viewStub)
 
-        val itemOneBinding = resultBinding.include1
-        val itemTwoBinding = resultBinding.include2
-        val itemThreeBinding = resultBinding.include3
-        val itemFourBinding = resultBinding.include4
-        val itemFiveBinding = resultBinding.include5
-        val itemSixBinding = resultBinding.include6
-        val itemSevenBinding = resultBinding.include7
-        val itemEightBinding = resultBinding.include8
+            val itemOneBinding = resultBinding.include1
+            val itemTwoBinding = resultBinding.include2
+            val itemThreeBinding = resultBinding.include3
+            val itemFourBinding = resultBinding.include4
+            val itemFiveBinding = resultBinding.include5
+            val itemSixBinding = resultBinding.include6
+            val itemSevenBinding = resultBinding.include7
+            val itemEightBinding = resultBinding.include8
 
-        setResultItem(
-            itemOneBinding,
-            getString(R.string.bfp),
-            result.bfp.value.toString(),
-            getString(R.string.unit_percent),
-            result.bfp.level
-        )
+            setResultItem(
+                itemOneBinding,
+                getString(R.string.bfp),
+                result.bfp.value.toString(),
+                getString(R.string.unit_percent),
+                result.bfp.level
+            )
 
-        setResultItem(
-            itemTwoBinding,
-            getString(R.string.bfm),
-            result.bfm.value.toString(),
-            getString(R.string.unit_kg),
-            result.bfm.level
-        )
+            setResultItem(
+                itemTwoBinding,
+                getString(R.string.bfm),
+                result.bfm.value.toString(),
+                getString(R.string.unit_kg),
+                result.bfm.level
+            )
 
-        setResultItem(
-            itemThreeBinding,
-            getString(R.string.protein),
-            result.protein.value.toString(),
-            getString(R.string.unit_kg),
-            result.protein.level
-        )
+            setResultItem(
+                itemThreeBinding,
+                getString(R.string.protein),
+                result.protein.value.toString(),
+                getString(R.string.unit_kg),
+                result.protein.level
+            )
 
-        setResultItem(
-            itemFourBinding,
-            getString(R.string.smm),
-            result.smm.value.toString(),
-            getString(R.string.unit_kg),
-            result.smm.level
-        )
+            setResultItem(
+                itemFourBinding,
+                getString(R.string.smm),
+                result.smm.value.toString(),
+                getString(R.string.unit_kg),
+                result.smm.level
+            )
 
-        setResultItem(
-            itemFiveBinding,
-            getString(R.string.mineral),
-            result.mineral.value.toString(),
-            getString(R.string.unit_kg),
-            result.mineral.level
-        )
+            setResultItem(
+                itemFiveBinding,
+                getString(R.string.mineral),
+                result.mineral.value.toString(),
+                getString(R.string.unit_kg),
+                result.mineral.level
+            )
 
-        setResultItem(
-            itemSixBinding,
-            getString(R.string.bmr),
-            result.bmr.value.toString(),
-            getString(R.string.unit_kcal),
-            result.bmr.level
-        )
+            setResultItem(
+                itemSixBinding,
+                getString(R.string.bmr),
+                result.bmr.value.toString(),
+                getString(R.string.unit_kcal),
+                result.bmr.level
+            )
 
-        setResultItem(
-            itemSevenBinding,
-            getString(R.string.water),
-            result.ecf.value.toString(),
-            getString(R.string.unit_percent),
-            result.ecf.level
-        )
+            setResultItem(
+                itemSevenBinding,
+                getString(R.string.water),
+                result.ecf.value.toString(),
+                getString(R.string.unit_percent),
+                result.ecf.level
+            )
 
-        setResultItem(
-            itemEightBinding,
-            getString(R.string.body_age),
-            result.bodyAge.toString(),
-            getString(R.string.unit_age),
-            ""
-        )
+            setResultItem(
+                itemEightBinding,
+                getString(R.string.body_age),
+                result.bodyAge.toString(),
+                getString(R.string.unit_age),
+                ""
+            )
+        }
     }
 
     private fun setBloodPressure(result: BloodPressureResultResponse) {
-        val viewStub = binding.vsResultTwo.inflate()
-        val resultBinding = LayoutResultTwoBinding.bind(viewStub)
+        if (binding.vsResultTwo.parent != null) {
+            val viewStub = binding.vsResultTwo.inflate()
+            val resultBinding = LayoutResultTwoBinding.bind(viewStub)
 
-        val itemOneBinding = resultBinding.include1
-        val itemTwoBinding = resultBinding.include2
+            val itemOneBinding = resultBinding.include1
+            val itemTwoBinding = resultBinding.include2
 
-        setResultItem(
-            itemOneBinding,
-            getString(R.string.sbp),
-            result.dbp.value.toString(),
-            getString(R.string.unit_mmHg),
-            result.dbp.level
-        )
+            setResultItem(
+                itemOneBinding,
+                getString(R.string.sbp),
+                result.dbp.value.toString(),
+                getString(R.string.unit_mmHg),
+                result.dbp.level
+            )
 
-        setResultItem(
-            itemTwoBinding,
-            getString(R.string.dbp),
-            result.dbp.value.toString(),
-            getString(R.string.unit_mmHg),
-            result.dbp.level
-        )
+            setResultItem(
+                itemTwoBinding,
+                getString(R.string.dbp),
+                result.dbp.value.toString(),
+                getString(R.string.unit_mmHg),
+                result.dbp.level
+            )
+        }
     }
 
     private fun setHeartRate(result: HeartRateResultResponse) {
-        val viewStub = binding.vsResultTwo.inflate()
-        val resultBinding = LayoutResultTwoBinding.bind(viewStub)
+        if (binding.vsResultTwo.parent != null) {
+            val viewStub = binding.vsResultTwo.inflate()
+            val resultBinding = LayoutResultTwoBinding.bind(viewStub)
 
-        val itemOneBinding = resultBinding.include1
-        val itemTwoBinding = resultBinding.include2
+            val itemOneBinding = resultBinding.include1
+            val itemTwoBinding = resultBinding.include2
 
-        setResultItem(
-            itemOneBinding,
-            getString(R.string.bpm),
-            result.bpm.value.toString(),
-            getString(R.string.unit_bpm),
-            result.bpm.level
-        )
+            setResultItem(
+                itemOneBinding,
+                getString(R.string.bpm),
+                result.bpm.value.toString(),
+                getString(R.string.unit_bpm),
+                result.bpm.level
+            )
 
-        setResultItem(
-            itemTwoBinding,
-            getString(R.string.oxygen),
-            result.oxygen.value.toString(),
-            getString(R.string.unit_percent),
-            result.oxygen.level
-        )
+            setResultItem(
+                itemTwoBinding,
+                getString(R.string.oxygen),
+                result.oxygen.value.toString(),
+                getString(R.string.unit_percent),
+                result.oxygen.level
+            )
+        }
     }
 
     private fun setStress(result: StressResultResponse) {
-        val viewStub = binding.vsResultTwo.inflate()
-        val resultBinding = LayoutResultTwoBinding.bind(viewStub)
+        if (binding.vsResultTwo.parent != null) {
+            val viewStub = binding.vsResultTwo.inflate()
+            val resultBinding = LayoutResultTwoBinding.bind(viewStub)
 
-        val itemOneBinding = resultBinding.include1
-        val itemTwoBinding = resultBinding.include2
+            val itemOneBinding = resultBinding.include1
+            val itemTwoBinding = resultBinding.include2
 
-        setResultItem(
-            itemOneBinding,
-            getString(R.string.stress_value),
-            result.stressValue.value.toString(),
-            "",
-            result.stressValue.level
-        )
+            setResultItem(
+                itemOneBinding,
+                getString(R.string.stress_value),
+                result.stressValue.toString(),
+                "",
+                ""
+            )
 
-        setResultItem(
-            itemTwoBinding,
-            getString(R.string.stress_level),
-            result.stressLevel,
-            "",
-            ""
-        )
+            setResultItem(
+                itemTwoBinding,
+                getString(R.string.stress_level),
+                result.stressLevel,
+                "",
+                ""
+            )
+        }
     }
 
     private fun setBodyTemperature(result: TemperatureResultResponse) {
-        val viewStub = binding.vsResultOne.inflate()
-        val resultBinding = LayoutResultOneBinding.bind(viewStub)
+        if (binding.vsResultOne.parent != null) {
+            val viewStub = binding.vsResultOne.inflate()
+            val resultBinding = LayoutResultOneBinding.bind(viewStub)
 
-        val itemOneBinding = resultBinding.include1
+            val itemOneBinding = resultBinding.include1
 
-        setResultItem(
-            itemOneBinding,
-            getString(R.string.temp),
-            result.temperature.value.toString(),
-            getString(R.string.unit_celsius),
-            result.temperature.level
-        )
+            setResultItem(
+                itemOneBinding,
+                getString(R.string.temp),
+                result.temperature.value.toString(),
+                getString(R.string.unit_celsius),
+                result.temperature.level
+            )
+        }
     }
 
     private fun setResultItem(

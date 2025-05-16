@@ -30,6 +30,7 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
         initButtons()
         initViews()
         observeConnectState()
+        observeToastMessage()
     }
 
     private fun setTitle() {
@@ -41,7 +42,7 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
             findNavController().popBackStack()
         }
         binding.btnStart.setOnClickListener {
-            findNavController().navigate(R.id.dest_measure_loading)
+            findNavController().navigate(R.id.action_dest_measure_guide_to_dest_measure_loading)
         }
     }
 
@@ -71,6 +72,16 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
                     if (!it) {
                         findNavController().navigate(R.id.action_dest_measure_guide_to_dest_device_connect)
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeToastMessage() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                fitrusViewModel.toastMessage.collect {
+                    showToast(it)
                 }
             }
         }
