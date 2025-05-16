@@ -2,38 +2,44 @@ pipeline {
     agent any
 
     environment {
-        # 고정값 (민감하지 않은 값)
-        POSTGRES_USER = 's209'
-        POSTGRES_DB = 'yobi'
-        TZ = 'Asia/Seoul'
-        SPRING_REDIS_HOST = 'redis'
-        SPRING_REDIS_PORT = '6379'
-        SPRING_REDIS_DB = '0'
-        REDIS_HOST = 'redis'
-        REDIS_PORT = '6379'
-        REDIS_DB = '0'
-        DATABASE_URL = 'postgresql://postgres:s209password@localhost:5432/S209'
-        INTERNAL_AI_URL = 'http://localhost:8001/ai/analyze'
-        BASE_MODEL_PATH = '/srv/models/base'
-        ADAPTER_PATH = '/srv/models/mistral_lora_adapter'
-        MERGED_MODEL_PATH = '/srv/models/merged'
-        HF_CACHE_DIR = '/srv/models/cache'
-        BATCH_MAX_WORKERS = '20'
-        BATCH_MAX_CONCURRENT = '10'
-        LOG_LEVEL = 'INFO'
-        LOG_PATH = '/app/logs'
-
-        # 민감정보 (Jenkins Credentials에서 가져오기)
-        HF_TOKEN = credentials('hf_token')
-        OPENAI_API_KEY = credentials('openai_api_key')
-        POSTGRES_PASSWORD = credentials('postgres_password')
-        SPRING_REDIS_PASSWORD = credentials('redis_password')
-        REDIS_PASSWORD = credentials('redis_password')
-        DOCKERHUB_USER = credentials('docker-hub-user')
-        DOCKERHUB_PASS = credentials('docker-hub-pass')
+        ENV_FILE = ".env"
+        REMOTE_PATH = "/home/ubuntu/ai-app"
+        DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
     }
 
+
     stages {
+        stage('Branch Check') {
+            steps {
+                script {
+                    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '') ?: 'unknown'
+                    echo "현재 브랜치: ${branchName}"
+
+                    if (!branchName || !branchName.contains('ai-dev')) {
+                        echo "❌ 이 잡은 ai-dev 브랜치에서만 동작합니다. 현재 브랜치: ${branchName}"
+                        currentBuild.result = 'SUCCESS'
+                        error('브랜치가 ai-dev가 아니므로 빌드를 중단합니다.')
+                    } else {
+                        echo "✅ ai-dev 브랜치 감지됨. 계속 진행합니다."
+                    }
+                }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Load .env File') {
+            steps {
+                withCredentials([file(credentialsId: 'ai-env-secret', variable: 'LOADED_ENV')]) {
+                    sh 'rm -f .env && cp $LOADED_ENV .env'
+                }
+            }
+        }
+
         stage('Check & Download Mistral LoRA') {
             steps {
                 script {
@@ -76,10 +82,10 @@ pipeline {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@ai번서버IP '
-                            docker pull your-dockerhub-id/ai-app:latest &&
+                        ssh -o StrictHostKeyChecking=no ubuntu@2번서버IP '
                             cd /home/ubuntu/your-app-directory &&
-                            docker-compose -f docker-compose.ec2-2.yml up -d
+                            docker pull your-dockerhub-id/ai-app:latest &&
+                            docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
                         '
                     """
                 }
