@@ -63,8 +63,17 @@ public class UserService implements UserDetailsService {
                 return ApiResponseDTO.fail(ApiResponseCode.PASSWORD_NO_INPUT);
             }
 
+            if (password.length() < 8 || password.length() > 16) {
+                return ApiResponseDTO.fail(ApiResponseCode.WRONG_PASSWORD_LENGTH);
+            }
+
             // 허용된 특수문자 목록
             String allowedSpecialChars = "@$!%*#?&";
+            String pattern = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$";
+
+            if (!password.matches(pattern)) {
+                return ApiResponseDTO.fail(ApiResponseCode.WRONG_PASSWORD_FORMAT);
+            }
 
             // 비밀번호에 허용되지 않은 특수문자가 포함되어 있는지 직접 검사
             for (int i = 0; i < password.length(); i++) {
