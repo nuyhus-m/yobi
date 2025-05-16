@@ -26,8 +26,6 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
 ) {
     private val args: DiaryDetailFragmentArgs by navArgs()
     private val viewModel: DiaryDetailViewModel by viewModels()
-    private val LIST_DEST = R.id.dest_visit_log_list   // ← 자신의 destination id
-    val REFRESH_KEY = "refresh_logs"
 
     companion object {
         private const val DELETE_RESULT_KEY = "delete_confirmed"
@@ -102,13 +100,6 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
         viewModel.deleted.observe(viewLifecycleOwner) { success ->
             if (success) {
                 showToast("삭제되었습니다.")
-
-                // 중요: 리스트 프래그먼트에 새로고침 플래그 설정
-                findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                    REFRESH_KEY,
-                    true
-                )
-
                 findNavController().popBackStack()
             }
         }

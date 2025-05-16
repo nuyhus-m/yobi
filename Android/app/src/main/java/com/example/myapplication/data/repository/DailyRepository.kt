@@ -13,7 +13,18 @@ class DailyRepository @Inject constructor(
 ) {
 
     suspend fun getDailyHumanList(): Response<List<DailyHumanDTO>> {
-        return dailyService.getDailyHumanList()
+        return try {
+            val response = dailyService.getDailyHumanList()
+            // 응답이 비어있거나 유효하지 않은 경우 빈 리스트 반환
+            if (!response.isSuccessful || response.body() == null) {
+                Response.success(emptyList())
+            } else {
+                response
+            }
+        } catch (e: Exception) {
+            // 예외 발생 시 빈 리스트 반환
+            Response.success(emptyList())
+        }
     }
 
     suspend fun getDailyLogs(scheduleId: Int): Response<DailyLogResponse> {

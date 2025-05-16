@@ -35,10 +35,13 @@ class DeleteDairyDialog : DialogFragment() {
         binding.btnNo.setOnClickListener { dismiss() }
         binding.btnYes.setOnClickListener {
             // 결과 전달: 현재 다이얼로그 → 이전 BackStackEntry
-            findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                DELETE_RESULT_KEY,
-                args.scheduleId
-            )
+            findNavController()
+                .previousBackStackEntry
+                ?.savedStateHandle
+                ?.set(
+                    DELETE_RESULT_KEY,
+                    args.scheduleId
+                )
             dismiss()
         }
     }

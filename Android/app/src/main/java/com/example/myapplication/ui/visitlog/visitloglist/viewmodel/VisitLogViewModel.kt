@@ -1,5 +1,4 @@
 package com.example.myapplication.ui.visitlog.visitloglist.viewmodel
-
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -37,8 +36,16 @@ class VisitLogViewModel @Inject constructor(
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    // 현재 선택된 필터 이름 저장
+    private var currentFilter = "전체"
+
     init {
         fetchDailyHumanList()
+    }
+
+    // 에러 메시지 초기화 함수
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 
     private fun fetchDailyHumanList() {
@@ -51,19 +58,21 @@ class VisitLogViewModel @Inject constructor(
                     _allLogs.value = dailyHumans
                     Log.d(TAG, "fetchDailyHumanList: $dailyHumans")
 
-                    // 필터
+                    // 필터 아이템 준비
                     val names = dailyHumans.map { it.clientName }.distinct()
-                    val filterItems = mutableListOf(FilterItem("전체", true))
-                    filterItems.addAll(names.map { FilterItem(it, false) })
+                    val filterItems = mutableListOf(FilterItem("전체", currentFilter == "전체"))
+                    filterItems.addAll(names.map { FilterItem(it, it == currentFilter) })
                     _filterItems.value = filterItems
-                    filterLogs("전체")
+
+                    // 현재 선택된 필터로 목록 필터링
+                    filterLogs(currentFilter)
                 } else {
-                    Log.d(TAG, "fetchDailyHumanList: ")
-                    _errorMessage.value = "데이터 못불러왔어요 : ${response.message()}"
+                    Log.d(TAG, "fetchDailyHumanList: Error ${response.code()}")
+                    _errorMessage.value = "데이터를 불러오지 못했습니다 : ${response.message()}"
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "fetchDailyHumanList: ${e.message}")
-                _errorMessage.value = "데이터 못불러왔어요 catch : ${e.message}"
+                _errorMessage.value = "데이터를 불러오지 못했습니다 : ${e.message}"
             } finally {
                 _isLoading.value = false
             }
@@ -72,6 +81,7 @@ class VisitLogViewModel @Inject constructor(
 
     // 필터 선택 시 호출되는 함수
     fun selectFilter(selectedName: String) {
+        currentFilter = selectedName
         _filterItems.value = _filterItems.value?.map {
             it.copy(isSelected = it.name == selectedName)
         }
@@ -88,6 +98,7 @@ class VisitLogViewModel @Inject constructor(
             }
     }
 
+    // 화면에 복귀하거나 필요할 때 호출하여 목록 갱신
     fun forceRefresh() {
         fetchDailyHumanList()
     }
