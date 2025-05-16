@@ -24,12 +24,12 @@ pipeline {
             }
         }
 
-    stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
         stage('Load .env File') {
             steps {
                 withCredentials([file(credentialsId: 'env-secret', variable: 'LOADED_ENV')]) {
@@ -37,6 +37,7 @@ pipeline {
                 }
             }
         }
+
         stage('Load Application Config') {
             steps {
                 withCredentials([file(credentialsId: 'application-yml', variable: 'APP_CONFIG')]) {
