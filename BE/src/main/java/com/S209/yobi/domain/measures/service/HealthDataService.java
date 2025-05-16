@@ -1,6 +1,7 @@
 package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.responseDTO.*;
+import com.S209.yobi.domain.measures.Mapper.StressLevelMapper;
 import com.S209.yobi.domain.measures.entity.*;
 import com.S209.yobi.domain.measures.repository.*;
 import com.S209.yobi.domain.users.entity.User;
@@ -186,8 +187,8 @@ public class HealthDataService {
         // 스트레스 데이터를 DTO로 변환
         StressResponseDTO responseDTO = StressResponseDTO.builder()
                 .stressId(stress.getId())
-                .stressValue(new MeasureWithLevel(stress.getStressValue(), stressLevels.getOrDefault("stressValue", "보통")))
-                .stressLevel(stress.getStressLevel() != null ? stress.getStressLevel().toString() : "보통")
+                .stressValue(stress.getStressValue())
+                .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
                 .build();
 
         // 성공 응답 생성
