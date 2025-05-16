@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
@@ -27,11 +28,15 @@ public class MainHealthResponseDTO implements ApiResult {
         // 오늘 측정 값이 업는 경우
         if(measure == null){
             // 시간 Long 타입으로 변환
-            long epochDay = today.toEpochDay();
+            long epochMilli = (today != null ? today : LocalDate.now())
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+
 
             return MainHealthResponseDTO.builder()
                     .clientId(clientId)
-                    .today(epochDay)
+                    .today(epochMilli)
                     .bodyComposition(null)
                     .stress(null)
                     .heartRate(null)
