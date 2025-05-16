@@ -30,7 +30,7 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
 
         binding.tvBodyComp.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
-            findNavController().navigate(R.id.dest_measure_guide)
+            findNavController().navigate(R.id.dest_device_connect)
         }
 
         binding.tvHeartRate.setOnClickListener {
@@ -44,7 +44,6 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
         }
 
         binding.tvStress.setOnClickListener {
-            fitrusViewModel.setMeasureType(HealthDataType.STRESS)
             fitrusViewModel.setMeasureType(HealthDataType.STRESS)
             findNavController().navigate(R.id.dest_device_connect)
         }
