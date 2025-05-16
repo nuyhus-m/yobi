@@ -22,13 +22,15 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.tvTitle.text = getString(R.string.measure_title, fitrusViewModel.client.name)
+
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
         binding.tvBodyComp.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.BODY_COMPOSITION)
-            findNavController().navigate(R.id.dest_measure_guide)
+            findNavController().navigate(R.id.dest_device_connect)
         }
 
         binding.tvHeartRate.setOnClickListener {
@@ -38,16 +40,17 @@ class MeasureItemFragment : BaseFragment<FragmentMeasureItemBinding>(
 
         binding.tvBloodPressure.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.BLOOD_PRESSURE)
-            findNavController().navigate(R.id.dest_measure_loading)
+            findNavController().navigate(R.id.dest_device_connect)
         }
 
         binding.tvStress.setOnClickListener {
             fitrusViewModel.setMeasureType(HealthDataType.STRESS)
-            findNavController().navigate(R.id.dest_measure_loading)
+            findNavController().navigate(R.id.dest_device_connect)
         }
 
         binding.tvBodyTemp.setOnClickListener {
-            findNavController().navigate(R.id.dest_measure_result)
+            fitrusViewModel.setMeasureType(HealthDataType.TEMPERATURE)
+            findNavController().navigate(R.id.dest_device_connect)
         }
     }
 }
