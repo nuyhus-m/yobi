@@ -42,15 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-
-
             // 토큰 추출 및 공백 제거
             final String jwt;
             if (authHeader.startsWith("Bearer Bearer ")) {
-                // "Bearer Bearer " 형태로 중복된 경우
                 jwt = authHeader.substring(14).replaceAll("\\s+", "");
             } else {
-                // 일반적인 "Bearer " 형태인 경우
                 jwt = authHeader.substring(7).replaceAll("\\s+", "");
             }
             logger.info("Processed Token (first 20 chars): " + (jwt.length() > 20 ? jwt.substring(0, 20) + "..." : jwt));
@@ -63,6 +59,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
+                // 블랙리스트 체크 추가
+                if (jwtProvider.isAccessTokenBlacklisted(jwt)) {
+                    logger.warning("Token is blacklisted");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
                 // 토큰 정보 추출
                 final Integer employeeNumber = jwtProvider.extractEmployeeNumber(jwt);
                 final Integer userId = jwtProvider.extractUserId(jwt);
@@ -81,49 +84,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                         logger.info("Authentication successful for user: " + employeeNumber);
                     } else {
-                        // Access token이 만료된 경우 - Refresh Token 처리
-                        logger.info("Access token expired, checking refresh token");
-                        String refreshToken = request.getHeader("Refresh-Token");
-                        if (refreshToken != null && refreshToken.startsWith("Bearer ")) {
-                            refreshToken = refreshToken.substring(7).replaceAll("\\s+", "");
-
-                            if (!isValidJwtFormat(refreshToken)) {
-                                logger.warning("Invalid refresh token format");
-                                filterChain.doFilter(request, response);
-                                return;
-                            }
-
-                            if (jwtProvider.validateRefreshToken(refreshToken, userDetails, employeeNumber, userId)) {
-                                // 새로운 access token 발급
-                                String newAccessToken = jwtProvider.generateToken(employeeNumber, userId);
-                                response.setHeader("New-Access-Token", newAccessToken);
-                                logger.info("New access token generated");
-
-                                // 인증 정보 설정
-                                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                        userDetails,
-                                        null,
-                                        userDetails.getAuthorities()
-                                );
-                                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                                SecurityContextHolder.getContext().setAuthentication(authToken);
-                            } else {
-                                logger.warning("Refresh token validation failed");
-                            }
-                        } else {
-                            logger.info("No refresh token available");
-                        }
+                        logger.warning("Token validation failed");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        return;
                     }
                 }
             } catch (Exception e) {
                 logger.severe("Error processing JWT token: " + e.getMessage());
-                // 디버깅 정보 로깅
-                StringBuilder sb = new StringBuilder("Token characters: ");
-                for (int i = 0; i < Math.min(jwt.length(), 30); i++) {
-                    char c = jwt.charAt(i);
-                    sb.append("[").append(i).append("]:").append((int) c).append(" ");
-                }
-                logger.info(sb.toString());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         } catch (Exception e) {
             logger.severe("Unexpected error in JWT filter: " + e.getMessage());

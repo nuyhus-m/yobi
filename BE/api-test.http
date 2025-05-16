@@ -16,7 +16,11 @@ Content-Disposition: form-data; name="password"
 ssafy123
 --MyBoundary--
 
+### 환경 변수 설정
+@accessToken = {{login.response.body.accessToken}}
+
 ### 로그인 테스트
+# @name login
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
@@ -27,8 +31,7 @@ Content-Type: application/json
 
 ### 로그인 후 토큰으로 보호된 API 테스트
 GET http://localhost:8080/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyMDE4MTAsImV4cCI6MTc0OTc5MzgxMH0.Q99cXys0NtzlCncTK7cVCsGcQPEaKkXTYKQvIYaSqQs
-
+Authorization: Bearer {{accessToken}}
 
 ### 리프레시 토큰으로 토큰 갱신
 POST http://localhost:8080/api/users/refresh
@@ -36,16 +39,21 @@ Content-Type: application/json
 
 {
 
-  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTUyNzMsImV4cCI6MTc0OTg4NzI3M30.liTdq6vKRbeHiFahAeaaupK-VH5qoJuu6YOeAqdfD5A"
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkxMTEsImV4cCI6MTc0OTk3MTExMX0.kzEdd1IayNL-sgH9pVidLUO2W6L8FJ8Wh1ipUMvoiMM"
 }
 
 
 ### 사용자 정보 조회
 GET http://localhost:8080/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTA2NDIsImV4cCI6MTc0OTg4MjY0Mn0.11a-ni6YXkMiMkmPdI3JAuhM1UVB1NIn2pBMq0ES5WU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkyODIsImV4cCI6MTc0Nzk4NDA4Mn0.H2yAuTv30aoeCQgvhF1d0N5SiIndjMWF_xa5kje5Mcw
+
 
 ### 로그아웃
-POST http://localhost:8080/api/v1/users/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDcyOTUyNzMsImV4cCI6MTc0OTg4NzI3M30.liTdq6vKRbeHiFahAeaaupK-VH5qoJuu6YOeAqdfD5A
+POST http://localhost:8080/api/users/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkyODIsImV4cCI6MTc0Nzk4NDA4Mn0.H2yAuTv30aoeCQgvhF1d0N5SiIndjMWF_xa5kje5Mcw
 Content-Type: application/json
+
+### 로그아웃 후 토큰으로 API 호출 시도 (401 Unauthorized 예상)
+GET http://localhost:8080/api/users
+Authorization: Bearer {{accessToken}}
 
