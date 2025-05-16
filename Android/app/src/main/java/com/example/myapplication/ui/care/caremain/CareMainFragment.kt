@@ -32,6 +32,11 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        clearInitialUIValues()
+        setupTabLayout()
+
+        // 처음에는 스켈레톤 뷰 표시
+        showSkeletonView(true)
 
         viewModel.fetchClientDetail(args.clientId)
         Log.d(TAG, "onViewCreated: ${args.clientId}")
@@ -41,32 +46,61 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
         }
 
         viewModel.clientDetail.observe(viewLifecycleOwner) { detail ->
-            binding.tvName.text = detail.name
-            binding.tvGender.text = when (detail.gender) {
-                0 -> "남자"
-                1 -> "여자"
-                else -> "기타"
-            }
 
-            binding.tvBirth.text = detail.birth
-            binding.tvHeight.text = "${detail.height}cm"
-            binding.tvWeight.text = "${detail.weight}kg"
-            binding.tvAddress.text = detail.address
+            // 데이터가 있어도 최소 0.5초는 스켈레톤 유지 시키기
+            binding.shimmerLayout.postDelayed({
+                // 데이터 설정 및 실제 컨텐츠 표시
+                binding.tvName.text = detail.name
+                binding.tvGender.text = if (detail.gender == 0) "남자" else "여자"
+                binding.tvBirth.text = detail.birth
+                binding.tvHeight.text = "${detail.height}cm"
+                binding.tvWeight.text = "${detail.weight}kg"
+                binding.tvAddress.text = detail.address
 
-            Glide.with(this)
-                .load(detail.image)
-                .transform(CenterCrop(), RoundedCorners(dpToPx(12)))
-                .into(binding.ivProfile)
+                // 프로필 이미지가 있다면 로드
+                detail.image?.let { imageUrl ->
+                    Glide.with(requireContext())
+                        .load(imageUrl)
+                        .transform(CenterCrop(), RoundedCorners(dpToPx(8)))
+                        .into(binding.ivProfile)
+                }
 
-            setupTabLayout()
+                // 스켈레톤 뷰 숨기기
+                showSkeletonView(false)
+
+            }, 500)
+        }
+
+    }
+
+    private fun clearInitialUIValues() {
+        binding.tvName.text = ""
+        binding.tvGender.text = ""
+        binding.tvBirth.text = ""
+        binding.tvHeight.text = ""
+        binding.tvWeight.text = ""
+        binding.tvAddress.text = ""
+    }
+
+    private fun showSkeletonView(show: Boolean) {
+        if (show) {
+            // 스켈레톤 뷰 표시
+            binding.contentLayout.visibility = View.INVISIBLE  // GONE 대신 INVISIBLE 사용 (레이아웃 깜빡임 방지)
+            binding.shimmerLayout.visibility = View.VISIBLE
+            binding.shimmerLayout.startShimmer()
+        } else {
+            // 실제 콘텐츠 표시
+            binding.shimmerLayout.stopShimmer()
+            binding.shimmerLayout.visibility = View.GONE
+            binding.contentLayout.visibility = View.VISIBLE
         }
     }
 
     private fun setupTabLayout() {
-        val detail = viewModel.clientDetail.value
-        val pagerAdapter = detail?.name?.let { CarePagerAdapter(this, args.clientId, it) }
-
+        // 👉 처음에는 name 없이도 adapter 설정
+        val pagerAdapter = CarePagerAdapter(this, args.clientId, "")
         binding.viewPager.adapter = pagerAdapter
+        binding.viewPager.offscreenPageLimit = 3
 
         val tabTitles = listOf("일일\n건강상태", "내\n건강추이", "주간\n보고서")
 

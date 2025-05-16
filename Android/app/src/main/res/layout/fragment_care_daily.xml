@@ -62,8 +62,8 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -74,40 +74,88 @@
                         android:text="체지방률"
                         android:textColor="@color/purple" />
 
-                    <TextView
-                        android:id="@+id/tv_fat_ratio"
-                        style="@style/CardTitleTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="33.3" />
+                        android:layout_marginTop="6dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_fat_ratio"
+                            android:layout_width="60dp"
+                            android:layout_height="24dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_fat_ratio"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="33.3"
+                            android:visibility="invisible" />
+                    </FrameLayout>
 
                     <TextView
-                        style="@style/LabelTextStyle"
-                        android:textColor="@color/gray_text_sub"
+                        style="@style/CaptionTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/space_8dp"
-                        android:text="%" />
+                        android:text="%"
+                        android:textColor="@color/gray_text_sub" />
 
-                    <TextView
-                        android:id="@+id/tv_fat_ratio_level"
-                        style="@style/LabelTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_red_sub_radius_4"
-                        android:paddingHorizontal="@dimen/space_8dp"
-                        android:paddingVertical="1dp"
-                        android:text="높음"
-                        android:textColor="@color/red" />
+                        android:layout_height="wrap_content">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_fat_ratio_level"
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_fat_ratio_level"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_red_sub_radius_4"
+                            android:paddingHorizontal="@dimen/space_8dp"
+                            android:paddingVertical="1dp"
+                            android:text="높음"
+                            android:textColor="@color/red"
+                            android:visibility="invisible" />
+                    </FrameLayout>
                 </LinearLayout>
 
                 <!-- 기초대사량 -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -118,13 +166,37 @@
                         android:text="기초대사량"
                         android:textColor="@color/purple" />
 
-                    <TextView
-                        android:id="@+id/tv_bmr"
-                        style="@style/CardTitleTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="1083" />
+                        android:layout_marginTop="6dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_bmr"
+                            android:layout_width="60dp"
+                            android:layout_height="24dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_bmr"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1083"
+                            android:visibility="invisible" />
+                    </FrameLayout>
 
                     <TextView
                         style="@style/CaptionTextStyle"
@@ -134,24 +206,48 @@
                         android:text="cal"
                         android:textColor="@color/gray_text_sub" />
 
-                    <TextView
-                        android:id="@+id/tv_bmr_level"
-                        style="@style/LabelTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_green_sub_radius_4"
-                        android:paddingHorizontal="@dimen/space_8dp"
-                        android:paddingVertical="1dp"
-                        android:text="보통"
-                        android:textColor="#4DAF37" />
+                        android:layout_height="wrap_content">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_bmr_level"
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_bmr_level"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_green_sub_radius_4"
+                            android:paddingHorizontal="@dimen/space_8dp"
+                            android:paddingVertical="1dp"
+                            android:text="보통"
+                            android:textColor="#4DAF37"
+                            android:visibility="invisible" />
+                    </FrameLayout>
                 </LinearLayout>
 
                 <!-- 체내 수분 -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -162,13 +258,37 @@
                         android:text="체내 수분"
                         android:textColor="@color/purple" />
 
-                    <TextView
-                        android:id="@+id/tv_body_moisture"
-                        style="@style/CardTitleTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="48.6" />
+                        android:layout_marginTop="6dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_body_moisture"
+                            android:layout_width="60dp"
+                            android:layout_height="24dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_body_moisture"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="48.6"
+                            android:visibility="invisible" />
+                    </FrameLayout>
 
                     <TextView
                         style="@style/CaptionTextStyle"
@@ -178,16 +298,40 @@
                         android:text="%"
                         android:textColor="@color/gray_text_sub" />
 
-                    <TextView
-                        android:id="@+id/tv_moisture_level"
-                        style="@style/LabelTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_blue_sub_radius_4"
-                        android:paddingHorizontal="@dimen/space_8dp"
-                        android:paddingVertical="1dp"
-                        android:text="낮음"
-                        android:textColor="#4A90E2" />
+                        android:layout_height="wrap_content">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_moisture_level"
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_moisture_level"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_blue_sub_radius_4"
+                            android:paddingHorizontal="@dimen/space_8dp"
+                            android:paddingVertical="1dp"
+                            android:text="낮음"
+                            android:textColor="#4A90E2"
+                            android:visibility="invisible" />
+                    </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -220,19 +364,68 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_stress_low" />
+                    android:layout_height="48dp">
 
-                <TextView
-                    android:id="@+id/tv_stress_level"
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sfl_stress_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:shimmer_auto_start="true"
+                        app:shimmer_base_color="#D0C1EB"
+                        app:shimmer_direction="left_to_right"
+                        app:shimmer_duration="1200"
+                        app:shimmer_highlight_alpha="0.9"
+                        app:shimmer_highlight_color="#FFFFFF"
+                        app:shimmer_repeat_mode="restart">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_skeleton" />
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <ImageView
+                        android:id="@+id/iv_stress_icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_stress_low"
+                        android:visibility="invisible" />
+                </FrameLayout>
+
+                <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="오늘 스트레스 등급은\n낮은 상태에요"
-                    android:textAlignment="center"
-                    android:textSize="14sp" />
+                    android:layout_marginTop="8dp">
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sfl_stress_level"
+                        android:layout_width="140dp"
+                        android:layout_height="32dp"
+                        app:shimmer_auto_start="true"
+                        app:shimmer_base_color="#D0C1EB"
+                        app:shimmer_direction="left_to_right"
+                        app:shimmer_duration="1200"
+                        app:shimmer_highlight_alpha="0.9"
+                        app:shimmer_highlight_color="#FFFFFF"
+                        app:shimmer_repeat_mode="restart">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_skeleton" />
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <TextView
+                        android:id="@+id/tv_stress_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="오늘 스트레스 등급은\n낮은 상태에요"
+                        android:textAlignment="center"
+                        android:textSize="14sp"
+                        android:visibility="invisible" />
+                </FrameLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -283,34 +476,81 @@
                         android:layout_height="28dp"
                         android:src="@drawable/ic_heart" />
 
-                    <TextView
-                        android:id="@+id/tv_heart_rate"
-                        style="@style/TitleTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="77" />
+                        android:layout_marginTop="8dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_heart_rate"
+                            android:layout_width="60dp"
+                            android:layout_height="28dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_heart_rate"
+                            style="@style/TitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="77"
+                            android:visibility="invisible" />
+                    </FrameLayout>
 
                     <TextView
+                        style="@style/LabelTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+
                         android:text="BPM"
+                        android:textColor="@color/gray_text_sub" />
 
-                        style="@style/LabelTextStyle"
-                        android:textColor="@color/gray_text_sub"
-                        />
-
-                    <TextView
-                        android:id="@+id/tv_heart_rate_level"
-                        style="@style/LabelTextStyle"
+                    <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:background="@drawable/bg_red_sub_radius_4"
-                        android:paddingHorizontal="@dimen/space_8dp"
-                        android:paddingVertical="1dp"
-                        android:text="높음"
-                        android:textColor="@color/red" />
+                        android:layout_marginTop="4dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_heart_rate_level"
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#D0C1EB"
+                            app:shimmer_direction="left_to_right"
+                            app:shimmer_duration="1200"
+                            app:shimmer_highlight_alpha="0.9"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_repeat_mode="restart">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_heart_rate_level"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_red_sub_radius_4"
+                            android:paddingHorizontal="@dimen/space_8dp"
+                            android:paddingVertical="1dp"
+                            android:text="높음"
+                            android:textColor="@color/red"
+                            android:visibility="invisible" />
+                    </FrameLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -361,12 +601,36 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tv_systole"
-                            style="@style/TitleTextStyle"
+                        <FrameLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="119" />
+                            android:layout_height="wrap_content">
+
+                            <com.facebook.shimmer.ShimmerFrameLayout
+                                android:id="@+id/sfl_systole"
+                                android:layout_width="60dp"
+                                android:layout_height="28dp"
+                                app:shimmer_auto_start="true"
+                                app:shimmer_base_color="#D0C1EB"
+                                app:shimmer_direction="left_to_right"
+                                app:shimmer_duration="1200"
+                                app:shimmer_highlight_alpha="0.9"
+                                app:shimmer_highlight_color="#FFFFFF"
+                                app:shimmer_repeat_mode="restart">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/bg_skeleton" />
+                            </com.facebook.shimmer.ShimmerFrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_systole"
+                                style="@style/TitleTextStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="119"
+                                android:visibility="invisible" />
+                        </FrameLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -375,12 +639,36 @@
                             android:text=" / "
                             android:textSize="25sp" />
 
-                        <TextView
-                            android:id="@+id/tv_diastole"
-                            style="@style/TitleTextStyle"
+                        <FrameLayout
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="80" />
+                            android:layout_height="wrap_content">
+
+                            <com.facebook.shimmer.ShimmerFrameLayout
+                                android:id="@+id/sfl_diastole"
+                                android:layout_width="60dp"
+                                android:layout_height="28dp"
+                                app:shimmer_auto_start="true"
+                                app:shimmer_base_color="#D0C1EB"
+                                app:shimmer_direction="left_to_right"
+                                app:shimmer_duration="1200"
+                                app:shimmer_highlight_alpha="0.9"
+                                app:shimmer_highlight_color="#FFFFFF"
+                                app:shimmer_repeat_mode="restart">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/bg_skeleton" />
+                            </com.facebook.shimmer.ShimmerFrameLayout>
+
+                            <TextView
+                                android:id="@+id/tv_diastole"
+                                style="@style/TitleTextStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="80"
+                                android:visibility="invisible" />
+                        </FrameLayout>
                     </LinearLayout>
 
                     <LinearLayout
@@ -403,16 +691,40 @@
                                 android:layout_marginBottom="2dp"
                                 android:text="수축기" />
 
-                            <TextView
-                                android:id="@+id/tv_systole_level"
-                                style="@style/LabelTextStyle"
+                            <FrameLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_red_sub_radius_4"
-                                android:paddingHorizontal="@dimen/space_8dp"
-                                android:paddingVertical="1dp"
-                                android:text="높음"
-                                android:textColor="@color/red" />
+                                android:layout_height="wrap_content">
+
+                                <com.facebook.shimmer.ShimmerFrameLayout
+                                    android:id="@+id/sfl_systole_level"
+                                    android:layout_width="40dp"
+                                    android:layout_height="18dp"
+                                    app:shimmer_auto_start="true"
+                                    app:shimmer_base_color="#D0C1EB"
+                                    app:shimmer_direction="left_to_right"
+                                    app:shimmer_duration="1200"
+                                    app:shimmer_highlight_alpha="0.9"
+                                    app:shimmer_highlight_color="#FFFFFF"
+                                    app:shimmer_repeat_mode="restart">
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/bg_skeleton" />
+                                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                                <TextView
+                                    android:id="@+id/tv_systole_level"
+                                    style="@style/LabelTextStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_red_sub_radius_4"
+                                    android:paddingHorizontal="@dimen/space_8dp"
+                                    android:paddingVertical="1dp"
+                                    android:text="높음"
+                                    android:textColor="@color/red"
+                                    android:visibility="invisible" />
+                            </FrameLayout>
                         </LinearLayout>
 
                         <TextView
@@ -436,16 +748,40 @@
                                 android:layout_marginBottom="2dp"
                                 android:text="이완기" />
 
-                            <TextView
-                                android:id="@+id/tv_diastole_level"
-                                style="@style/LabelTextStyle"
+                            <FrameLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_red_sub_radius_4"
-                                android:paddingHorizontal="@dimen/space_8dp"
-                                android:paddingVertical="1dp"
-                                android:text="높음"
-                                android:textColor="@color/red" />
+                                android:layout_height="wrap_content">
+
+                                <com.facebook.shimmer.ShimmerFrameLayout
+                                    android:id="@+id/sfl_diastole_level"
+                                    android:layout_width="40dp"
+                                    android:layout_height="18dp"
+                                    app:shimmer_auto_start="true"
+                                    app:shimmer_base_color="#D0C1EB"
+                                    app:shimmer_direction="left_to_right"
+                                    app:shimmer_duration="1200"
+                                    app:shimmer_highlight_alpha="0.9"
+                                    app:shimmer_highlight_color="#FFFFFF"
+                                    app:shimmer_repeat_mode="restart">
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="@drawable/bg_skeleton" />
+                                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                                <TextView
+                                    android:id="@+id/tv_diastole_level"
+                                    style="@style/LabelTextStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_red_sub_radius_4"
+                                    android:paddingHorizontal="@dimen/space_8dp"
+                                    android:paddingVertical="1dp"
+                                    android:text="높음"
+                                    android:textColor="@color/red"
+                                    android:visibility="invisible" />
+                            </FrameLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

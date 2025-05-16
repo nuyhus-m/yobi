@@ -28,7 +28,7 @@ google-cloud = "2.43.0"
 mp = "v3.1.0"
 webrtc = "2.0.9"
 kotlinxSerialization = "2.1.20"
-
+shimmer = "0.5.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
@@ -63,6 +63,8 @@ grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mp" }
 vad-webrtc = { module = "com.github.gkonovalov.android-vad:webrtc", version.ref = "webrtc" }
+ui-shimmer = {module = "com.facebook.shimmer:shimmer", version.ref = "shimmer"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

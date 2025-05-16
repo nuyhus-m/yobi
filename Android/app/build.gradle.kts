@@ -135,4 +135,8 @@ dependencies {
 
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // https://opensource.fb.com/
+    implementation (libs.ui.shimmer)
+
 }
