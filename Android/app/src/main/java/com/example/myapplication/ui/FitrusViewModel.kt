@@ -50,6 +50,12 @@ class FitrusViewModel @Inject constructor(
     private lateinit var _healthDataResponse: HealthDataResponse
     val healthDataResponse: HealthDataResponse get() = _healthDataResponse
 
+    private var _isMeasuring = false
+    val isMeasuring: Boolean get() = _isMeasuring
+
+    private var _isFirst = true
+    val isFirst: Boolean get() = _isFirst
+
     private val _measureResult = MutableSharedFlow<MeasureResult>()
     val measureResult: SharedFlow<MeasureResult> = _measureResult
 
@@ -77,6 +83,14 @@ class FitrusViewModel @Inject constructor(
 
     fun setMeasureType(type: HealthDataType) {
         _measureType = type
+    }
+
+    fun setMeasuringStatus(status: Boolean) {
+        _isMeasuring = status
+    }
+
+    fun setIsFirst(status: Boolean) {
+        _isFirst = status
     }
 
     fun setBodyCompositionResult(result: BodyCompositionResult) {
@@ -125,7 +139,6 @@ class FitrusViewModel @Inject constructor(
         if (manager.fitrusConnectionState) {
             manager.disconnectFitrus()
         }
-        _isConnected.value = false
     }
 
     fun startMeasure() {
@@ -185,6 +198,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusCompMeasured(result: Map<String, String>) {
+        Log.d(TAG, "handleFitrusCompMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<BodyCompositionResult>(result)
@@ -211,6 +225,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusPpgMeasured(result: Map<String, Any>) {
+        Log.d(TAG, "handleFitrusPpgMeasured: $result")
         viewModelScope.launch {
             when (measureType) {
                 HealthDataType.HEART_RATE -> {
@@ -251,6 +266,7 @@ class FitrusViewModel @Inject constructor(
     }
 
     override fun handleFitrusTempMeasured(result: Map<String, String>) {
+        Log.d(TAG, "handleFitrusPpgMeasured: $result")
         viewModelScope.launch {
             runCatching {
                 val data = mapToDataClass<TemperatureResult>(result)

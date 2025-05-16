@@ -3,6 +3,9 @@ package com.example.myapplication.ui.measure.measureloading
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,6 +32,8 @@ import com.example.myapplication.ui.measure.measureloading.viewmodel.MeasureLoad
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+private const val TAG = "MeasureLoadingFragment"
+
 @AndroidEntryPoint
 class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
     FragmentMeasureLoadingBinding::bind,
@@ -37,11 +42,40 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
 
     private val fitrusViewModel by activityViewModels<FitrusViewModel>()
     private val viewModel by viewModels<MeasureLoadingViewModel>()
+    private var backPressedTime = 0L
+    private var toast: Toast? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - backPressedTime < 2000) {
+                        toast?.cancel()
+                        isEnabled = false
+                        showToast("기기를 한 번 껐다가 다시 켠 후, 측정을 다시 시도해 주세요.")
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
+                    } else {
+                        backPressedTime = currentTime
+                        toast =
+                            Toast.makeText(
+                                requireContext(),
+                                "한 번 더 누르면 측정이 중지됩니다.",
+                                Toast.LENGTH_SHORT
+                            )
+                        toast?.show()
+                    }
+                }
+            }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initButton()
         setTitle()
         initView()
         startMeasure()
@@ -49,12 +83,8 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
         observeHealthDataResponse()
         observeConnectState()
         observeToastMessage()
-    }
-
-    private fun initButton() {
-        binding.ivBack.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        fitrusViewModel.setMeasuringStatus(true)
+        fitrusViewModel.setIsFirst(true)
     }
 
     private fun setTitle() {
@@ -62,9 +92,11 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
     }
 
     private fun initView() {
-        binding.ivCharacter.post {
-            val animationDrawable = binding.ivCharacter.background as AnimationDrawable
-            animationDrawable.start()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val animationDrawable = binding.ivCharacter.background as AnimationDrawable
+                animationDrawable.start()
+            }
         }
     }
 
@@ -127,6 +159,8 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                             )
                         }
                     }
+
+                    fitrusViewModel.setMeasuringStatus(false)
                 }
             }
         }
@@ -156,7 +190,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 fitrusViewModel.isConnected.collect {
-                    if (!it) {
+                    if (!it && fitrusViewModel.isFirst) {
                         findNavController().navigate(R.id.action_dest_measure_loading_to_dest_device_connect)
                     }
                 }
@@ -219,5 +253,20 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
         return TemperatureRequest(
             temperature = temp
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        fitrusViewModel.setIsFirst(false)
     }
 }

@@ -79,8 +79,8 @@
         <action
             android:id="@+id/action_dest_device_connect_to_dest_measure_guide"
             app:destination="@id/dest_measure_guide"
-            app:popUpTo="@id/dest_measure_target"
-            app:popUpToInclusive="false" />
+            app:popUpTo="@id/dest_device_connect"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -105,6 +105,11 @@
             app:destination="@id/dest_device_connect"
             app:popUpTo="@id/dest_measure_target"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_guide_to_dest_measure_loading"
+            app:destination="@id/dest_measure_loading"
+            app:popUpTo="@id/dest_measure_guide"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -127,6 +132,11 @@
             app:destination="@id/dest_device_connect"
             app:popUpTo="@id/dest_measure_target"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_target"
+            app:destination="@id/dest_measure_target"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
