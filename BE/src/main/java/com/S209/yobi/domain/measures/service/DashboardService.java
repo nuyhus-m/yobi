@@ -56,7 +56,7 @@ public class DashboardService {
         long epochMilli = getTodayEpochMilli();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         Measure measure = optionalMeasure.orElseGet(() ->
-                        measureRepository.findTopByUserAndClientOrderByDateDesc(user, client).orElse(null));
+                        measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
 
         LocalDate baseDate = null;
         if(measure != null){
@@ -82,7 +82,6 @@ public class DashboardService {
     /**
      * 단건 데이터 조회 (자세히보기)
      */
-
     public ApiResult getHealthDetail (int userId, int clientId) {
 
         // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
@@ -95,7 +94,7 @@ public class DashboardService {
         long epochMilli = getTodayEpochMilli();
         Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
         Measure measure = optionalMeasure.orElseGet(() ->
-                measureRepository.findTopByUserAndClientOrderByDateDesc(user, client).orElse(null));
+                measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
 
         LocalDate baseDate = null;
         if(measure != null){

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
 
 import static com.S209.yobi.Mapper.DateTimeUtils.toEpochMilli;
@@ -28,11 +29,15 @@ public class HealthDetailResponseDTO implements ApiResult {
         if(measure == null){
 
             // 시간 Long 타입으로 변환
-            long epochDay = today.toEpochDay();
+            long epochMilli = (today != null ? today : LocalDate.now())
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+
 
             return HealthDetailResponseDTO.builder()
                     .clientId(clientId)
-                    .today(epochDay)
+                    .today(epochMilli)
                     .bodyComposition(null)
                     .temperature(null)
                     .bloodPressure(null)
