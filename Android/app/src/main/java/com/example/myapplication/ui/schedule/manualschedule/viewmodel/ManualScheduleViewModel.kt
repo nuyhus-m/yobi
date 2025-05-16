@@ -8,13 +8,14 @@ import com.example.myapplication.data.repository.ScheduleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @HiltViewModel
 class ManualScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository
 ) : ViewModel(){
 
-    fun registerSchedule(request: ScheduleRequest, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun registerSchedule(request: ScheduleRequest, onSuccess: () -> Unit, onError: (String?) -> Unit) {
         viewModelScope.launch {
             runCatching {
                 scheduleRepository.registerSchedule(request)
@@ -22,16 +23,17 @@ class ManualScheduleViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
-                    onError()
+                    val errorCode = extractErrorCode(response)
+                    onError(errorCode)
                 }
             }.onFailure {
-                onError()
+                onError(null)
             }
 
         }
     }
 
-    fun editSchedule(scheduleId: Int, request: ScheduleRequest, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun editSchedule(scheduleId: Int, request: ScheduleRequest, onSuccess: () -> Unit, onError: (String?) -> Unit) {
         viewModelScope.launch {
             runCatching {
                 scheduleRepository.editSchedule(scheduleId, request)
@@ -39,10 +41,11 @@ class ManualScheduleViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
-                    onError()
+                    val errorCode = extractErrorCode(response)
+                    onError(errorCode)
                 }
             }.onFailure {
-                onError()
+                onError(null)
             }
         }
     }
@@ -77,5 +80,11 @@ class ManualScheduleViewModel @Inject constructor(
                 onError()
             }
         }
+    }
+
+    private fun extractErrorCode(response: retrofit2.Response<*>): String? {
+        val errorBody = response.errorBody()?.string()
+        val json = JSONObject(errorBody ?: return null)
+        return json.getString("code")
     }
 }

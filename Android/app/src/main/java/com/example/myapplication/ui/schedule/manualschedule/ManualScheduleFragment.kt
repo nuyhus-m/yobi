@@ -73,6 +73,10 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
     private fun setupObservers() {
         mainViewModel.clientList.observe(viewLifecycleOwner) { clients ->
             setupClientSpinner(clients)
+
+            if (isEditMode && selectedClientId != null) {
+                selectClientInSpinner(selectedClientId)
+            }
         }
     }
 
@@ -189,8 +193,12 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
                 showToast("일정이 등록되었습니다.")
                 findNavController().popBackStack()
             },
-            onError = {
-                showToast("일정 등록에 실패했습니다.")
+            onError = { code ->
+                when (code) {
+                    "400-10" -> showToast("해당 시간에 다른 일정이 이미 존재합니다.")
+                    "400-11" -> showToast("해당 날짜에 해당 돌봄 대상이 이미 존재합니다")
+                    else -> showToast("일정 등록에 실패했습니다.")
+                }
             }
         )
     }
@@ -203,8 +211,12 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
                 showToast("일정이 수정되었습니다.")
                 findNavController().popBackStack()
             },
-            onError = {
-                showToast("일정 수정에 실패했습니다.")
+            onError = { code ->
+                when (code) {
+                    "400-10" -> showToast("해당 시간에 다른 일정이 이미 존재합니다.")
+                    "400-11" -> showToast("해당 날짜에 해당 돌봄 대상이 이미 존재합니다")
+                    else -> showToast("일정 수정에 실패했습니다.")
+                }
             }
         )
     }
@@ -237,7 +249,9 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
                     tvEndTime.setText(formatTime(endTime!!))
                 }
 
-                selectClientInSpinner(schedule.clientId)
+                if (binding.tvSpinnerClient.adapter != null && binding.tvSpinnerClient.adapter.count > 0) {
+                    selectClientInSpinner(selectedClientId)
+                }
                 validateForm()
             },
             onError = {
@@ -247,7 +261,7 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
         )
     }
 
-    private fun selectClientInSpinner(clientId: Int) {
+    private fun selectClientInSpinner(clientId: Int?) {
         val adapter = binding.tvSpinnerClient.adapter
         for (i in 0 until adapter.count) {
             val client = adapter.getItem(i) as? ClientDetailResponse
