@@ -8,523 +8,1068 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_content_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_24dp"
-            android:layout_marginTop="@dimen/space_40dp"
-            android:src="@drawable/ic_back"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/TitleTextStyle"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_24dp"
+                android:layout_marginTop="@dimen/space_40dp"
+                android:src="@drawable/ic_back"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/TitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_70dp"
+                android:layout_marginBottom="42dp"
+                android:text="일일 건강상태 자세히 보기"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_body_ingredient"
+                style="@style/CardTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginTop="42dp"
+                android:text="체성분"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+            <TextView
+                android:id="@+id/tv_body_fat_ratio"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="체지방률: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_body_ingredient" />
+
+            <ImageView
+                android:id="@+id/iv_ratio_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_body_fat_ratio"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_body_fat_ratio"
+                app:layout_constraintTop_toTopOf="@id/tv_body_fat_ratio"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_body_fat"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="체지방량: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_body_fat_ratio" />
+
+            <ImageView
+                android:id="@+id/iv_body_fat_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_body_fat"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_body_fat"
+                app:layout_constraintTop_toTopOf="@id/tv_body_fat"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_muscle_mass"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="근육량: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_body_fat" />
+
+            <ImageView
+                android:id="@+id/iv_muscle_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_muscle_mass"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_muscle_mass"
+                app:layout_constraintTop_toTopOf="@id/tv_muscle_mass"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_bmr"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="기초대사량: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_muscle_mass" />
+
+            <ImageView
+                android:id="@+id/iv_bmr_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_bmr"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_bmr"
+                app:layout_constraintTop_toTopOf="@id/tv_bmr"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_body_water"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="체내 수분: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_bmr" />
+
+            <ImageView
+                android:id="@+id/iv_body_water_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_body_water"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_body_water"
+                app:layout_constraintTop_toTopOf="@id/tv_body_water"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_protein"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="단백질량: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_body_water" />
+
+            <ImageView
+                android:id="@+id/iv_protein_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_protein"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_protein"
+                app:layout_constraintTop_toTopOf="@id/tv_protein"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_mineral"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="무기질량: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_protein" />
+
+
+            <ImageView
+                android:id="@+id/iv_mineral_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_mineral"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_mineral"
+                app:layout_constraintTop_toTopOf="@id/tv_mineral"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+
+            <TextView
+                android:id="@+id/tv_body_age"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="신체나이: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_mineral" />
+
+            <TextView
+                android:id="@+id/tv_temp_card"
+                style="@style/CardTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_24dp"
+                android:text="체온"
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_body_age" />
+
+
+            <TextView
+                android:id="@+id/tv_temperature"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="체온: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_temp_card" />
+
+            <ImageView
+                android:id="@+id/iv_temperature_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_temperature"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_temperature"
+                app:layout_constraintTop_toTopOf="@id/tv_temperature"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_pulse"
+                style="@style/CardTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_24dp"
+                android:text="혈압"
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_temperature" />
+
+            <TextView
+                android:id="@+id/tv_systolic"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="수축기: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_pulse" />
+
+            <ImageView
+                android:id="@+id/iv_systolic_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_systolic"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_systolic"
+                app:layout_constraintTop_toTopOf="@id/tv_systolic"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_diastolic"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="이완기: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_systolic" />
+
+            <ImageView
+                android:id="@+id/iv_diastolic_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_diastolic"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_diastolic"
+                app:layout_constraintTop_toTopOf="@id/tv_diastolic"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_bpm"
+                style="@style/CardTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_24dp"
+                android:text="심박"
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_diastolic" />
+
+            <TextView
+                android:id="@+id/tv_heart_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="심박수: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_bpm" />
+
+            <ImageView
+                android:id="@+id/iv_heart_rate_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_heart_rate"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_heart_rate"
+                app:layout_constraintTop_toTopOf="@id/tv_heart_rate"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_oxygen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="산소포화도: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_heart_rate" />
+
+            <ImageView
+                android:id="@+id/iv_oxygen_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_oxygen"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_oxygen"
+                app:layout_constraintTop_toTopOf="@id/tv_oxygen"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_stress_card"
+                style="@style/CardTitleTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_24dp"
+                android:text="스트레스"
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_oxygen" />
+
+            <TextView
+                android:id="@+id/tv_stress_index"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="스트레스 지수: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@+id/tv_stress_card" />
+
+            <ImageView
+                android:id="@+id/iv_stress_index_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_stress_index"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_stress_index"
+                app:layout_constraintTop_toTopOf="@id/tv_stress_index"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_stress_level"
+                style="@style/BodyTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_4dp"
+                android:text="스트레스 등급: "
+                app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
+                app:layout_constraintTop_toBottomOf="@id/tv_stress_index" />
+
+            <ImageView
+                android:id="@+id/iv_stress_level_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_stress_level"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toEndOf="@id/tv_stress_level"
+                app:layout_constraintTop_toTopOf="@id/tv_stress_level"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_des1"
+                style="@style/LabelTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_40dp"
+                android:layout_marginRight="34dp"
+                android:text="권장 기준과 비교해 건강상태 수치를"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_stress_level" />
+
+            <TextView
+                android:id="@+id/tv_high"
+                style="@style/LabelTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="높음 "
+                app:layout_constraintEnd_toStartOf="@id/iv_high_level"
+                app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+
+            <ImageView
+                android:id="@+id/iv_high_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_high"
+                app:layout_constraintBottom_toBottomOf="@id/tv_high"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/tv_middle"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintTop_toTopOf="@id/tv_high"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_middle"
+                style="@style/LabelTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text=" 보통 "
+                app:layout_constraintEnd_toStartOf="@id/iv_middle_level"
+                app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+
+            <ImageView
+                android:id="@+id/iv_middle_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_middle"
+                app:layout_constraintBottom_toBottomOf="@id/tv_middle"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/tv_low"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintTop_toTopOf="@id/tv_middle"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_low"
+                style="@style/LabelTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text=" 낮음 "
+                app:layout_constraintEnd_toStartOf="@id/iv_low_level"
+                app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+
+            <ImageView
+                android:id="@+id/iv_low_level"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/space_4dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_low"
+                app:layout_constraintBottom_toBottomOf="@id/tv_low"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@id/tv_last_text"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintTop_toTopOf="@id/tv_low"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.05" />
+
+            <TextView
+                android:id="@+id/tv_last_text"
+                style="@style/LabelTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text=" 으로 표시하였습니다."
+                app:layout_constraintEnd_toEndOf="@id/tv_des1"
+                app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_70dp"
-            android:layout_marginBottom="42dp"
-            android:text="일일 건강상태 자세히 보기"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:visibility="visible"
+            app:shimmer_auto_start="true"
+            app:shimmer_duration="1200"
+            app:shimmer_base_color="#EEEEEE"
+            app:shimmer_highlight_color="#FFFFFF">
 
-        <TextView
-            android:id="@+id/tv_body_ingredient"
-            style="@style/CardTitleTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="36dp"
-            android:layout_marginTop="42dp"
-            android:text="체성분"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_body_fat_ratio"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="체지방률: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_body_ingredient" />
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sfl_view_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_ratio_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_body_fat_ratio"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_body_fat_ratio"
-            app:layout_constraintTop_toTopOf="@id/tv_body_fat_ratio"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_body_fat"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="체지방량: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_body_fat_ratio" />
+                        <ImageView
+                            android:id="@+id/iv_back_sh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/space_24dp"
+                            android:layout_marginTop="@dimen/space_40dp"
+                            android:src="@drawable/ic_back"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_body_fat_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_body_fat"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_body_fat"
-            app:layout_constraintTop_toTopOf="@id/tv_body_fat"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <TextView
+                            android:id="@+id/tv_title_sh"
+                            style="@style/TitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_70dp"
+                            android:layout_marginBottom="42dp"
+                            android:text="일일 건강상태 자세히 보기"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_muscle_mass"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="근육량: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_body_fat" />
+                        <TextView
+                            android:id="@+id/tv_body_ingredient_sh"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="36dp"
+                            android:layout_marginTop="42dp"
+                            android:text="체성분"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_title_sh" />
 
-        <ImageView
-            android:id="@+id/iv_muscle_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_muscle_mass"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_muscle_mass"
-            app:layout_constraintTop_toTopOf="@id/tv_muscle_mass"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <TextView
+                            android:id="@+id/tv_body_fat_ratio_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="체지방률: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_body_ingredient_sh" />
 
-        <TextView
-            android:id="@+id/tv_bmr"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="기초대사량: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_muscle_mass" />
+                        <ImageView
+                            android:id="@+id/iv_ratio_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_body_fat_ratio_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_body_fat_ratio_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_body_fat_ratio_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <ImageView
-            android:id="@+id/iv_bmr_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_bmr"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_bmr"
-            app:layout_constraintTop_toTopOf="@id/tv_bmr"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <TextView
+                            android:id="@+id/tv_body_fat_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="체지방량: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_body_fat_ratio_sh" />
 
-        <TextView
-            android:id="@+id/tv_body_water"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="체내 수분: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_bmr" />
+                        <ImageView
+                            android:id="@+id/iv_body_fat_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_body_fat_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_body_fat_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_body_fat_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <ImageView
-            android:id="@+id/iv_body_water_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_body_water"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_body_water"
-            app:layout_constraintTop_toTopOf="@id/tv_body_water"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <TextView
+                            android:id="@+id/tv_muscle_mass_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="근육량: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_body_fat_sh" />
 
-        <TextView
-            android:id="@+id/tv_protein"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="단백질량: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_body_water" />
+                        <ImageView
+                            android:id="@+id/iv_muscle_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_muscle_mass_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_muscle_mass_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_muscle_mass_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <ImageView
-            android:id="@+id/iv_protein_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_protein"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_protein"
-            app:layout_constraintTop_toTopOf="@id/tv_protein"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <TextView
+                            android:id="@+id/tv_bmr_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="기초대사량: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_muscle_mass_sh" />
 
-        <TextView
-            android:id="@+id/tv_mineral"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="무기질량: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_protein" />
+                        <ImageView
+                            android:id="@+id/iv_bmr_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_bmr_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_bmr_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_bmr_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
+
+                        <TextView
+                            android:id="@+id/tv_body_water_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="체내 수분: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_bmr_sh" />
+
+                        <ImageView
+                            android:id="@+id/iv_body_water_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_body_water_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_body_water_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_body_water_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
+
+                        <TextView
+                            android:id="@+id/tv_protein_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="단백질량: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_body_water_sh" />
+
+                        <ImageView
+                            android:id="@+id/iv_protein_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_protein_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_protein_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_protein_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
+
+                        <TextView
+                            android:id="@+id/tv_mineral_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="무기질량: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_protein_sh" />
 
 
-        <ImageView
-            android:id="@+id/iv_mineral_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_mineral"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_mineral"
-            app:layout_constraintTop_toTopOf="@id/tv_mineral"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_mineral_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_mineral_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_mineral_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_mineral_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
 
-        <TextView
-            android:id="@+id/tv_body_age"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="신체나이: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_mineral" />
+                        <TextView
+                            android:id="@+id/tv_body_age_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="신체나이: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_mineral_sh" />
 
-        <TextView
-            android:id="@+id/tv_temp_card"
-            style="@style/CardTitleTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_24dp"
-            android:text="체온"
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_body_age" />
+                        <TextView
+                            android:id="@+id/tv_temp_card_sh"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_24dp"
+                            android:text="체온"
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_body_age_sh" />
 
 
-        <TextView
-            android:id="@+id/tv_temperature"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="체온: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_temp_card" />
+                        <TextView
+                            android:id="@+id/tv_temperature_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="체온: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_temp_card_sh" />
 
-        <ImageView
-            android:id="@+id/iv_temperature_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_temperature"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_temperature"
-            app:layout_constraintTop_toTopOf="@id/tv_temperature"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_temperature_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_temperature_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_temperature_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_temperature_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_pulse"
-            style="@style/CardTitleTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_24dp"
-            android:text="혈압"
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_temperature" />
+                        <TextView
+                            android:id="@+id/tv_pulse_sh"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_24dp"
+                            android:text="혈압"
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_temperature_sh" />
 
-        <TextView
-            android:id="@+id/tv_systolic"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="수축기: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_pulse" />
+                        <TextView
+                            android:id="@+id/tv_systolic_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="수축기: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_pulse_sh" />
 
-        <ImageView
-            android:id="@+id/iv_systolic_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_systolic"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_systolic"
-            app:layout_constraintTop_toTopOf="@id/tv_systolic"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_systolic_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_systolic_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_systolic_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_systolic_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_diastolic"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="이완기: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_systolic" />
+                        <TextView
+                            android:id="@+id/tv_diastolic_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="이완기: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_systolic_sh" />
 
-        <ImageView
-            android:id="@+id/iv_diastolic_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_diastolic"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_diastolic"
-            app:layout_constraintTop_toTopOf="@id/tv_diastolic"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_diastolic_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_diastolic_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_diastolic_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_diastolic_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_bpm"
-            style="@style/CardTitleTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_24dp"
-            android:text="심박"
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_diastolic" />
+                        <TextView
+                            android:id="@+id/tv_bpm_sh"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_24dp"
+                            android:text="심박"
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_diastolic_sh" />
 
-        <TextView
-            android:id="@+id/tv_heart_rate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="심박수: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_bpm" />
+                        <TextView
+                            android:id="@+id/tv_heart_rate_sh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="심박수: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_bpm_sh" />
 
-        <ImageView
-            android:id="@+id/iv_heart_rate_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_heart_rate"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_heart_rate"
-            app:layout_constraintTop_toTopOf="@id/tv_heart_rate"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_heart_rate_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_heart_rate_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_heart_rate_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_heart_rate_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_oxygen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="산소포화도: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_heart_rate" />
+                        <TextView
+                            android:id="@+id/tv_oxygen_sh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="산소포화도: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_heart_rate_sh" />
 
-        <ImageView
-            android:id="@+id/iv_oxygen_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_oxygen"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_oxygen"
-            app:layout_constraintTop_toTopOf="@id/tv_oxygen"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_oxygen_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_oxygen_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_oxygen_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_oxygen_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_stress_card"
-            style="@style/CardTitleTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_24dp"
-            android:text="스트레스"
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_oxygen" />
+                        <TextView
+                            android:id="@+id/tv_stress_card_sh"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_24dp"
+                            android:text="스트레스"
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_oxygen_sh" />
 
-        <TextView
-            android:id="@+id/tv_stress_index"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="스트레스 지수: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@+id/tv_stress_card" />
+                        <TextView
+                            android:id="@+id/tv_stress_index_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="스트레스 지수: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_stress_card_sh" />
 
-        <ImageView
-            android:id="@+id/iv_stress_index_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_stress_index"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_stress_index"
-            app:layout_constraintTop_toTopOf="@id/tv_stress_index"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_stress_index_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_stress_index_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_stress_index_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_stress_index_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_stress_level"
-            style="@style/BodyTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_4dp"
-            android:text="스트레스 등급: "
-            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
-            app:layout_constraintTop_toBottomOf="@id/tv_stress_index" />
+                        <TextView
+                            android:id="@+id/tv_stress_level_sh"
+                            style="@style/BodyTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_4dp"
+                            android:text="스트레스 등급: "
+                            app:layout_constraintStart_toStartOf="@id/tv_body_ingredient_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_stress_index_sh" />
 
-        <ImageView
-            android:id="@+id/iv_stress_level_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_stress_level"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toEndOf="@id/tv_stress_level"
-            app:layout_constraintTop_toTopOf="@id/tv_stress_level"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_stress_level_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_stress_level_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintStart_toEndOf="@id/tv_stress_level_sh"
+                            app:layout_constraintTop_toTopOf="@id/tv_stress_level_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_des1"
-            style="@style/LabelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_40dp"
-            android:layout_marginRight="34dp"
-            android:text="권장 기준과 비교해 건강상태 수치를"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_stress_level" />
+                        <TextView
+                            android:id="@+id/tv_des1_sh"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_40dp"
+                            android:layout_marginRight="34dp"
+                            android:text="권장 기준과 비교해 건강상태 수치를"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_stress_level_sh" />
 
-        <TextView
-            android:id="@+id/tv_high"
-            style="@style/LabelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="높음 "
-            app:layout_constraintEnd_toStartOf="@id/iv_high_level"
-            app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+                        <TextView
+                            android:id="@+id/tv_high_sh"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="높음 "
+                            app:layout_constraintEnd_toStartOf="@id/iv_high_level_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_des1_sh" />
 
-        <ImageView
-            android:id="@+id/iv_high_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/ic_high"
-            app:layout_constraintBottom_toBottomOf="@id/tv_high"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/tv_middle"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintTop_toTopOf="@id/tv_high"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_high_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/ic_high"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_high_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintEnd_toStartOf="@id/tv_middle_sh"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintTop_toTopOf="@id/tv_high_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_middle"
-            style="@style/LabelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text=" 보통 "
-            app:layout_constraintEnd_toStartOf="@id/iv_middle_level"
-            app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+                        <TextView
+                            android:id="@+id/tv_middle_sh"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text=" 보통 "
+                            app:layout_constraintEnd_toStartOf="@id/iv_middle_level_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_des1_sh" />
 
-        <ImageView
-            android:id="@+id/iv_middle_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/ic_middle"
-            app:layout_constraintBottom_toBottomOf="@id/tv_middle"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/tv_low"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintTop_toTopOf="@id/tv_middle"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_middle_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/ic_middle"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_middle_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintEnd_toStartOf="@id/tv_low_sh"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintTop_toTopOf="@id/tv_middle_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_low"
-            style="@style/LabelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text=" 낮음 "
-            app:layout_constraintEnd_toStartOf="@id/iv_low_level"
-            app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+                        <TextView
+                            android:id="@+id/tv_low_sh"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text=" 낮음 "
+                            app:layout_constraintEnd_toStartOf="@id/iv_low_level_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_des1_sh" />
 
-        <ImageView
-            android:id="@+id/iv_low_level"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/space_4dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/ic_low"
-            app:layout_constraintBottom_toBottomOf="@id/tv_low"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/tv_last_text"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintTop_toTopOf="@id/tv_low"
-            app:layout_constraintWidth_default="percent"
-            app:layout_constraintWidth_percent="0.05" />
+                        <ImageView
+                            android:id="@+id/iv_low_level_sh"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/space_4dp"
+                            android:layout_marginTop="5dp"
+                            android:src="@drawable/ic_low"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_low_sh"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintEnd_toStartOf="@id/tv_last_text_sh"
+                            app:layout_constraintHeight_default="wrap"
+                            app:layout_constraintTop_toTopOf="@id/tv_low_sh"
+                            app:layout_constraintWidth_default="percent"
+                            app:layout_constraintWidth_percent="0.05" />
 
-        <TextView
-            android:id="@+id/tv_last_text"
-            style="@style/LabelTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text=" 으로 표시하였습니다."
-            app:layout_constraintEnd_toEndOf="@id/tv_des1"
-            app:layout_constraintTop_toBottomOf="@id/tv_des1" />
+                        <TextView
+                            android:id="@+id/tv_last_text_sh"
+                            style="@style/LabelTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text=" 으로 표시하였습니다."
+                            app:layout_constraintEnd_toEndOf="@id/tv_des1_sh"
+                            app:layout_constraintTop_toBottomOf="@id/tv_des1_sh" />
 
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>

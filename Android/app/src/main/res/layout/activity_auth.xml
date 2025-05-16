@@ -79,7 +79,7 @@
         android:id="@+id/tv_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="기존 비밀번호"
+        android:text="비밀번호"
         app:layout_constraintTop_toBottomOf="@id/til_employ_number"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/space_40dp"
