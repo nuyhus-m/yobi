@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '') ?: 'unknown'
-                    echo "현재 브랜치: ${branchName}"
+                    echo "현재 브랜치입니다다: ${branchName}"
 
                     if (!branchName || !branchName.contains('ai-dev')) {
                         echo "❌ 이 잡은 ai-dev 브랜치에서만 동작합니다. 현재 브랜치: ${branchName}"
