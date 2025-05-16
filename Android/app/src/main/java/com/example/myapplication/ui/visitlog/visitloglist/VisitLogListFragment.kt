@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentVisitLogListBinding
-import com.example.myapplication.ui.visitlog.diarydetail.DiaryDetailFragment
 import com.example.myapplication.ui.visitlog.visitloglist.adapter.FilterAdapter
 import com.example.myapplication.ui.visitlog.visitloglist.adapter.VisitLogAdapter
 import com.example.myapplication.ui.visitlog.visitloglist.viewmodel.VisitLogViewModel

@@ -23,16 +23,39 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_title"
-                style="@style/SubTitleTextStyle"
+            <!-- ── 제목(스켈레톤 포함) ── -->
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/space_70dp"
-                android:layout_marginBottom="40dp"
-                android:text="제목" />
+                android:layout_marginBottom="40dp">
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/sfl_title"
+                    android:layout_width="120dp"
+                    android:layout_height="28dp"
+                    app:shimmer_auto_start="true"
+                    app:shimmer_base_color="#CCCCCC"
+                    app:shimmer_highlight_color="#FFFFFF"
+                    app:shimmer_highlight_alpha="1.0">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_skeleton" />
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/SubTitleTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="제목"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+            <!-- ── 날짜 카드 ── -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,19 +78,41 @@
                         android:layout_marginStart="@dimen/space_16dp"
                         android:background="@drawable/bg_purple_radius_5" />
 
-                    <TextView
-                        android:id="@+id/tv_date"
-                        style="@style/CardTitleTextStyle"
+                    <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_20dp"
                         android:layout_weight="1"
                         android:paddingTop="@dimen/space_20dp"
-                        android:paddingBottom="@dimen/space_20dp"
-                        android:text="날짜" />
+                        android:paddingBottom="@dimen/space_20dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/sfl_date"
+                            android:layout_width="90dp"
+                            android:layout_height="24dp"
+                            app:shimmer_auto_start="true"
+                            app:shimmer_base_color="#CCCCCC"
+                            app:shimmer_highlight_color="#FFFFFF"
+                            app:shimmer_highlight_alpha="1.0">
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_skeleton" />
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/tv_date"
+                            style="@style/CardTitleTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="날짜"
+                            android:visibility="invisible" />
+                    </FrameLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- "일지 내용" 라벨 -->
             <TextView
                 style="@style/CardTitleTextStyle"
                 android:layout_width="wrap_content"
@@ -79,6 +124,7 @@
                 android:text="일지 내용"
                 android:textColor="@color/gray_text" />
 
+            <!-- ── 내용 카드 (cv_content는 항상 보인다) ── -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cv_content"
                 android:layout_width="match_parent"
@@ -89,15 +135,36 @@
                 app:cardCornerRadius="@dimen/space_8dp"
                 app:cardElevation="0dp">
 
-                <EditText
-                    android:id="@+id/et_content"
-                    style="@style/BodyTextStyle"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="top"
-                    android:hint="기침이 잦음. 약 복용 필요."
-                    android:padding="@dimen/space_16dp" />
+                    android:layout_height="match_parent">
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sfl_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        app:shimmer_auto_start="true"
+                        app:shimmer_base_color="#CCCCCC"
+                        app:shimmer_highlight_color="#FFFFFF"
+                        app:shimmer_highlight_alpha="1.0">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_skeleton" />
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    <EditText
+                        android:id="@+id/et_content"
+                        style="@style/BodyTextStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:background="@android:color/transparent"
+                        android:gravity="top"
+                        android:hint="기침이 잦음. 약 복용 필요."
+                        android:padding="@dimen/space_16dp"
+                        android:visibility="invisible" />
+                </FrameLayout>
             </androidx.cardview.widget.CardView>
 
 

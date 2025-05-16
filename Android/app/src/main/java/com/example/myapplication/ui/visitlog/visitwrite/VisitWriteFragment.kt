@@ -28,6 +28,7 @@ import com.example.myapplication.ui.visitlog.visitwrite.stt.SpeechStreamManager
 import com.example.myapplication.ui.visitlog.visitwrite.viewmodel.VisitWriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,6 +37,7 @@ import java.util.Date
 import java.util.Locale
 
 private const val TAG = "VisitWriteFragment"
+private const val SKELETON_DELAY = 500L
 
 @AndroidEntryPoint
 class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
@@ -74,41 +76,55 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             findNavController().popBackStack()
         }
 
+        ivMic.visibility = View.INVISIBLE
+        btnRecord.visibility = View.INVISIBLE
+        btnReRecordContainer.visibility = View.GONE
+
         if (args.isEditMode) {
-            viewModel.loadDailyLog(
-                scheduleId = args.scheduleId,
-                onSuccess = { clientName, visitedDate, logContent ->
-                    val title = SpannableString("${clientName}님 일지").apply {
-                        setSpan(
-                            RelativeSizeSpan(1.2f),
-                            0,
-                            clientName.length,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        setSpan(
-                            StyleSpan(Typeface.BOLD),
-                            0,
-                            clientName.length,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
+            showSkeletonUI(true)
+
+            lifecycleScope.launch {
+                delay(SKELETON_DELAY)
+
+                viewModel.loadDailyLog(
+                    scheduleId = args.scheduleId,
+                    onSuccess = { clientName, visitedDate, logContent ->
+                        showSkeletonUI(false)
+
+                        val title = SpannableString("${clientName}님 일지").apply {
+                            setSpan(
+                                RelativeSizeSpan(1.2f),
+                                0,
+                                clientName.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            setSpan(
+                                StyleSpan(Typeface.BOLD),
+                                0,
+                                clientName.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                        binding.tvTitle.text = title
+
+                        val dateStr = SimpleDateFormat(
+                            "yyyy.MM.dd",
+                            Locale.getDefault()
+                        ).format(Date(visitedDate))
+                        binding.tvDate.text = dateStr
+                        val content = logContent ?: ""
+
+                        binding.etContent.setText(content)
+                        finalBuffer.clear()
+                        finalBuffer.append(content)
+                        hasFinalResult = true
+                        setUiState(UiState.RECORDED)
                     }
-                    binding.tvTitle.text = title
-
-                    val dateStr = SimpleDateFormat(
-                        "yyyy.MM.dd",
-                        Locale.getDefault()
-                    ).format(Date(visitedDate))
-                    binding.tvDate.text = dateStr
-                    val content = logContent ?: ""
-
-                    binding.etContent.setText(content)
-                    finalBuffer.clear()
-                    finalBuffer.append(content)
-                    hasFinalResult = true
-                    setUiState(UiState.RECORDED)
-                }
-            )
+                )
+            }
         } else {
+            showSkeletonUI(false)
+
             viewModel.loadDailyLog(
                 scheduleId = args.scheduleId,
                 onSuccess = { clientName, visitedDate, logContent ->
@@ -168,6 +184,23 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
 
         btnComplete.setOnClickListener {
             saveVisitLog()
+        }
+    }
+
+    private fun showSkeletonUI(show: Boolean) = with(binding) {
+        if (show) {
+            sflTitle.visibility = View.VISIBLE
+            sflDate.visibility = View.VISIBLE
+            sflContent.visibility = View.VISIBLE
+
+        } else {
+            sflTitle.visibility = View.GONE
+            sflDate.visibility = View.GONE
+            sflContent.visibility = View.GONE
+
+            tvTitle.visibility = View.VISIBLE
+            tvDate.visibility = View.VISIBLE
+            etContent.visibility = View.VISIBLE
         }
     }
 
@@ -388,5 +421,4 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             binding.btnRecord.isEnabled = false
         }
     }
-
 }

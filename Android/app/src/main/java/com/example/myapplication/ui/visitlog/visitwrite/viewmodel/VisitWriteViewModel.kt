@@ -43,7 +43,7 @@ class VisitWriteViewModel @Inject constructor(
             try {
                 val res = dailyRepository.getDailyLogs(scheduleId)
                 if (res.isSuccessful) {
-                    res.body()?.let {                      // ★ 여기
+                    res.body()?.let {
                         Log.d(TAG, "loadDailyLog: ${it}")
                         onSuccess(it.clientName, it.visitedDate, it.logContent)
                     }

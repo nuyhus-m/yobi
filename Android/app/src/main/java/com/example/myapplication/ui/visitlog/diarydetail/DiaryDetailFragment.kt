@@ -8,6 +8,7 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
@@ -15,6 +16,8 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentDiaryDetailBinding
 import com.example.myapplication.ui.visitlog.diarydetail.viewmodel.DiaryDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,6 +37,20 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupClickListeners()
+        observeViewModel()
+
+        // 데이터 로드 전에 shimmer 시작
+        showShimmerEffect(true)
+
+        // 데이터 로드
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(500)
+            viewModel.loadDailyLog(args.scheduleId)
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -50,10 +67,11 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
                     scheduleId = args.scheduleId,
                     isEditMode = true
                 )
-
             findNavController().navigate(action)
         }
+    }
 
+    private fun observeViewModel() {
         // 삭제 다이얼로그의 결과 관찰
         val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
         savedStateHandle?.getLiveData<Int>(DELETE_RESULT_KEY)
@@ -64,11 +82,13 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
 
         // ViewModel의 데이터 관찰
         viewModel.dailyLog.observe(viewLifecycleOwner) { daily ->
+
+            showShimmerEffect(false)
+
             binding.apply {
                 val name = daily.clientName
                 val fullText = "${name}님 일지"
                 val spannable = SpannableString(fullText)
-
                 val nameEnd = name.length
                 spannable.setSpan(
                     StyleSpan(Typeface.BOLD),
@@ -82,7 +102,6 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
                     nameEnd,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
-
                 binding.tvTitle.text = spannable
                 tvContent.text = daily.logContent
                 val formattedDate = SimpleDateFormat("yyyy.MM.dd", Locale.getDefault())
@@ -93,18 +112,47 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
 
         // 에러 메시지 관찰
         viewModel.error.observe(viewLifecycleOwner) { message ->
+            // 에러 발생해도 shimmer 효과 중지
+            showShimmerEffect(false)
             showToast(message)
         }
 
-        // 삭제 성공 관찰 - 여기를 수정합니다
+        // 삭제 성공 관찰
         viewModel.deleted.observe(viewLifecycleOwner) { success ->
             if (success) {
                 showToast("삭제되었습니다.")
                 findNavController().popBackStack()
             }
         }
+    }
 
-        // 데이터 로드
-        viewModel.loadDailyLog(args.scheduleId)
+    private fun showShimmerEffect(show: Boolean) {
+        if (show) {
+            // 텍스트 뷰 숨기고 shimmer 표시
+            binding.tvTitle.visibility = View.INVISIBLE
+            binding.tvDate.visibility = View.GONE
+            binding.tvContent.visibility = View.INVISIBLE
+
+            binding.shimmerTitle.visibility = View.VISIBLE
+            binding.shimmerDate.visibility = View.VISIBLE
+            binding.shimmerContent.visibility = View.VISIBLE
+
+            binding.shimmerTitle.startShimmer()
+            binding.shimmerDate.startShimmer()
+            binding.shimmerContent.startShimmer()
+        } else {
+            // 텍스트 뷰 표시하고 shimmer 숨김
+            binding.tvTitle.visibility = View.VISIBLE
+            binding.tvDate.visibility = View.VISIBLE
+            binding.tvContent.visibility = View.VISIBLE
+
+            binding.shimmerTitle.visibility = View.GONE
+            binding.shimmerDate.visibility = View.GONE
+            binding.shimmerContent.visibility = View.GONE
+
+            binding.shimmerTitle.stopShimmer()
+            binding.shimmerDate.stopShimmer()
+            binding.shimmerContent.stopShimmer()
+        }
     }
 }
