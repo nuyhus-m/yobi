@@ -11,10 +11,12 @@ pipeline {
         stage('Branch Check') {
             steps {
                 script {
-                    echo "현재 브랜치: ${env.BRANCH_NAME}"
+                    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '') ?: 'unknown'
+                    echo "현재 브랜치: ${branchName}"
 
-                    if (!env.BRANCH_NAME || !env.BRANCH_NAME.contains('backend-dev')) {
-                        echo "❌ 이 잡은 backend-dev 브랜치에서만 동작합니다. 현재 브랜치: ${env.BRANCH_NAME}"
+                    if (!branchName || !branchName .contains('backend-dev')) {
+                        
+                        echo "❌ 이 잡은 backend-dev 브랜치에서만 동작합니다. 현재 브랜치: ${branchName}"
                         currentBuild.result = 'SUCCESS'
                         error('브랜치가 backend-dev가 아니므로 빌드를 중단합니다.')
                     } else {
