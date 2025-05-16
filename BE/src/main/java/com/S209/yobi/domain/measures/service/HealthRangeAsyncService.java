@@ -1,7 +1,7 @@
 package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.domain.clients.entity.Client;
-import com.S209.yobi.domain.measures.entity.BodyComposition;
+import com.S209.yobi.domain.measures.entity.*;
 import com.S209.yobi.domain.measures.helper.BodyCompResultVo;
 import com.S209.yobi.domain.measures.helper.tbl_bodycomp;
 import com.S209.yobi.domain.users.entity.User;
@@ -56,6 +56,207 @@ public class HealthRangeAsyncService {
         if(score < 90) return "낮음";
         if(score <= 130) return "보통";
         return "높음";
+    }
+
+
+    /**
+     * 혈압 데이터에 대한 level을 계산하고 Redis에 저장
+     */
+    @Async
+    public void calculateAndSaveBloodPressureLevels(User user, Client client, BloodPressure blood) {
+        log.info("혈압 범위 계산하러 들어옴 [userId: {}, clientId: {}]",
+                user.getId(), client.getId());
+
+        // 소수점 첫째자리로 반올림
+        float roundedSbp = Math.round(blood.getSbp() * 10) / 10.0f;
+        float roundedDbp = Math.round(blood.getDbp() * 10) / 10.0f;
+
+        // 혈압에 따라 level 계산
+        String sbpLevel = calculateBpLevel(roundedSbp, true);
+        String dbpLevel = calculateBpLevel(roundedDbp, false);
+
+        // Redis 키 생성
+        String redisKey = "bp:" + user.getId() + ":" + client.getId() + ":" + LocalDate.now();
+
+        // 기존 데이터 삭제
+        redisTemplate.delete(redisKey);
+
+        // 결과 맵 생성
+        Map<String, String> result = new HashMap<>();
+        result.put("sbp", sbpLevel);
+        result.put("dbp", dbpLevel);
+
+        // Redis에 저장
+        redisTemplate.opsForHash().putAll(redisKey, result);
+    }
+
+    /**
+     * 혈압 값에 따라 level 계산
+     *
+     * 참고: 미국 심장협회(AHA) 기준
+     */
+    private String calculateBpLevel(float bp, boolean isSystolic) {
+        if (isSystolic) {  // 수축기 혈압 (SBP)
+            if (bp < 90) return "낮음";       // 저혈압
+            if (bp < 120) return "정상";      // 정상
+            if (bp < 130) return "주의";      // 상승
+            if (bp < 140) return "경계성";    // 고혈압 1기 경계
+            if (bp < 180) return "높음";      // 고혈압 1기, 2기
+            return "위험";                    // 고혈압 위기
+        } else {  // 이완기 혈압 (DBP)
+            if (bp < 60) return "낮음";       // 저혈압
+            if (bp < 80) return "정상";       // 정상
+            if (bp < 85) return "주의";       // 상승
+            if (bp < 90) return "경계성";     // 고혈압 1기 경계
+            if (bp < 120) return "높음";      // 고혈압 1기, 2기
+            return "위험";                    // 고혈압 위기
+        }
+    }
+
+
+    /**
+     * 스트레스 데이터에 대한 level을 계산하고 Redis에 저장
+     */
+    @Async
+    public void calculateAndSaveStressLevels(User user, Client client, Stress stress) {
+        log.info("스트레스 범위 계산하러 들어옴 [userId: {}, clientId: {}]",
+                user.getId(), client.getId());
+
+        // 스트레스 값
+        float stressValue = stress.getStressValue();
+
+        // 스트레스 값에 따라 level 계산
+        String stressValueLevel = calculateStressValueLevel(stressValue);
+
+        // Redis 키 생성
+        String redisKey = "stress:" + user.getId() + ":" + client.getId() + ":" + LocalDate.now();
+
+        // 기존 데이터 삭제
+        redisTemplate.delete(redisKey);
+
+        // 결과 맵 생성
+        Map<String, String> result = new HashMap<>();
+        result.put("stressValue", stressValueLevel);
+
+        // Redis에 저장
+        redisTemplate.opsForHash().putAll(redisKey, result);
+    }
+
+    /**
+     * 스트레스 값에 따라 level 계산
+     *
+     * @param stressValue 스트레스 값
+     * @return 스트레스 레벨
+     */
+    private String calculateStressValueLevel(float stressValue) {
+        if (stressValue < 30) return "낮음";     // 낮은 스트레스
+        if (stressValue < 60) return "보통";     // 보통 스트레스
+        if (stressValue < 80) return "높음";     // 높은 스트레스
+        return "매우 높음";                      // 매우 높은 스트레스
+    }
+
+
+
+    /**
+     * 심박수 데이터에 대한 level을 계산하고 Redis에 저장
+     */
+    @Async
+    public void calculateAndSaveHeartRateLevels(User user, Client client, HeartRate heartRate) {
+        log.info("심박수 범위 계산하러 들어옴 [userId: {}, clientId: {}]",
+                user.getId(), client.getId());
+
+        // 심박수 값
+        float bpm = heartRate.getBpm();
+        float oxygen = heartRate.getOxygen();
+
+        // 심박수 및 산소포화도에 따라 level 계산
+        String bpmLevel = calculateBpmLevel(bpm);
+        String oxygenLevel = calculateOxygenLevel(oxygen);
+
+        // Redis 키 생성
+        String redisKey = "hr:" + user.getId() + ":" + client.getId() + ":" + LocalDate.now();
+
+        // 기존 데이터 삭제
+        redisTemplate.delete(redisKey);
+
+        // 결과 맵 생성
+        Map<String, String> result = new HashMap<>();
+        result.put("bpm", bpmLevel);
+        result.put("oxygen", oxygenLevel);
+
+        // Redis에 저장
+        redisTemplate.opsForHash().putAll(redisKey, result);
+    }
+
+    /**
+     * 심박수에 따라 level 계산
+     *
+     * @param bpm 심박수 (beats per minute)
+     * @return 심박수 레벨
+     */
+    private String calculateBpmLevel(float bpm) {
+        if (bpm < 60) return "낮음";      // 서맥
+        if (bpm <= 100) return "정상";    // 정상
+        return "높음";                   // 빈맥
+    }
+
+    /**
+     * 산소포화도에 따라 level 계산
+     *
+     * @param oxygen 산소포화도 (%)
+     * @return 산소포화도 레벨
+     */
+    private String calculateOxygenLevel(float oxygen) {
+        if (oxygen < 90) return "위험";      // 위험 수준
+        if (oxygen < 95) return "낮음";      // 낮은 수준
+        if (oxygen <= 100) return "정상";    // 정상
+        return "비정상";                     // 100%를 초과하는 경우 (측정 오류)
+    }
+
+    /**
+     * 체온 데이터에 대한 level을 계산하고 Redis에 저장
+     */
+    @Async
+    public void calculateAndSaveTemperatureLevels(User user, Client client, Temperature temperature) {
+        log.info("체온 범위 계산하러 들어옴 [userId: {}, clientId: {}, 온도: {}]",
+                user.getId(), client.getId(), temperature.getTemperature());
+
+        // 체온 값
+        float temp = temperature.getTemperature();
+
+        // 체온 값에 따라 level 계산
+        String tempLevel = calculateTemperatureLevel(temp);
+        log.info("계산된 체온 레벨: {}", tempLevel);
+
+        // Redis 키 생성
+        String redisKey = "temp:" + user.getId() + ":" + client.getId() + ":" + LocalDate.now();
+        log.info("Redis 키: {}", redisKey);
+
+        // 기존 데이터 삭제
+        redisTemplate.delete(redisKey);
+
+        // 결과 맵 생성
+        Map<String, String> result = new HashMap<>();
+        result.put("temperature", tempLevel);
+
+        // Redis에 저장
+        redisTemplate.opsForHash().putAll(redisKey, result);
+        log.info("Redis에 저장 완료: key={}, value={}", redisKey, result);
+    }
+
+    /**
+     * 체온 값에 따라 level 계산
+     *
+     * @param temp 체온 (°C)
+     * @return 체온 레벨
+     */
+    private String calculateTemperatureLevel(float temp) {
+        if (temp < 35.0) return "위험 저체온";    // 위험한 저체온
+        if (temp < 36.0) return "저체온";         // 저체온
+        if (temp <= 37.5) return "정상";          // 정상 체온
+        if (temp <= 38.3) return "미열";          // 미열
+        if (temp <= 39.5) return "고열";          // 고열
+        return "위험 고열";                      // 위험한 고열
     }
 
 }

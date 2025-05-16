@@ -166,6 +166,8 @@ public class MeasureService {
         measure.setTemperature(temperature);
         measureRepository.save(measure);
 
+        healthRangeAsyncService.calculateAndSaveTemperatureLevels(user, client, temperature);
+
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("temperatureId", temperature.getId());
     }
