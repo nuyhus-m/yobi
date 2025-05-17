@@ -76,11 +76,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                export DOCKER_BUILDKIT=0        # BuildKit OFF
-                docker build --pull --no-cache \
-                            -f ${DOCKERFILE} \
-                            -t ${DOCKER_IMAGE} \
-                            ${DOCKER_CTX}
+                docker build -f ${DOCKERFILE} -t ${DOCKER_IMAGE} ${DOCKER_CTX}
                 """
             }
         }
@@ -111,7 +107,8 @@ pipeline {
                         set -e
 
                         echo 📦 Pulling Docker Image: ${DOCKER_IMAGE}
-                        docker pull ${DOCKER_IMAGE}
+                        docker image inspect ${DOCKER_IMAGE} > /dev/null || docker pull ${DOCKER_IMAGE}
+
 
                         sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
                         sudo chown -R ubuntu:ubuntu /srv/models
