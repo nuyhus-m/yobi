@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.myapplication.R
 import com.example.myapplication.databinding.DialogDeleteBinding
 
 class DeleteDairyDialog : DialogFragment() {
@@ -31,6 +33,8 @@ class DeleteDairyDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setDialogSize()
+
         binding.ivClose.setOnClickListener { dismiss() }
         binding.btnNo.setOnClickListener { dismiss() }
         binding.btnYes.setOnClickListener {
@@ -44,6 +48,16 @@ class DeleteDairyDialog : DialogFragment() {
                 )
             dismiss()
         }
+    }
+
+    private fun setDialogSize() {
+        val displayMetrics = resources.displayMetrics
+        val widthPixels = displayMetrics.widthPixels
+
+        val params = dialog?.window?.attributes
+        params?.width = (widthPixels * 0.9).toInt()
+        dialog?.window?.attributes = params as WindowManager.LayoutParams
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_white_radius_15)
     }
 
     override fun onDestroyView() {

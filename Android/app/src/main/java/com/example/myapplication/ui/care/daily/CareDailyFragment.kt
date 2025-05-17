@@ -35,6 +35,7 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         // 15개 ID 쌍 초기화
         skeletonPairs = listOf(
             binding.sflFatRatio to binding.tvFatRatio,
@@ -195,4 +196,5 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             }
         }
     }
+
 }
