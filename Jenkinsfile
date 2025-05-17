@@ -4,8 +4,8 @@ pipeline {
     /* ───────────── 공통 환경변수 ───────────── */
     environment {
         /* Git 저장소 내부 경로 */
-        DOCKER_CTX   = "S12P31S209/AI"              // build context
-        DOCKERFILE   = "S12P31S209/AI/Dockerfile"   // Dockerfile 경로
+        DOCKER_CTX   = "AI"              // build context
+        DOCKERFILE   = "AI/Dockerfile"   // Dockerfile 경로
 
         /* 원격(2번) 경로 */
         REMOTE_PATH  = "/home/ubuntu/S12P31S209"    // compose·.env 위치
