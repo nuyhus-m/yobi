@@ -17,29 +17,15 @@ pipeline {
             }
         }
 
-        stage('Debug psycopg2 Trace') {
-            steps {
-                sh """
-                    docker build --no-cache -t debug-psycopg2 ./AI
-                """
-            }
-        }
-
         stage('Build Docker Image (Real)') {
-            when {
-                expression { false } // 디버그 끝나면 여기 true로 바꿔서 빌드할 것
-            }
             steps {
                 sh """
-                    docker build --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} .
+                    docker build --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} ./AI
                 """
             }
         }
 
         stage('Push Docker Image') {
-            when {
-                expression { false } // 디버그 끝나면 true로 변경
-            }
             steps {
                 sh """
                     echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
@@ -50,9 +36,6 @@ pipeline {
         }
 
         stage('Deploy to AI Server') {
-            when {
-                expression { false } // 디버그 끝나면 true로 변경
-            }
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
