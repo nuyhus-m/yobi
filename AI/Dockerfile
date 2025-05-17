@@ -7,6 +7,7 @@ WORKDIR /app
 # 시스템 패키지 설치 및 캐시 정리
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    build-essential \ 
     postgresql-client \
     libpq-dev \
     gcc \
@@ -23,7 +24,7 @@ COPY . /app/
 
 # 모델 다운로드: 환경 변수 지정 & download_models.py 실행
 RUN HF_TOKEN=${HF_TOKEN} \
-    BASE_MODEL_PATH=/srv/models/base \
+    BASE_MODEL_PATH=/srv/models/base \ 
     ADAPTER_PATH=/srv/models/mistral_lora_adapter \
     HF_HOME=/srv/models/cache \
     TEST_MODEL_LOADING=true \
