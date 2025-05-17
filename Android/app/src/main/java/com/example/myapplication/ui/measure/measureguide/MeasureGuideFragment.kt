@@ -70,6 +70,7 @@ class MeasureGuideFragment : BaseFragment<FragmentMeasureGuideBinding>(
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 fitrusViewModel.isConnected.collect {
                     if (!it) {
+                        showToast("연결이 끊겼습니다. 다시 시도해주세요😭😭")
                         findNavController().navigate(R.id.action_dest_measure_guide_to_dest_device_connect)
                     }
                 }

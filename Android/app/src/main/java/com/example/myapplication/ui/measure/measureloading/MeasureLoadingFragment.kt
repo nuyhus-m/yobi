@@ -57,6 +57,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
                         toast?.cancel()
                         isEnabled = false
                         showToast("기기를 한 번 껐다가 다시 켠 후, 측정을 다시 시도해 주세요.")
+                        fitrusViewModel.disconnectDevice()
                         requireActivity().onBackPressedDispatcher.onBackPressed()
                     } else {
                         backPressedTime = currentTime
@@ -191,6 +192,7 @@ class MeasureLoadingFragment : BaseFragment<FragmentMeasureLoadingBinding>(
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 fitrusViewModel.isConnected.collect {
                     if (!it && fitrusViewModel.isFirst) {
+                        showToast("연결이 끊겼습니다. 다시 시도해주세요😭😭")
                         findNavController().navigate(R.id.action_dest_measure_loading_to_dest_device_connect)
                     }
                 }

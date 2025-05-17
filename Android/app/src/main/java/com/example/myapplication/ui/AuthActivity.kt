@@ -5,17 +5,14 @@ import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.myapplication.R
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.myapplication.base.BaseActivity
 import com.example.myapplication.databinding.ActivityAuthBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::inflate) {
@@ -28,10 +25,11 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
         binding.btnLogin.isEnabled = false
         setupInputValidationWatcher()
 
-
-        binding.ivCharacter.post {
-            val animationDrawable = binding.ivCharacter.background as AnimationDrawable
-            animationDrawable.start()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val animationDrawable = binding.ivCharacter.background as AnimationDrawable
+                animationDrawable.start()
+            }
         }
 
         binding.btnLogin.setOnClickListener {
