@@ -5,6 +5,15 @@ pipeline {
         ENV_FILE = ".env"
         REMOTE_PATH = "/home/ubuntu/ai-app"
         DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
+
+        # 필요한 환경변수 추가 (Groovy에서 쓰기 위함)
+        BASE_MODEL_PATH = "/srv/models/base"
+        ADAPTER_PATH = "/srv/models/mistral_lora_adapter"
+        HF_CACHE_DIR = "/srv/models/cache"
+
+        HF_TOKEN = credentials('hf_token')
+        DOCKERHUB_USER = credentials('docker-hub-user')
+        DOCKERHUB_PASS = credentials('docker-hub-pass')
     }
 
     stages {
