@@ -2,61 +2,30 @@ pipeline {
     agent any
 
     environment {
-        ENV_FILE = ".env"
+        // 도커 이미지 이름
+        DOCKER_IMAGE = "mundevelop/ai-app:latest"
+
+        // 배포 서버에서 사용하는 경로 (EC2 내부 경로)
         REMOTE_PATH = "/home/ubuntu/ai-app"
-        DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
 
-        // 필요한 환경변수 추가 (Groovy에서 쓰기 위함)
-        BASE_MODEL_PATH = "/srv/models/base"
-        ADAPTER_PATH = "/srv/models/mistral_lora_adapter"
-        HF_CACHE_DIR = "/srv/models/cache"
-
-        HF_TOKEN = credentials('hf_token')
-        DOCKERHUB_USER = credentials('docker-hub-user')
-        DOCKERHUB_PASS = credentials('docker-hub-pass')
-        EC2_AI_IP = "43.203.38.182"
+        // Jenkins Credentials에서 가져오는 시크릿 값들
+        HF_TOKEN = credentials('hf_token') // huggingface token
+        DOCKERHUB_USER = credentials('docker-hub-user') // dockerhub 아이디
+        DOCKERHUB_PASS = credentials('docker-hub-pass') // dockerhub 비밀번호
+        EC2_AI_IP = "43.203.38.182" // AI 서버 IP
     }
-    
 
     stages {
-
-        stage('Check Workspace') {
-            steps {
-                sh 'echo Current workspace: $WORKSPACE'
-                sh 'pwd'
-                sh 'ls -al'
-            }
-        }
-
-        // ✅ [1] 현재 브랜치가 ai-dev 인지 체크 (아니면 빌드 중단)
-        stage('Branch Check') {
-            steps {
-                script {
-                    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '') ?: 'unknown'
-                    echo "현재 브랜치입니다: ${branchName}"
-
-                    if (!branchName || !branchName.contains('ai-dev')) {
-                        echo "❌ 이 잡은 ai-dev 브랜치에서만 동작합니다. 현재 브랜치: ${branchName}"
-                        currentBuild.result = 'SUCCESS'
-                        error('브랜치가 ai-dev가 아니므로 빌드를 중단합니다.')
-                    } else {
-                        echo "✅ ai-dev 브랜치 감지됨. 계속 진행합니다."
-                    }
-                }
-            }
-        }
-
-        // ✅ [2] GitLab 저장소 Checkout (코드 가져오기)
         stage('Checkout') {
             steps {
+                // ✅ [1] GitLab 저장소 코드 가져오기
                 checkout scm
             }
         }
 
-
-         // ✅ [2.5] Workspace Debug (경로 구조 확인용)
         stage('Debug Workspace') {
             steps {
+                // ✅ [2] Jenkins가 실제로 어디서 작업하는지 로그 확인
                 sh 'echo "=== Current Workspace Directory ==="'
                 sh 'pwd'
                 sh 'echo "=== List Workspace Files ==="'
@@ -64,74 +33,37 @@ pipeline {
             }
         }
 
-        // ✅ [3] Jenkins Credentials에 있는 .env 파일 로드 (.env로 복사)
-        stage('Load .env File') {
+        stage('Build Docker Image with HF_TOKEN') {
             steps {
-                withCredentials([file(credentialsId: 'ai-env-secret', variable: 'LOADED_ENV')]) {
-                    sh 'rm -f .env && cp $LOADED_ENV .env'
-                }
-            }
-        }
-        
-        // ✅ [3.5] Python Requirements 설치 (huggingface_hub 등)
-        stage('Install Python Requirements') {
-            steps {
-                sh 'pip install -r AI/requirements.txt'
+                // ✅ [3] 도커 이미지 빌드 (모델 다운로드 포함)
+                // HF_TOKEN을 build-arg로 넘겨서 Dockerfile에서 모델 다운로드 시 사용
+                sh """
+                    docker build --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} .
+                """
             }
         }
 
-        // ✅ [4] 모델 파일이 없는 경우 HuggingFace에서 다운로드 후 저장
-        stage('Check & Download Mistral LoRA') {
-            steps {
-                script {
-                    def modelCheck = sh(script: "[ -f ${BASE_MODEL_PATH}/config.json ] && [ -f ${ADAPTER_PATH}/adapter_model.bin ]", returnStatus: true)
-
-                    if (modelCheck != 0) {
-                        echo "🔍 모델이 없음. download_models.py 실행"
-                        sh """
-                            export HF_TOKEN='${env.HF_TOKEN}'
-                            export BASE_MODEL_PATH=${BASE_MODEL_PATH}
-                            export ADAPTER_PATH=${ADAPTER_PATH}
-                            export HF_HOME=${HF_CACHE_DIR}
-                            export TEST_MODEL_LOADING=true
-                            python3 AI/app/ai_model/download_models.py
-
-                        """
-                    } else {
-                        echo "✅ 모델이 이미 존재합니다. 다운로드 스킵"
-                    }
-                }
-            }
-        }
-
-        // ✅ [5] Docker 이미지 빌드 (AI App 기준)
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t your-dockerhub-id/ai-app:latest .'
-            }
-        }
-
-        // ✅ [6] 빌드한 Docker 이미지를 DockerHub에 Push
         stage('Push Docker Image to Docker Hub') {
             steps {
+                // ✅ [4] 도커 허브 로그인 → 이미지 푸시 → 로그아웃
                 sh """
                     echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                    docker push your-dockerhub-id/ai-app:latest
+                    docker push ${DOCKER_IMAGE}
                     docker logout
                 """
             }
         }
 
-        // ✅ [7] 2번 서버(AI 서버)에 접속 → 최신 이미지 pull → docker-compose로 배포
         stage('Deploy to AI Server (2번 서버)') {
             steps {
+                // ✅ [5] SSH를 통해 EC2 서버 접속 → 도커 이미지 최신 pull → 배포
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} "
                             cd /home/ubuntu/S12P31S209 &&
-                            docker pull your-dockerhub-id/ai-app:latest &&
+                            docker pull ${DOCKER_IMAGE} &&
                             docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
-                        '
+                        "
                     """
                 }
             }
