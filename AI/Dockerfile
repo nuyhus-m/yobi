@@ -4,13 +4,13 @@ WORKDIR /app
 # 1) 시스템 패키지
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      build-essential \
-      gcc \
-      libc6-dev \                # ← glibc headers (limits.h)
-      libpq-dev \
-      postgresql-client \
-      curl \
-      cron && \
+        build-essential \          
+        gcc \                    
+        libc6-dev \              
+        libpq-dev \
+        postgresql-client \
+        curl \
+        cron && \
     rm -rf /var/lib/apt/lists/*
 
 # 2) Python 의존성 (+ psycopg2 trace는 유지)
