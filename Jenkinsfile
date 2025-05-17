@@ -20,7 +20,7 @@ pipeline {
         stage('Debug psycopg2 Trace') {
             steps {
                 sh """
-                    docker build --no-cache -t debug-psycopg2 .
+                    docker build --no-cache -t debug-psycopg2 ./AI
                 """
             }
         }
