@@ -16,8 +16,17 @@ pipeline {
         DOCKERHUB_PASS = credentials('docker-hub-pass')
         EC2_AI_IP = "43.203.38.182"
     }
+    
 
     stages {
+
+        stage('Check Workspace') {
+            steps {
+                sh 'echo Current workspace: $WORKSPACE'
+                sh 'pwd'
+                sh 'ls -al'
+            }
+        }
 
         // ✅ [1] 현재 브랜치가 ai-dev 인지 체크 (아니면 빌드 중단)
         stage('Branch Check') {
@@ -73,7 +82,7 @@ pipeline {
                     if (modelCheck != 0) {
                         echo "🔍 모델이 없음. download_models.py 실행"
                         sh """
-                            export HF_TOKEN=${HF_TOKEN}
+                            export HF_TOKEN='${env.HF_TOKEN}'
                             export BASE_MODEL_PATH=${BASE_MODEL_PATH}
                             export ADAPTER_PATH=${ADAPTER_PATH}
                             export HF_HOME=${HF_CACHE_DIR}
@@ -110,7 +119,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP}'
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} "
                             cd /home/ubuntu/S12P31S209 &&
                             docker pull your-dockerhub-id/ai-app:latest &&
                             docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
