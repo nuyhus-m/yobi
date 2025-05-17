@@ -94,18 +94,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        scheduleViewModel.selectDate(LocalDate.now())
-
-        binding.cv.findFirstVisibleMonth()?.let { month ->
-            val start = month.weekDays.first().first().date.toEpochMillis()
-            val end = month.weekDays.last().last().date.toEpochMillis()
-
-            scheduleViewModel.getPeriodSchedule(start, end)
-        }
-    }
-
 
     private fun setupObservers() {
         scheduleViewModel.dotMap.observe(viewLifecycleOwner) {
