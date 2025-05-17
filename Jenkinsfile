@@ -54,6 +54,18 @@ pipeline {
         /* 2. 코드 체크아웃 */
         stage('Checkout') { steps { checkout scm } }
 
+        /* 🔧 2-A) requirements.txt 에서 psycopg2(*) 날리기 -------- */
+        stage('Patch requirements (drop psycopg2)') {
+            steps {
+                // AI/requirements.txt 안에서 두 줄 모두 삭제
+                sh '''
+                  sed -i -E '/^psycopg2(-binary)?([[:space:]]*==.*)?[[:space:]]*$/Id' AI/requirements.txt
+                  echo "== after patch =="
+                  grep -n psycopg2 AI/requirements.txt || echo "✔ no psycopg2 lines"
+                '''
+            }
+        }
+
         /* 3. .env 파일 준비 (Jenkins 파일-credential) */
         stage('Prepare .env') {
             steps {
