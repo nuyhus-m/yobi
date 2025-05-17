@@ -66,7 +66,10 @@ pipeline {
         /* 4. Docker 이미지 빌드 */
         stage('Build Docker Image') {
             steps {
-                sh "docker build -f ${DOCKERFILE} -t ${DOCKER_IMAGE} ${DOCKER_CTX}"
+                sh "docker build --pull --no-cache \
+                 -f ${DOCKERFILE} \
+                 -t ${DOCKER_IMAGE} \
+                 ${DOCKER_CTX}"
             }
         }
 
