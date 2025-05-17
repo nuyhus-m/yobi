@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingHorizontal="@dimen/space_24dp"
-        android:paddingBottom="@dimen/space_40dp">
+        android:paddingHorizontal="@dimen/space_24dp">
 
         <LinearLayout
             android:layout_width="match_parent"

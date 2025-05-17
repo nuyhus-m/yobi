@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
@@ -21,6 +22,8 @@ import com.example.myapplication.util.TimeUtils.toEpochMillis
 import com.example.myapplication.util.TimeUtils.toLocalDate
 import com.example.myapplication.util.TimeUtils.toLocalTime
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -30,23 +33,22 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
     FragmentManualScheduleBinding::bind,
     R.layout.fragment_manual_schedule
 ) {
-    // Constants
     companion object {
         private const val INVALID_SCHEDULE_ID = -1
         private val TIME_FORMATTER = DateTimeFormatter.ofPattern("a h:mm")
     }
 
-    // View Models & Arguments
     private val args: ManualScheduleFragmentArgs by navArgs()
     private val manualScheduleViewModel: ManualScheduleViewModel by viewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    // State Variables
     private var selectedClientId: Int? = null
     private var selectedDate: LocalDate? = null
     private var startTime: LocalTime? = null
     private var endTime: LocalTime? = null
     private val isEditMode: Boolean by lazy { args.scheduleId != INVALID_SCHEDULE_ID }
+
+    private var isScheduleDataLoaded = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,8 +58,13 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
         setupObservers()
 
         mainViewModel.fetchClients()
+
         if (isEditMode) {
-            loadScheduleData(args.scheduleId)
+            showSkeletonUI(true)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(500L)
+                loadScheduleData(args.scheduleId)
+            }
         }
     }
 
@@ -113,8 +120,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             btnBack.setOnClickListener { findNavController().popBackStack() }
 
             etDate.setOnClickListener { showDatePicker() }
-            tvStartTime.setOnClickListener { showTimePicker(isStartTime = true) }
-            tvEndTime.setOnClickListener { showTimePicker(isStartTime = false) }
+            etStart.setOnClickListener { showTimePicker(isStartTime = true) }
+            etEnd.setOnClickListener { showTimePicker(isStartTime = false) }
 
             btnRegister.setOnClickListener { handleScheduleRegistration() }
             btnDelete.setOnClickListener { handleScheduleDeletion() }
@@ -136,10 +143,10 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             onTimeSelected = { time ->
                 if (isStartTime) {
                     startTime = time
-                    binding.tvStartTime.setText(formatTime(time))
+                    binding.etStart.setText(formatTime(time))
                 } else {
                     endTime = time
-                    binding.tvEndTime.setText(formatTime(time))
+                    binding.etEnd.setText(formatTime(time))
                 }
                 validateForm()
             }
@@ -232,6 +239,9 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
         manualScheduleViewModel.getSchedule(
             scheduleId,
             onSuccess = { schedule ->
+                isScheduleDataLoaded = true
+                showSkeletonUI(false)
+
                 selectedClientId = schedule.clientId
                 selectedDate = schedule.visitedDate.toLocalDate()
                 startTime = schedule.startAt.toLocalTime()
@@ -239,8 +249,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
 
                 with(binding) {
                     etDate.setText(selectedDate.toString())
-                    tvStartTime.setText(formatTime(startTime!!))
-                    tvEndTime.setText(formatTime(endTime!!))
+                    etStart.setText(formatTime(startTime!!))
+                    etEnd.setText(formatTime(endTime!!))
                 }
 
                 if (binding.tvSpinnerClient.adapter != null && binding.tvSpinnerClient.adapter.count > 0) {
@@ -249,6 +259,7 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
                 validateForm()
             },
             onError = {
+                showSkeletonUI(false)
                 showToast("일정 정보를 불러오지 못했습니다.")
                 findNavController().popBackStack()
             }
@@ -269,8 +280,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
     private fun validateForm() {
         val hasClient = selectedClientId != null
         val hasDate = binding.etDate.text?.toString()?.isNotBlank() == true
-        val hasStart = binding.tvStartTime.text?.isNotBlank() == true
-        val hasEnd = binding.tvEndTime.text?.isNotBlank() == true
+        val hasStart = binding.etStart.text?.isNotBlank() == true
+        val hasEnd = binding.etEnd.text?.isNotBlank() == true
 
         binding.btnRegister.isEnabled = hasClient && hasDate && hasStart && hasEnd
     }
@@ -278,4 +289,21 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
     private fun formatTime(time: LocalTime): String {
         return time.format(TIME_FORMATTER)
     }
+
+    private fun showSkeletonUI(show: Boolean) = with(binding) {
+        sflSpinner.visibility = if (show) View.VISIBLE else View.GONE
+        tvSpinnerClient.visibility = if (show) View.INVISIBLE else View.VISIBLE
+
+        sflDate.visibility = if (show) View.VISIBLE else View.GONE
+        etDate.visibility = if (show) View.INVISIBLE else View.VISIBLE
+
+        sflStart.visibility = if (show) View.VISIBLE else View.GONE
+        etStart.visibility = if (show) View.INVISIBLE else View.VISIBLE
+
+        sflEnd.visibility = if (show) View.VISIBLE else View.GONE
+        etEnd.visibility = if (show) View.INVISIBLE else View.VISIBLE
+
+        btnRegister.isEnabled = !show
+    }
+
 }
