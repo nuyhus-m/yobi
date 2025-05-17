@@ -102,30 +102,32 @@ pipeline {
             }
         }
 
-        /* 6. 원격 배포 (.env 복사 + 모델 확인/다운로드 + compose up) */
         stage('Deploy to AI Server') {
             steps {
                 sshagent(credentials: ['ec2-2-pem-key-id']) {
                     withCredentials([string(credentialsId: 'hf_token', variable: 'HF_TOKEN')]) {
                         sh """
-                        scp -o StrictHostKeyChecking=no .env ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c "
+                        set -e
 
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c "set -e \
-                        && echo '📦 Pulling Docker Image: ${DOCKER_IMAGE}' \
-                        && docker pull ${DOCKER_IMAGE} \
-                        && sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR} \
-                        && sudo chown -R ubuntu:ubuntu /srv/models \
-                        && if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then \
-                            echo '⬇️ Downloading Models' \
-                            && docker run --rm \
-                                -e HF_TOKEN=${HF_TOKEN} \
-                                -v /srv/models:/srv/models \
-                                -v /mnt/data/huggingface:/root/.cache/huggingface \
-                                ${DOCKER_IMAGE} \
-                                python app/ai_model/download_models.py; \
-                        fi \
-                        && echo '🚀 Deploying via docker-compose' \
-                        && docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate"
+                        echo 📦 Pulling Docker Image: ${DOCKER_IMAGE}
+                        docker pull ${DOCKER_IMAGE}
+
+                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
+                        sudo chown -R ubuntu:ubuntu /srv/models
+
+                        if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
+                            echo ⬇️ Downloading Models
+                            docker run --rm \\
+                                -e HF_TOKEN=${HF_TOKEN} \\
+                                -v /srv/models:/srv/models \\
+                                -v /mnt/data/huggingface:/root/.cache/huggingface \\
+                                ${DOCKER_IMAGE} \\
+                                python app/ai_model/download_models.py
+                        fi
+
+                        echo 🚀 Deploying via docker-compose
+                        docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate"
                         """
                     }
                 }
