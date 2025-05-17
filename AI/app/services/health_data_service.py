@@ -53,7 +53,6 @@ class HealthDataProcessor:
 
         # 비동기 OpenAI 클라이언트
         self.openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-        # self.internal_ai_url = settings.INTERNAL_AI_URL
 
          # 배치 작업용 설정
         self.batch_mode = False
@@ -171,13 +170,12 @@ class HealthDataProcessor:
 
         output_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-         # 🔹 JSON 부분만 파싱
+        # 🔹 JSON 부분만 파싱
         try:
             json_part = output_text.strip()
             return json.loads(json_part)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"모델 추론 결과 파싱 실패: {str(e)}")
-
         
          # 배치 모드에서는 세션 재사용
         if self.batch_mode and self.aiohttp_session:
