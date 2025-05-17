@@ -38,7 +38,8 @@ pipeline {
                 // ✅ [3] 도커 이미지 빌드 (모델 다운로드 포함)
                 // HF_TOKEN을 build-arg로 넘겨서 Dockerfile에서 모델 다운로드 시 사용
                 sh """
-                    docker build --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} ./AI
+                    docker build --no-cache --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} ./AI
+
                 """
             }
         }
