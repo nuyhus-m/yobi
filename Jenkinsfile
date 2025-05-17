@@ -87,7 +87,8 @@ pipeline {
                             export ADAPTER_PATH=${ADAPTER_PATH}
                             export HF_HOME=${HF_CACHE_DIR}
                             export TEST_MODEL_LOADING=true
-                            python3 S12P31S209/AI/app/ai_model/download_models.py
+                            python3 AI/app/ai_model/download_models.py
+
                         """
                     } else {
                         echo "✅ 모델이 이미 존재합니다. 다운로드 스킵"
