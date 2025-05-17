@@ -57,3 +57,16 @@ Content-Type: application/json
 GET http://localhost:8080/api/users
 Authorization: Bearer {{accessToken}}
 
+### 회원 탈퇴
+DELETE http://localhost:8080/api/users/withdraw
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "password": "ssafyaaa####"
+}
+
+### 회원 탈퇴 후 토큰으로 API 호출 시도 (401 Unauthorized 예상)
+GET http://localhost:8080/api/users
+Authorization: Bearer {{accessToken}}
+

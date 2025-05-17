@@ -1,12 +1,9 @@
 package com.S209.yobi.domain.users.controller;
 
+import com.S209.yobi.DTO.requestDTO.*;
 import com.S209.yobi.DTO.responseDTO.TokenResponseDTO;
 import com.S209.yobi.DTO.responseDTO.NewTokenResponseDTO;
-import com.S209.yobi.DTO.requestDTO.LoginRequestDTO;
-import com.S209.yobi.DTO.requestDTO.PasswordRequestDTO;
-import com.S209.yobi.DTO.requestDTO.RefreshTokenRequest;
 import com.S209.yobi.DTO.responseDTO.LoginResponseDTO;
-import com.S209.yobi.DTO.requestDTO.SignUpRequest;
 import com.S209.yobi.DTO.responseDTO.UserInfoDTO;
 import com.S209.yobi.Mapper.AuthUtils;
 import com.S209.yobi.config.JwtProvider;
@@ -24,8 +21,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -288,6 +283,46 @@ public class UserController {
             log.error("로그아웃 처리 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponseDTO.fail("401", "인증되지 않은 요청입니다."));
+        }
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "비밀번호 확인 후 사용자의 계정을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 요청 또는 비밀번호 불일치"),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    })
+    @DeleteMapping("/deleteaccount")
+    public ResponseEntity<ApiResponseDTO> deleteAccount(
+            @Valid @RequestBody DeleteAccountRequestDTO request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            String employeeNumber = userDetails.getUsername();
+            String accessToken = jwtProvider.getAccessTokenFromRequest();
+            
+            // 1. 비밀번호 확인
+            if (!userService.verifyPassword(Integer.parseInt(employeeNumber), request.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponseDTO.fail("401", "비밀번호가 일치하지 않습니다."));
+            }
+            
+            // 2. 사용자 정보 삭제
+            userService.deleteUser(Integer.parseInt(employeeNumber));
+            
+            // 3. Refresh Token 삭제
+            jwtProvider.deleteRefreshToken(Integer.parseInt(employeeNumber));
+            
+            // 4. Access Token 블랙리스트에 추가
+            if (accessToken != null) {
+                jwtProvider.addToAccessTokenBlacklist(accessToken);
+            }
+            
+            return ResponseEntity.ok(ApiResponseDTO.success("회원 탈퇴가 완료되었습니다."));
+        } catch (Exception e) {
+            log.error("회원 탈퇴 중 오류 발생: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponseDTO.fail("500", "회원 탈퇴 중 오류가 발생했습니다."));
         }
     }
 

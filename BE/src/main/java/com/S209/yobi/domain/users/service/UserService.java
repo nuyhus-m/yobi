@@ -212,4 +212,20 @@ public class UserService implements UserDetailsService {
 
         return ApiResponseDTO.success(null);
     }
+
+    @Transactional
+    public void deleteUser(Integer employeeNumber) {
+        User user = userRepository.findByEmployeeNumber(employeeNumber)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        // 사용자 정보 삭제
+        userRepository.delete(user);
+    }
+
+    public boolean verifyPassword(Integer employeeNumber, String password) {
+        User user = userRepository.findByEmployeeNumber(employeeNumber)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        return passwordEncoder.matches(password, user.getPassword());
+    }
 } 
