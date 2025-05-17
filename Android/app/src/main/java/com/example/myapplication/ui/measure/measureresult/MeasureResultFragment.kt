@@ -246,9 +246,9 @@ class MeasureResultFragment : BaseFragment<FragmentMeasureResultBinding>(
             setResultItem(
                 itemOneBinding,
                 getString(R.string.sbp),
-                result.dbp.value.toString(),
+                result.sbp.value.toString(),
                 getString(R.string.unit_mmHg),
-                result.dbp.level
+                result.sbp.level
             )
 
             setResultItem(
