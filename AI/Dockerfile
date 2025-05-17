@@ -20,12 +20,14 @@ RUN apt-get update && \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt && \
     pip install pipdeptree && \
-    pipdeptree | grep psycopg2 || echo "✅ psycopg2 dependency trace 끝 (없으면 문제없음)"
+    echo "====== psycopg2 dependency trace 시작 ======" && \
+    pipdeptree | grep psycopg2 || echo "✅ psycopg2 dependency trace 끝 (없으면 문제없음)" && \
+    echo "==========================================="
 
 # 애플리케이션 코드 복사
 COPY . /app/
 
-# 모델 다운로드
+# 모델 다운로드 (환경 변수 지정)
 ARG HF_TOKEN
 RUN export HF_TOKEN=$HF_TOKEN && \
     export BASE_MODEL_PATH=/srv/models/base && \
