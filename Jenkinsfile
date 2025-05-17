@@ -12,7 +12,7 @@ pipeline {
         COMPOSE_FILE = "/home/ubuntu/S12P31S209/docker-compose.ec2-2.yml"
 
         /* Docker Hub 이미지 */
-        DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
+        DOCKER_IMAGE = "mundevelop/ai-app:latest"
 
         /* 모델 경로 (컨테이너·호스트 공통) */
         BASE_MODEL_PATH = "/srv/models/base"
