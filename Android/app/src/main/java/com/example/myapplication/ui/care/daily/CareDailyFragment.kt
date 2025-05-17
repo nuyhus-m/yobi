@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.care.daily
 
+import android.R.color.transparent
 import android.os.Bundle
 import android.util.Log
 import android.view.View                         // ← 누락되어 있던 import
@@ -79,35 +80,89 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
 
     /* -------- API 값 바인딩 -------- */
     private fun updateUIWithData(data: TodayResponse) {
-        // 체성분
-        binding.tvFatRatio.text = data.bodyComposition?.bfp?.value?.toString().orEmpty()
-        binding.tvFatRatioLevel.text = data.bodyComposition?.bfp?.level.orEmpty()
 
-        binding.tvBmr.text =
-            data.bodyComposition?.bmr?.value?.toInt()?.toString().orEmpty()
-        binding.tvBmrLevel.text = data.bodyComposition?.bmr?.level.orEmpty()
+        // 체성분 binding
+        binding.apply {
+            val bc = data.bodyComposition
+            tvFatRatio.text = bc?.bfp?.value?.toString() ?: "---"
 
-        binding.tvBodyMoisture.text = data.bodyComposition?.ecf?.value?.toString().orEmpty()
-        binding.tvMoistureLevel.text = data.bodyComposition?.ecf?.level.orEmpty()
+            if (bc?.bfp?.value != null) {
+                tvFatRatioLevel.text = bc?.bfp?.level
+            } else {
+                tvFatRatioLevel.text = ""
+                tvFatRatioLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
 
-        // 스트레스
-        binding.tvStressLevel.text =
-            data.stress?.stressLevel?.let { "오늘 스트레스 등급은\n${it} 상태에요" }
-                ?: "측정을 먼저해주세요!"
+            // 기초대사량
+            tvBmr.text =
+                bc?.bmr?.value?.toInt()?.toString() ?: "---"
+            if (bc?.bmr?.value != null) {
+                tvBmrLevel.text = bc?.bmr?.level
+            } else {
+                tvBmrLevel.text = ""
+                tvBmrLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
 
-        // 심박
-        binding.tvHeartRate.text =
-            data.heartRate?.bpm?.value?.toInt()?.toString() ?: "---"
-        binding.tvHeartRateLevel.text =
-            data.heartRate?.bpm?.level ?: "---"
+            // 체내수분
+            tvBodyMoisture.text = bc?.ecf?.value?.toString() ?: "---"
 
-        // 혈압
-        binding.tvSystole.text =
-            data.bloodPressure?.sbp?.value?.toInt()?.toString().orEmpty()
-        binding.tvDiastole.text =
-            data.bloodPressure?.dbp?.value?.toInt()?.toString().orEmpty()
-        binding.tvSystoleLevel.text = data.bloodPressure?.sbp?.level.orEmpty()
-        binding.tvDiastoleLevel.text = data.bloodPressure?.dbp?.level.orEmpty()
+            if (bc?.ecf?.value != null) {
+                tvMoistureLevel.text = bc?.ecf?.level
+            } else {
+                tvMoistureLevel.text = ""
+                tvMoistureLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
+
+        }
+        // 그 외
+        binding.apply {
+            // 스트레스
+            tvStressLevel.text =
+                data.stress?.stressLevel?.let { "오늘 스트레스 등급은\n${it} 상태에요" }
+                    ?: "측정을 먼저해주세요!"
+
+            // 심박
+            tvHeartRate.text =
+                data.heartRate?.bpm?.value?.toInt()?.toString() ?: "---"
+
+            if (data.heartRate?.bpm?.value != null) {
+                tvHeartRateLevel.text = ""
+                tvHeartRateLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
+
+            // 혈압 (수축기)
+            tvSystole.text =
+                data.bloodPressure?.sbp?.value?.toInt()?.toString() ?: "---"
+            if (data.bloodPressure?.sbp?.value != null) {
+                tvSystoleLevel.text = data.bloodPressure?.sbp?.level
+            } else {
+                tvStressLevel.text = ""
+                tvSystoleLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
+            // 혈압 (이완기)
+            tvDiastole.text =
+                data.bloodPressure?.dbp?.value?.toInt()?.toString() ?: "---"
+
+            if (data.bloodPressure?.dbp?.value != null) {
+                tvDiastoleLevel.text = data.bloodPressure?.dbp?.level
+            } else {
+                tvDiastoleLevel.text = ""
+                tvDiastoleLevel.setBackgroundColor(
+                    resources.getColor(transparent, null)
+                )
+            }
+        }
+
     }
 
     /* -------- 숫자/등급/아이콘 스켈레톤 토글 -------- */

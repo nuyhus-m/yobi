@@ -123,41 +123,48 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                 )
             }
         } else {
-            showSkeletonUI(false)
+            showSkeletonUI(true)
 
-            viewModel.loadDailyLog(
-                scheduleId = args.scheduleId,
-                onSuccess = { clientName, visitedDate, logContent ->
-                    val title = SpannableString("${clientName}님 일지").apply {
-                        setSpan(
-                            RelativeSizeSpan(1.2f),
-                            0,
-                            clientName.length,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        setSpan(
-                            StyleSpan(Typeface.BOLD),
-                            0,
-                            clientName.length,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
+            lifecycleScope.launch {
+                delay(SKELETON_DELAY)
+
+
+                viewModel.loadDailyLog(
+                    scheduleId = args.scheduleId,
+                    onSuccess = { clientName, visitedDate, logContent ->
+                        showSkeletonUI(false)
+                        val title = SpannableString("${clientName}님 일지").apply {
+                            setSpan(
+                                RelativeSizeSpan(1.2f),
+                                0,
+                                clientName.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            setSpan(
+                                StyleSpan(Typeface.BOLD),
+                                0,
+                                clientName.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                        }
+                        binding.tvTitle.text = title
+
+                        val dateStr = SimpleDateFormat(
+                            "yyyy.MM.dd",
+                            Locale.getDefault()
+                        ).format(Date(visitedDate))
+                        binding.tvDate.text = dateStr
+                        val content = logContent ?: ""
+
+                        binding.etContent.setText(content)
+                        finalBuffer.clear()
+                        finalBuffer.append(content)
+                        hasFinalResult = true
+                        setUiState(UiState.INITIAL)
                     }
-                    binding.tvTitle.text = title
+                )
+            }
 
-                    val dateStr = SimpleDateFormat(
-                        "yyyy.MM.dd",
-                        Locale.getDefault()
-                    ).format(Date(visitedDate))
-                    binding.tvDate.text = dateStr
-                    val content = logContent ?: ""
-
-                    binding.etContent.setText(content)
-                    finalBuffer.clear()
-                    finalBuffer.append(content)
-                    hasFinalResult = true
-                    setUiState(UiState.INITIAL)
-                }
-            )
         }
 
         speechManager = SpeechStreamManager(requireContext())
