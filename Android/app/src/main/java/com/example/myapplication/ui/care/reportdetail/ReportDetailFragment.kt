@@ -3,9 +3,11 @@ package com.example.myapplication.ui.care.reportdetail
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +17,8 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentReportDetailBinding
 import com.example.myapplication.ui.care.reportdetail.viewmodel.ReportDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
+private const val TAG = "ReportDetailFragment"
 
 @AndroidEntryPoint
 class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
@@ -28,56 +32,76 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
         super.onViewCreated(view, savedInstanceState)
 
         val reportId = args.reportId
-        val name = args.name
         val dateRange = args.dateRange
+        val name: String = findNavController().previousBackStackEntry
+            ?.savedStateHandle?.get<String>("clientName") ?: ""
 
-        // 타이틀 텍스트 스타일링
-        val fullTitle = "${name}님 주간 보고서"
-        val spannable = SpannableString(fullTitle).apply {
-            setSpan(StyleSpan(Typeface.BOLD), 0, name.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(AbsoluteSizeSpan(24, true), 0, name.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val titleSpannable = SpannableStringBuilder().apply {
+            val spanName = SpannableString(name).apply {
+                setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setSpan(AbsoluteSizeSpan(24, true), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            append(spanName)
+            append("님 주간 보고서")
         }
-        binding.tvTitle.text = spannable
+        binding.tvTitle.text = titleSpannable
         binding.tvDateRange.text = dateRange
 
-        binding.ivBack.setOnClickListener {
-            findNavController().popBackStack()
+        binding.ivBack.setOnClickListener { findNavController().popBackStack() }
+
+        with(binding) {
+            listOf(
+                sflTvTitle, sflDate, sflSummary, sflVariation,
+                sflOverall, sflRecommendation, sflWeekLog
+            ).forEach { it.apply { visibility = View.VISIBLE; startShimmer() } }
+
+            listOf(
+                tvTitle, tvDateRange, tvSummary, tvVariation,
+                tvOverall, tvRecommendation, tvWeekLog
+            ).forEach { it.visibility = View.INVISIBLE }
         }
 
-        // 데이터 요청
         viewModel.fetchReportDetail(reportId)
 
-        // 데이터 바인딩
         viewModel.report.observe(viewLifecycleOwner) { report ->
             binding.apply {
                 tvSummary.text = parseSection(report.reportContent, "주간 요약")
                 tvVariation.text = parseSection(report.reportContent, "특이 변동")
                 tvOverall.text = parseSection(report.reportContent, "총평")
                 tvRecommendation.text = parseSection(report.reportContent, "추천 식단")
-
-                // log_summary: 주간 요약
                 tvWeekLog.text = report.logSummery
             }
         }
+
+        view.postDelayed({
+            with(binding) {
+                listOf(
+                    sflTvTitle, sflDate, sflSummary, sflVariation,
+                    sflOverall, sflRecommendation, sflWeekLog
+                ).forEach { it.apply { stopShimmer(); visibility = View.GONE } }
+
+                listOf(
+                    tvTitle, tvDateRange, tvSummary, tvVariation,
+                    tvOverall, tvRecommendation, tvWeekLog
+                ).forEach { it.visibility = View.VISIBLE }
+            }
+        }, 500L)   // <-- 0.5 초 딜레이
     }
 
-    // 예시: report_content 문자열을 파싱해서 각 섹션별 내용만 추출
+    /* 문자열에서 섹션만 잘라내는 헬퍼 */
     private fun parseSection(content: String?, sectionTitle: String): String {
         if (content.isNullOrBlank()) return ""
-
         val lines = content.split("\n")
-        val startIndex = lines.indexOfFirst {
-            val line = it.trim()
-            line.removePrefix("•").trim() == sectionTitle
-        }
-        if (startIndex == -1) return ""
+        val start = lines.indexOfFirst {
+            it.trim().removePrefix("•").trim() == sectionTitle
+        }.takeIf { it != -1 } ?: return ""
 
-        val result = StringBuilder()
-        for (i in startIndex + 1 until lines.size) {
+        val sb = StringBuilder()
+        for (i in start + 1 until lines.size) {
             val line = lines[i].trim()
             if (line.startsWith("•")) break
-            result.appendLine(lines[i])
+            sb.appendLine(lines[i])
         }
-        return result.toString().trim()
+        return sb.toString().trim()
     }
 }
