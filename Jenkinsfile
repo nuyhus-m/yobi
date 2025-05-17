@@ -1,28 +1,27 @@
-
 pipeline {
-    agent any
+    agent any                     // 1번 EC2에 설치된 Jenkins 에이전트
 
-        environment {
-            // 로컬(워크스페이스) .env → 원격 .env
-            ENV_FILE     = ".env"
+    /* ─────────────── 공통 변수 ─────────────── */
+    environment {
+        // 로컬(워크스페이스) .env → 원격 .env
+        ENV_FILE     = ".env"
 
-            // 원격 AI 서버 기본 경로
-            REMOTE_PATH  = "/home/ubuntu/ai-app"
+        // 원격 AI 서버 기본 경로
+        REMOTE_PATH  = "/home/ubuntu/ai-app"
 
-            // Docker Hub 이미지
-            DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
+        // Docker Hub 이미지
+        DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
 
-            /* 모델 경로 (컨테이너·호스트 공통) */
-            BASE_MODEL_PATH = "/srv/models/base"
-            ADAPTER_PATH    = "/srv/models/mistral_lora_adapter"
-            HF_CACHE_DIR    = "/srv/models/cache"
+        /* 모델 경로 (컨테이너·호스트 공통) */
+        BASE_MODEL_PATH = "/srv/models/base"
+        ADAPTER_PATH    = "/srv/models/mistral_lora_adapter"
+        HF_CACHE_DIR    = "/srv/models/cache"
 
-            /* Jenkins Credentials */
-            HF_TOKEN        = credentials('hf_token')
-            DOCKERHUB_USER  = credentials('docker-hub-user')
-            DOCKERHUB_PASS  = credentials('docker-hub-pass')
-            EC2_AI_IP       = "43.203.38.182"            // 2번 서버 IP
-        }
+        /* Jenkins Credentials */
+        HF_TOKEN        = credentials('hf_token')
+        DOCKERHUB_USER  = credentials('docker-hub-user')
+        DOCKERHUB_PASS  = credentials('docker-hub-pass')
+        EC2_AI_IP       = "43.203.38.182"            // 2번 서버 IP
     }
 
     stages {
