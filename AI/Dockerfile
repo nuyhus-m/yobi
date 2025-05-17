@@ -8,10 +8,9 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    gcc \
-    libpq-dev \
-    libc-dev \
     postgresql-client \
+    libpq-dev \
+    gcc \
     curl \
     cron \
     && rm -rf /var/lib/apt/lists/*
