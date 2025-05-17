@@ -48,10 +48,13 @@ class DailyMetricAdapter(
         val item = items[position]
         val binding = holder.binding
         binding.tvTitle.text = item.title
+        val reversedValues = item.values.reversed()
+        val reversedDates = item.dates.reversed()
 
         // chart 초기화 post -> 안하면 에러 뜸 nullException
         binding.lineChart.post {
-            val entries = item.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            binding.lineChart.clear()
+            val entries = reversedValues.mapIndexed { index, value -> Entry(index.toFloat(), value) }
             val context = binding.root.context
             val drawable = ContextCompat.getDrawable(context, R.drawable.chart_fade)
 
@@ -136,7 +139,7 @@ class DailyMetricAdapter(
                     granularity = 1f
                     setDrawGridLines(false)
                     setDrawAxisLine(false)
-                    valueFormatter = IndexAxisValueFormatter(item.dates)
+                    valueFormatter = IndexAxisValueFormatter(reversedDates)
                     textSize = 9f
                     labelRotationAngle = 45f
                     setAvoidFirstLastClipping(true)
@@ -167,7 +170,7 @@ class DailyMetricAdapter(
 
 
                 // 스크롤 제한 설정 (차트 끝에서 스크롤 멈춤)
-                extraBottomOffset = 10f // X축 라벨을 위한 추가 여백
+                extraBottomOffset = 15f // X축 라벨을 위한 추가 여백
 
                 // 애니메이션 (0.5초)
                 animateY(500)

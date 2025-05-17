@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "CareSevenViewModel"
+
 @HiltViewModel
 class CareSevenViewModel @Inject constructor(
     private val careRepository: CareRepository
@@ -26,7 +27,7 @@ class CareSevenViewModel @Inject constructor(
     private var currentList = mutableListOf<DailyMetric>()
     private var isLoading = false
     private var currentClientId = -1          // ← 이후 loadMore()에서 사용
-    private val pageSize = 7                  // 고정
+    private val pageSize = 30                 // 고정
 
     /** 최초 호출·추가 호출 모두 여기서 처리 */
     fun fetchMetrics(
@@ -70,6 +71,9 @@ class CareSevenViewModel @Inject constructor(
 
     /** 차트가 왼쪽 끝에 닿을 때 호출 */
     fun loadMore() {
+        val currentCnt = currentList.firstOrNull()?.dates?.size ?: 0
+        if (currentCnt >= pageSize) return
+
         // 현재 리스트에서 가장 오래된 날짜 추출 (MM/dd 문자열)
         val oldestDateStr = currentList.firstOrNull()?.dates?.firstOrNull() ?: return
         // util 함수로 epoch millis 변환
@@ -85,13 +89,13 @@ class CareSevenViewModel @Inject constructor(
             return DailyMetric(title, dates, data.map { it.value })
         }
         return listOf(
-            cv("체지방률",       r.bodyComposition.bfp),
-            cv("기초대사량",     r.bodyComposition.bmr),
-            cv("체내 수분",      r.bodyComposition.ecf),
-            cv("단백질량",       r.bodyComposition.protein),
-            cv("수축기 혈압",    r.bloodPressure.sbp),
-            cv("이완기 혈압",    r.bloodPressure.dbp),
-            cv("스트레스 지수",  r.stress.stressValue)
+            cv("체지방률", r.bodyComposition.bfp),
+            cv("기초대사량", r.bodyComposition.bmr),
+            cv("체내 수분", r.bodyComposition.ecf),
+            cv("단백질량", r.bodyComposition.protein),
+            cv("수축기 혈압", r.bloodPressure.sbp),
+            cv("이완기 혈압", r.bloodPressure.dbp),
+            cv("스트레스 지수", r.stress.stressValue)
         )
     }
 }
