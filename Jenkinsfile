@@ -1,5 +1,5 @@
 pipeline {
-    agent any                               // 1번 EC2(Jenkins)
+    agent any
 
     /* ───────────── 공통 환경변수 ───────────── */
     environment {
@@ -25,7 +25,6 @@ pipeline {
     }
 
     stages {
-
         /* 0. 워크스페이스 확인 (옵션) */
         stage('Check Workspace') {
             steps {
@@ -50,12 +49,13 @@ pipeline {
         }
 
         /* 2. 코드 체크아웃 */
-        stage('Checkout') { steps { checkout scm } }
+        stage('Checkout') {
+            steps { checkout scm }
+        }
 
-        /* 🔧 2-A) requirements.txt 에서 psycopg2(*) 날리기 -------- */
+        /* 2-A. requirements.txt 에서 psycopg2 제거 */
         stage('Patch requirements (drop psycopg2)') {
             steps {
-                // AI/requirements.txt 안에서 두 줄 모두 삭제
                 sh '''
                   sed -i -E '/^psycopg2(-binary)?([[:space:]]*==.*)?[[:space:]]*$/Id' AI/requirements.txt
                   echo "== after patch =="
@@ -77,7 +77,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                export DOCKER_BUILDKIT=0        # ← BuildKit OFF
+                export DOCKER_BUILDKIT=0        # BuildKit OFF
                 docker build --pull --no-cache \
                             -f ${DOCKERFILE} \
                             -t ${DOCKER_IMAGE} \
@@ -109,13 +109,13 @@ pipeline {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     withCredentials([string(credentialsId: 'hf_token', variable: 'HF')]) {
 
-                        /* 6-1) .env 전송 */
+                        /* 6-1. .env 전송 */
                         sh """
                           scp -o StrictHostKeyChecking=no .env \
                               ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
                         """
 
-                        /* 6-2) 원격 명령 */
+                        /* 6-2. 원격 명령 (모델 확인 및 배포) */
                         sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} '
                           set -e
