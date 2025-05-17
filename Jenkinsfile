@@ -8,8 +8,9 @@ pipeline {
         COMPOSE_FILE = "/home/ubuntu/S12P31S209/docker-compose.ec2-2.yml"
         DOCKER_IMAGE = "mundevelop/ai-app:latest"
 
-        BASE_MODEL_PATH = "/srv/models/base"
-        ADAPTER_PATH    = "/srv/models/mistral_lora_adapter"
+        BASE_MODEL_PATH = "/mnt/data/models/base"
+        ADAPTER_PATH    = "/mnt/data/models/adapter"
+        HF_HOME="/mnt/data/huggingface"
         HF_CACHE_DIR    = "/srv/models/cache"
 
         EC2_AI_IP       = "43.203.38.182"
@@ -94,15 +95,16 @@ pipeline {
                         echo 📦 Pulling Docker Image: ${DOCKER_IMAGE}
                         docker image inspect ${DOCKER_IMAGE} > /dev/null || docker pull ${DOCKER_IMAGE}
 
-                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR} /mnt/data/huggingface
                         sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
                         if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
                             echo ⬇️ Downloading Models
                             docker run --rm \\
                                 -e HF_TOKEN=${HF_TOKEN} \\
-                                -e HF_HOME=/root/.cache/huggingface \\
-                                -v /srv/models:/srv/models \\
+                                -e HF_HOME=/root/.cache/huggingface \
+                                -e BASE_MODEL_PATH=/mnt/data/models/base \
+                                -e ADAPTER_PATH=/mnt/data/models/adapter \
+                                -v /mnt/data/models:/mnt/data/models \
                                 -v /mnt/data/huggingface:/root/.cache/huggingface \\
                                 ${DOCKER_IMAGE} \\
                                 python app/ai_model/download_models.py
