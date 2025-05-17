@@ -8,13 +8,13 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    gcc \
     libpq-dev \
-    libc-dev \
     postgresql-client \
     curl \
     cron \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip install psycopg2-binary --force-reinstall --no-cache-dir
 
 # Python 의존성 설치 및 psycopg2 추적용 pipdeptree 추가
 COPY requirements.txt /app/
