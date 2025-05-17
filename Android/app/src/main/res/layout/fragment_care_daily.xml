@@ -390,7 +390,6 @@
                         android:id="@+id/iv_stress_icon"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/ic_stress_low"
                         android:visibility="invisible" />
                 </FrameLayout>
 
