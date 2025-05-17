@@ -107,16 +107,11 @@ pipeline {
             steps {
                 sshagent(credentials: ['ec2-2-pem-key-id']) {
                     withCredentials([string(credentialsId: 'hf_token', variable: 'HF_TOKEN')]) {
-                        sh '''
-                        #!/bin/bash
-                        set -e
+                        sh """
+scp -o StrictHostKeyChecking=no .env ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
 
-                        scp -o StrictHostKeyChecking=no .env ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
-
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c 'set -e && sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR} && sudo chown -R ubuntu:ubuntu /srv/models && if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then docker run --rm -e HF_TOKEN=${HF_TOKEN} -v /srv/models:/srv/models ${DOCKER_IMAGE} python app/ai_model/download_models.py; fi && docker pull ${DOCKER_IMAGE} && docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate'
-
-
-                        '''
+ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c 'set -e && sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR} && sudo chown -R ubuntu:ubuntu /srv/models && if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then docker run --rm -e HF_TOKEN=${HF_TOKEN} -v /srv/models:/srv/models ${DOCKER_IMAGE} python app/ai_model/download_models.py; fi && docker pull ${DOCKER_IMAGE} && docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate'
+"""
                     }
                 }
             }
