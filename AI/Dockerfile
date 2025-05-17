@@ -4,25 +4,28 @@ FROM python:3.9-slim
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 필수 패키지 설치 (psycopg2-binary 빌드 필수 항목 포함)
+# 시스템 패키지 설치 및 캐시 정리
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
     libpq-dev \
+    libc-dev \
     postgresql-client \
     curl \
     cron \
     && rm -rf /var/lib/apt/lists/*
 
-# Python 의존성 설치
+# Python 의존성 설치 및 psycopg2 추적용 pipdeptree 추가
 COPY requirements.txt /app/
-RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install pipdeptree && \
+    pipdeptree | grep psycopg2 || echo "✅ psycopg2 dependency trace 끝 (없으면 문제없음)"
 
 # 애플리케이션 코드 복사
 COPY . /app/
 
-# 모델 다운로드 (HF_TOKEN은 build-arg로 받아서 넘김)
+# 모델 다운로드
 ARG HF_TOKEN
 RUN export HF_TOKEN=$HF_TOKEN && \
     export BASE_MODEL_PATH=/srv/models/base && \
