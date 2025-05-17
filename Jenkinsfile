@@ -1,30 +1,21 @@
 pipeline {
     agent any
 
-    /* ───────────── 공통 환경변수 ───────────── */
     environment {
-        /* Git 저장소 내부 경로 */
-        DOCKER_CTX   = "AI"              // build context
-        DOCKERFILE   = "AI/Dockerfile"   // Dockerfile 경로
-
-        /* 원격(2번) 경로 */
-        REMOTE_PATH  = "/home/ubuntu/S12P31S209"    // compose·.env 위치
+        DOCKER_CTX   = "AI"
+        DOCKERFILE   = "AI/Dockerfile"
+        REMOTE_PATH  = "/home/ubuntu/S12P31S209"
         COMPOSE_FILE = "/home/ubuntu/S12P31S209/docker-compose.ec2-2.yml"
-
-        /* Docker Hub 이미지 */
         DOCKER_IMAGE = "mundevelop/ai-app:latest"
 
-        /* 모델 경로 (컨테이너·호스트 공통) */
         BASE_MODEL_PATH = "/srv/models/base"
         ADAPTER_PATH    = "/srv/models/mistral_lora_adapter"
         HF_CACHE_DIR    = "/srv/models/cache"
 
-        /* Jenkins Credentials */
-        EC2_AI_IP       = "43.203.38.182"           // 2번 서버 IP
+        EC2_AI_IP       = "43.203.38.182"
     }
 
     stages {
-        /* 0. 워크스페이스 확인 (옵션) */
         stage('Check Workspace') {
             steps {
                 sh 'echo "[Workspace] $WORKSPACE"'
@@ -32,7 +23,6 @@ pipeline {
             }
         }
 
-        /* 1. ai-dev 브랜치인지 확인 */
         stage('Branch Check') {
             steps {
                 script {
@@ -47,12 +37,10 @@ pipeline {
             }
         }
 
-        /* 2. 코드 체크아웃 */
         stage('Checkout') {
             steps { checkout scm }
         }
 
-        /* 2-A. requirements.txt 에서 psycopg2 제거 */
         stage('Patch requirements (drop psycopg2)') {
             steps {
                 sh '''
@@ -63,7 +51,6 @@ pipeline {
             }
         }
 
-        /* 3. .env 파일 준비 (Jenkins 파일-credential) */
         stage('Prepare .env') {
             steps {
                 withCredentials([file(credentialsId: 'ai-env-secret', variable: 'ENV_SRC')]) {
@@ -72,7 +59,6 @@ pipeline {
             }
         }
 
-        /* 4. Docker 이미지 빌드 */
         stage('Build Docker Image') {
             steps {
                 sh """
@@ -81,7 +67,6 @@ pipeline {
             }
         }
 
-        /* 5. Docker Hub Push */
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
@@ -109,14 +94,14 @@ pipeline {
                         echo 📦 Pulling Docker Image: ${DOCKER_IMAGE}
                         docker image inspect ${DOCKER_IMAGE} > /dev/null || docker pull ${DOCKER_IMAGE}
 
-
-                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
-                        sudo chown -R ubuntu:ubuntu /srv/models
+                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR} /mnt/data/huggingface
+                        sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
                         if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
                             echo ⬇️ Downloading Models
                             docker run --rm \\
                                 -e HF_TOKEN=${HF_TOKEN} \\
+                                -e HF_HOME=/root/.cache/huggingface \\
                                 -v /srv/models:/srv/models \\
                                 -v /mnt/data/huggingface:/root/.cache/huggingface \\
                                 ${DOCKER_IMAGE} \\
