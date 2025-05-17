@@ -5,6 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.care.seven.CareSevenFragment">
 
+    <TextView
+        android:id="@+id/tv_empty"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="82dp"
+        android:gravity="center"
+        android:text="측정을 먼저 해주세요!"
+        android:textColor="@color/gray_text_sub"
+        android:visibility="gone"/>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

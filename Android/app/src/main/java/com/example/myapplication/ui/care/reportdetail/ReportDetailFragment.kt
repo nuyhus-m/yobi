@@ -10,6 +10,7 @@ import android.text.style.StyleSpan
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
@@ -17,6 +18,8 @@ import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentReportDetailBinding
 import com.example.myapplication.ui.care.reportdetail.viewmodel.ReportDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "ReportDetailFragment"
 
@@ -73,19 +76,26 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
             }
         }
 
-        view.postDelayed({
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(500L)
+
             with(binding) {
                 listOf(
                     sflTvTitle, sflDate, sflSummary, sflVariation,
                     sflOverall, sflRecommendation, sflWeekLog
-                ).forEach { it.apply { stopShimmer(); visibility = View.GONE } }
+                ).forEach {
+                    it.stopShimmer()
+                    it.visibility = View.GONE
+                }
 
                 listOf(
                     tvTitle, tvDateRange, tvSummary, tvVariation,
                     tvOverall, tvRecommendation, tvWeekLog
-                ).forEach { it.visibility = View.VISIBLE }
+                ).forEach {
+                    it.visibility = View.VISIBLE
+                }
             }
-        }, 500L)   // <-- 0.5 초 딜레이
+        }
     }
 
     /* 문자열에서 섹션만 잘라내는 헬퍼 */

@@ -42,8 +42,18 @@ class CareSevenViewModel @Inject constructor(
             try {
                 val res = careRepository.getTotalHealth(clientId, pageSize, cursorDate)
                 if (res.isSuccessful) {
-                    res.body()?.let { body ->
+                    val body = res.body()
+
+                    if (body == null) {
+                        _metrics.postValue(emptyList())
+                    } else {
                         val newMetrics = convertToDailyMetrics(body)
+
+                        val hasRealData = newMetrics.any { it.values.isNotEmpty() }
+                        if (!hasRealData) {
+                            _metrics.postValue(emptyList())
+                            return@launch
+                        }
 
                         currentList = if (cursorDate == null) {
                             // 초기 로드
@@ -59,9 +69,13 @@ class CareSevenViewModel @Inject constructor(
                         }
                         _metrics.postValue(currentList)
                     }
+                } else {
+                    // HTTP 에러 → 빈 리스트 발행
+                    _metrics.postValue(emptyList())
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "fetchMetrics error", e)
+                _metrics.postValue(emptyList())
             } finally {
                 isLoading = false
             }

@@ -18,7 +18,7 @@ data class BodyCompositionDto(
 
 data class StressDto(
     val stressId: Long,
-    val stressValue: ValueLevel,
+    val stressValue: Short,
     val stressLevel: String
 )
 

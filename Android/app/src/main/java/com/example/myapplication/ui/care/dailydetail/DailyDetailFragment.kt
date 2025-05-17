@@ -3,6 +3,7 @@ package com.example.myapplication.ui.care.dailydetail
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -10,6 +11,8 @@ import com.example.myapplication.data.dto.response.care.TodayDetailResponse
 import com.example.myapplication.databinding.FragmentDailyDetailBinding
 import com.example.myapplication.ui.care.dailydetail.viewmodel.DailyDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "DailyDetailFragment"
 
@@ -32,12 +35,14 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
         viewModel.todayDetailData.observe(viewLifecycleOwner) { data ->
             data ?: return@observe
 
-            // 최소 0.5초는 로딩 애니 유지
-            binding.shimmerLayout.postDelayed({
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(500)
+
                 bindBody(data)
                 showSkeletonView(false)
-            }, 500)
+            }
         }
+
 
         binding.ivBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
     }
@@ -58,11 +63,11 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
             ivDiastolicLevel to it.bloodPressure?.dbp?.level,
             ivHeartRateLevel to it.heartRate?.bpm?.level,
             ivOxygenLevel to it.heartRate?.oxygen?.level,
-            ivStressIndexLevel to it.stress?.stressValue?.level,
+            ivStressIndexLevel to it.stress?.stressValue,
             ivStressLevelLevel to it.stress?.stressLevel
         )
         levelMap.forEach { (img, lvl) ->
-            img.setImageResource(getLevelIconResOrNull(lvl) ?: 0)
+            img.setImageResource(getLevelIconResOrNull(lvl.toString()) ?: 0)
             img.visibility = if (lvl == null) View.GONE else View.VISIBLE
         }
 
@@ -81,7 +86,7 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
         tvDiastolic.text = "이완기: ${it.bloodPressure?.dbp?.value ?: "-"}"
         tvHeartRate.text = "심박수: ${it.heartRate?.bpm?.value ?: "-"} BPM"
         tvOxygen.text = "산소포화도: ${it.heartRate?.oxygen?.value ?: "-"}%"
-        tvStressIndex.text = "스트레스 지수: ${it.stress?.stressValue?.value ?: "-"}"
+        tvStressIndex.text = "스트레스 지수: ${it.stress?.stressValue ?: "-"}"
         tvStressLevel.text = "스트레스 등급: ${it.stress?.stressLevel ?: "-"}"
     }
 

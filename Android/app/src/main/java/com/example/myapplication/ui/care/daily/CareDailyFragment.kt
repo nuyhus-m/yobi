@@ -62,11 +62,12 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             data ?: return@observe
             Log.d(TAG, "todayData: $data")
 
-            updateUIWithData(data)
 
             viewLifecycleOwner.lifecycleScope.launch {
                 delay(500)
                 showValueSkeleton(false)
+                updateUIWithData(data)
+
             }
         }
 
@@ -124,21 +125,18 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
         binding.apply {
             // 스트레스
             tvStressLevel.text =
-                data.stress?.stressLevel?.let {
-                    // 텍스트 설정
-                    val message = "오늘 스트레스 등급은\n${it} 상태에요"
-
+                data.stress?.stressLevel?.let { level ->
                     // 아이콘 설정
-                    when (it) {
+                    when (level) {
                         "높음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_high)
                         "보통" -> ivStressIcon.setImageResource(R.drawable.ic_stress_normal)
                         "낮음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_low)
-                        else -> ivStressIcon.visibility = View.GONE
+                        else -> ivStressIcon.visibility = View.INVISIBLE
                     }
 
-                    message
+                    "오늘 스트레스 등급은\n${level} 상태에요"
                 } ?: run {
-                    ivStressIcon.visibility = View.GONE
+
                     "측정을 먼저해주세요!"
                 }
 
@@ -148,6 +146,8 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
                 data.heartRate?.bpm?.value?.toInt()?.toString() ?: "---"
 
             if (data.heartRate?.bpm?.value != null) {
+                tvHeartRateLevel.text = data.heartRate?.bpm?.value?.toInt()?.toString()
+            } else {
                 tvHeartRateLevel.text = ""
                 tvHeartRateLevel.setBackgroundColor(
                     resources.getColor(transparent, null)
@@ -160,7 +160,7 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             if (data.bloodPressure?.sbp?.value != null) {
                 tvSystoleLevel.text = data.bloodPressure?.sbp?.level
             } else {
-                tvStressLevel.text = ""
+                tvSystoleLevel.text = ""
                 tvSystoleLevel.setBackgroundColor(
                     resources.getColor(transparent, null)
                 )
