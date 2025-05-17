@@ -89,7 +89,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} '
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP}'
                             cd /home/ubuntu/your-app-directory &&
                             docker pull your-dockerhub-id/ai-app:latest &&
                             docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
