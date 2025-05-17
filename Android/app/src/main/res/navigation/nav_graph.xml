@@ -318,9 +318,9 @@
 
     <dialog
         android:id="@+id/dest_withdrawal_dialog"
-        android:name="com.example.myapplication.ui.mypage.WithdrawalDialog"
+        android:name="com.example.myapplication.ui.mypage.AppInfoDialog"
         android:label="WithdrawalDialog"
-        tools:layout="@layout/dialog_withdrawal" />
+        tools:layout="@layout/dialog_app_info" />
 
     <dialog
         android:id="@+id/dest_year_month_picker_Dialog"

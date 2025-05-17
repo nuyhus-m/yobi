@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.example.myapplication.R
-import com.example.myapplication.databinding.DialogWithdrawalBinding
+import com.example.myapplication.databinding.DialogAppInfoBinding
 
-class WithdrawalDialog : DialogFragment() {
+class AppInfoDialog : DialogFragment() {
 
-    private var _binding: DialogWithdrawalBinding? = null
+    private var _binding: DialogAppInfoBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -19,7 +19,7 @@ class WithdrawalDialog : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DialogWithdrawalBinding.inflate(inflater, container, false)
+        _binding = DialogAppInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -32,12 +32,7 @@ class WithdrawalDialog : DialogFragment() {
             dismiss()
         }
 
-        binding.btnNo.setOnClickListener {
-            dismiss()
-        }
-
         binding.btnYes.setOnClickListener {
-            // TODO 확인 버튼 기능
             dismiss()
         }
     }
