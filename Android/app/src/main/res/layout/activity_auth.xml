@@ -21,7 +21,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         style="@style/TitleTextStyle"/>
 
-    <!-- 캐릭터 영역 (이미지 자리만 잡음) -->
     <ImageView
         android:id="@+id/iv_character"
         android:layout_width="240dp"
@@ -65,24 +64,13 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/tv_id_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        style="@style/CaptionTextStyle"
-        app:layout_constraintTop_toBottomOf="@+id/til_employ_number"
-        android:layout_marginTop="@dimen/space_4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@color/red"/>
-
-    <TextView
         android:id="@+id/tv_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="비밀번호"
         app:layout_constraintTop_toBottomOf="@id/til_employ_number"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="@dimen/space_40dp"
+        android:layout_marginTop="@dimen/space_24dp"
         style="@style/CardTitleTextStyle"/>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -98,34 +86,24 @@
         app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
+            style="body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:hint="비밀번호를 입력해주세요"
             android:background="@drawable/bg_white_stroke_purple_radius_8"
-            android:maxLines="1"
+            android:hint="비밀번호를 입력해주세요"
+            android:inputType="textPassword"
             android:maxLength="15"
-            style="body"/>
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tv_password_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        style="@style/CaptionTextStyle"
-        app:layout_constraintTop_toBottomOf="@+id/til_password"
-        android:layout_marginTop="@dimen/space_4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@color/red"/>
-
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그인하기"
         style="@style/TitleTextStyle"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:enabled="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
