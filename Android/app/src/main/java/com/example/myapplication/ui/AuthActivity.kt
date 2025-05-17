@@ -3,6 +3,8 @@ package com.example.myapplication.ui
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -23,42 +25,30 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding.btnLogin.isEnabled = false
+        setupInputValidationWatcher()
+
+
         binding.ivCharacter.post {
             val animationDrawable = binding.ivCharacter.background as AnimationDrawable
             animationDrawable.start()
         }
 
         binding.btnLogin.setOnClickListener {
+            binding.btnLogin.isEnabled = false
+            binding.btnLogin.text = "로그인 중"
+
             val employeeNumberText = binding.tilEmployNumber.editText?.text.toString()
             val password = binding.tilPassword.editText?.text.toString()
 
-            val idPattern = Regex("^\\d{6}$")
-            val passwordPattern = Regex("^[a-zA-Z0-9@\$!%*#?&]{8,15}\$")
-
-            var isValid = true
-
-            if (!idPattern.matches(employeeNumberText)) {
-                binding.tvIdError.text = "아이디는 숫자 6자리여야 합니다."
-                isValid = false
-            } else {
-                binding.tvIdError.text = ""
-            }
-
-            if (!passwordPattern.matches(password)) {
-                binding.tvPasswordError.text = "비밀번호는 숫자, 영어, 특수문자(@\$!%*#?&)로 이루어진 8~15자여야 합니다."
-                isValid = false
-            } else {
-                binding.tvPasswordError.text = ""
-            }
-
-            if (isValid) {
-                val employeeNumber = employeeNumberText.toInt()
-                authViewModel.login(employeeNumber, password)
-            }
+            authViewModel.login(employeeNumberText.toInt(), password)
         }
 
 
         authViewModel.loginSuccess.observe(this) { success ->
+            binding.btnLogin.isEnabled = true
+            binding.btnLogin.text = "로그인하기"
+
             if (success) {
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
@@ -69,5 +59,26 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
 
         }
 
+    }
+
+    private fun setupInputValidationWatcher() {
+        val watcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                binding.btnLogin.isEnabled = checkInputValid()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+
+        binding.tilEmployNumber.editText?.addTextChangedListener(watcher)
+        binding.tilPassword.editText?.addTextChangedListener(watcher)
+    }
+
+
+    private fun checkInputValid(): Boolean {
+        val employeeNumber = binding.tilEmployNumber.editText?.text.toString()
+        val password = binding.tilPassword.editText?.text.toString()
+        return employeeNumber.length == 6 && password.length >= 8
     }
 }
