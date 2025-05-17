@@ -96,7 +96,7 @@ public class SchedulesController {
     }
 
 
-    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다.")
+    @Operation(summary = "단건 일정 수정 테스트트 테스트트", description = "일정 정보를 수정합니다.")
     @PatchMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 수정 성공",
