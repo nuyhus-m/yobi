@@ -31,6 +31,5 @@ services:
       retries: 3
 
 networks:
-  givu_ai-network:
-    name: ai-network
+  ai-network:
     external: true
