@@ -124,8 +124,24 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
         binding.apply {
             // 스트레스
             tvStressLevel.text =
-                data.stress?.stressLevel?.let { "오늘 스트레스 등급은\n${it} 상태에요" }
-                    ?: "측정을 먼저해주세요!"
+                data.stress?.stressLevel?.let {
+                    // 텍스트 설정
+                    val message = "오늘 스트레스 등급은\n${it} 상태에요"
+
+                    // 아이콘 설정
+                    when (it) {
+                        "높음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_high)
+                        "보통" -> ivStressIcon.setImageResource(R.drawable.ic_stress_normal)
+                        "낮음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_low)
+                        else -> ivStressIcon.visibility = View.GONE
+                    }
+
+                    message
+                } ?: run {
+                    ivStressIcon.visibility = View.GONE
+                    "측정을 먼저해주세요!"
+                }
+
 
             // 심박
             tvHeartRate.text =
