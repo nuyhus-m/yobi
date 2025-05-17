@@ -1,15 +1,17 @@
 pipeline {
-    agent any                     // 1번 EC2에 설치된 Jenkins 에이전트
+    agent any                               // 1번 EC2(Jenkins)
 
-    /* ─────────────── 공통 변수 ─────────────── */
+    /* ───────────── 공통 환경변수 ───────────── */
     environment {
-        // 로컬(워크스페이스) .env → 원격 .env
-        ENV_FILE     = ".env"
+        /* Git 저장소 내부 경로 */
+        DOCKER_CTX   = "S12P31S209/AI"              // build context
+        DOCKERFILE   = "S12P31S209/AI/Dockerfile"   // Dockerfile 경로
 
-        // 원격 AI 서버 기본 경로
-        REMOTE_PATH  = "/home/ubuntu/ai-app"
+        /* 원격(2번) 경로 */
+        REMOTE_PATH  = "/home/ubuntu/S12P31S209"    // compose·.env 위치
+        COMPOSE_FILE = "/home/ubuntu/S12P31S209/docker-compose.ec2-2.yml"
 
-        // Docker Hub 이미지
+        /* Docker Hub 이미지 */
         DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
 
         /* 모델 경로 (컨테이너·호스트 공통) */
@@ -21,12 +23,12 @@ pipeline {
         HF_TOKEN        = credentials('hf_token')
         DOCKERHUB_USER  = credentials('docker-hub-user')
         DOCKERHUB_PASS  = credentials('docker-hub-pass')
-        EC2_AI_IP       = "43.203.38.182"            // 2번 서버 IP
+        EC2_AI_IP       = "43.203.38.182"           // 2번 서버 IP
     }
 
     stages {
 
-        /* 0. 작업 경로 확인 (디버깅용) */
+        /* 0. 워크스페이스 확인 (옵션) */
         stage('Check Workspace') {
             steps {
                 sh 'echo "[Workspace] $WORKSPACE"'
@@ -34,16 +36,17 @@ pipeline {
             }
         }
 
-        /* 1. 브랜치 검사 (ai-dev 전용) */
+        /* 1. ai-dev 브랜치인지 확인 */
         stage('Branch Check') {
             steps {
                 script {
                     def branch = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//,'') ?: 'unknown'
-                    echo "현재 브랜치: ${branch}"
                     if (!branch.contains('ai-dev')) {
+                        echo "❌ ai-dev 전용 파이프라인. 현재: ${branch}"
                         currentBuild.result = 'SUCCESS'
-                        error('ai-dev 브랜치가 아니므로 파이프라인 중단')
+                        error('ai-dev 가 아니라서 중단')
                     }
+                    echo "✅ ai-dev 브랜치 확인 완료"
                 }
             }
         }
@@ -51,7 +54,7 @@ pipeline {
         /* 2. 코드 체크아웃 */
         stage('Checkout') { steps { checkout scm } }
 
-        /* 3. .env 파일 로드 (Jenkins 파일 타입 credential) */
+        /* 3. .env 파일 준비 (Jenkins 파일-credential) */
         stage('Prepare .env') {
             steps {
                 withCredentials([file(credentialsId: 'ai-env-secret', variable: 'ENV_SRC')]) {
@@ -60,10 +63,10 @@ pipeline {
             }
         }
 
-        /* 4. Docker 이미지 빌드 (모델 없이) */
+        /* 4. Docker 이미지 빌드 */
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE .'
+                sh "docker build -f ${DOCKERFILE} -t ${DOCKER_IMAGE} ${DOCKER_CTX}"
             }
         }
 
@@ -72,34 +75,33 @@ pipeline {
             steps {
                 sh """
                     echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                    docker push $DOCKER_IMAGE
+                    docker push ${DOCKER_IMAGE}
                     docker logout
                 """
             }
         }
 
-        /* 6. .env & 배포 스크립트 전송 + 모델 확인·배포 */
+        /* 6. 원격 배포 (.env 복사 + 모델 확인/다운로드 + compose up) */
         stage('Deploy to AI Server') {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     withCredentials([string(credentialsId: 'hf_token', variable: 'HF')]) {
 
-                        /* (6-1) .env 복사 */
+                        /* 6-1) .env 전송 */
                         sh """
-                        scp -o StrictHostKeyChecking=no ${ENV_FILE} \
-                            ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
+                          scp -o StrictHostKeyChecking=no .env \
+                              ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
                         """
 
-                        /* (6-2) 원격 배포 스크립트 실행 */
+                        /* 6-2) 원격 명령 */
                         sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} '
                           set -e
-
                           echo "▶ 모델 디렉터리 준비"
                           sudo mkdir -p /srv/models/base /srv/models/mistral_lora_adapter /srv/models/cache
                           sudo chown -R ubuntu:ubuntu /srv/models
 
-                          echo "▶ 모델 존재 여부 확인"
+                          echo "▶ 모델 존재 확인"
                           if [ ! -f /srv/models/base/config.json ] || [ ! -f /srv/models/mistral_lora_adapter/adapter_model.bin ]; then
                               echo "🔍 모델 없음 → 다운로드"
                               docker run --rm \
@@ -114,10 +116,9 @@ pipeline {
                               echo "✅ 모델 이미 존재"
                           fi
 
-                          echo "▶ 최신 이미지 Pull & 재배포"
-                          cd ${REMOTE_PATH}
+                          echo "▶ 최신 이미지 Pull & Compose 재배포"
                           docker pull ${DOCKER_IMAGE}
-                          docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
+                          docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate
                         '
                         """
                     }
