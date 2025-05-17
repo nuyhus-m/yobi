@@ -20,7 +20,6 @@ pipeline {
         HF_CACHE_DIR    = "/srv/models/cache"
 
         /* Jenkins Credentials */
-        HF_TOKEN        = credentials('hf_token')
         EC2_AI_IP       = "43.203.38.182"           // 2번 서버 IP
     }
 
@@ -106,36 +105,32 @@ pipeline {
         /* 6. 원격 배포 (.env 복사 + 모델 확인/다운로드 + compose up) */
         stage('Deploy to AI Server') {
             steps {
-                sshagent (credentials: ['ec2-2-pem-key-id']) {
-                    /* 6-1. .env 전송 */
-                    sh """
-                      scp -o StrictHostKeyChecking=no .env \
-                          ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
-
-                      /* 6-2. 원격 명령 (모델 확인 및 배포) */
-                      ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} "
+                sshagent(credentials: ['ec2-2-pem-key-id']) {
+                    withCredentials([string(credentialsId: 'hf_token', variable: 'HF_TOKEN')]) {
+                        sh '''
+                        #!/bin/bash
                         set -e
-                        echo '▶ 모델 디렉터리 준비'
-                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
-                        sudo chown -R ubuntu:ubuntu /srv/models
 
-                        echo '▶ 모델 존재 확인'
-                        if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
-                            echo '🔍 모델 없음 → 다운로드'
-                            docker run --rm \
-                              -e HF_TOKEN='${HF_TOKEN}' \
-                              -v /srv/models:/srv/models \
-                              ${DOCKER_IMAGE} \
-                              python app/ai_model/download_models.py
-                        else
-                            echo '✅ 모델 이미 존재'
-                        fi
+                        scp -o StrictHostKeyChecking=no .env ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
 
-                        echo '▶ 최신 이미지 Pull & Compose 재배포'
-                        docker pull ${DOCKER_IMAGE}
-                        docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate
-                      "
-                """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c "
+                            set -e
+                            sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
+                            sudo chown -R ubuntu:ubuntu /srv/models
+
+                            if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
+                                docker run --rm \\
+                                    -e HF_TOKEN='${HF_TOKEN}' \\
+                                    -v /srv/models:/srv/models \\
+                                    ${DOCKER_IMAGE} \\
+                                    python app/ai_model/download_models.py
+                            fi
+
+                            docker pull ${DOCKER_IMAGE}
+                            docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate
+                        "
+                        '''
+                    }
                 }
             }
         }
