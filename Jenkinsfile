@@ -107,43 +107,35 @@ pipeline {
         stage('Deploy to AI Server') {
             steps {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
-                    withCredentials([string(credentialsId: 'hf_token', variable: 'HF')]) {
+                    /* 6-1. .env 전송 */
+                    sh """
+                      scp -o StrictHostKeyChecking=no .env \
+                          ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
 
-                        /* 6-1. .env 전송 */
-                        sh """
-                          scp -o StrictHostKeyChecking=no .env \
-                              ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
-                        """
+                      /* 6-2. 원격 명령 (모델 확인 및 배포) */
+                      ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} "
+                        set -e
+                        echo '▶ 모델 디렉터리 준비'
+                        sudo mkdir -p ${BASE_MODEL_PATH} ${ADAPTER_PATH} ${HF_CACHE_DIR}
+                        sudo chown -R ubuntu:ubuntu /srv/models
 
-                        /* 6-2. 원격 명령 (모델 확인 및 배포) */
-                        sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} '
-                          set -e
-                          echo "▶ 모델 디렉터리 준비"
-                          sudo mkdir -p /srv/models/base /srv/models/mistral_lora_adapter /srv/models/cache
-                          sudo chown -R ubuntu:ubuntu /srv/models
+                        echo '▶ 모델 존재 확인'
+                        if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
+                            echo '🔍 모델 없음 → 다운로드'
+                            docker run --rm \
+                              -e HF_TOKEN='${HF_TOKEN}' \
+                              -v /srv/models:/srv/models \
+                              ${DOCKER_IMAGE} \
+                              python app/ai_model/download_models.py
+                        else
+                            echo '✅ 모델 이미 존재'
+                        fi
 
-                          echo "▶ 모델 존재 확인"
-                          if [ ! -f /srv/models/base/config.json ] || [ ! -f /srv/models/mistral_lora_adapter/adapter_model.bin ]; then
-                              echo "🔍 모델 없음 → 다운로드"
-                              docker run --rm \
-                                -e HF_TOKEN=${HF} \
-                                -e BASE_MODEL_PATH=${BASE_MODEL_PATH} \
-                                -e ADAPTER_PATH=${ADAPTER_PATH} \
-                                -e HF_HOME=${HF_CACHE_DIR} \
-                                -v /srv/models:/srv/models \
-                                ${DOCKER_IMAGE} \
-                                python app/ai_model/download_models.py
-                          else
-                              echo "✅ 모델 이미 존재"
-                          fi
-
-                          echo "▶ 최신 이미지 Pull & Compose 재배포"
-                          docker pull ${DOCKER_IMAGE}
-                          docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate
-                        '
-                        """
-                    }
+                        echo '▶ 최신 이미지 Pull & Compose 재배포'
+                        docker pull ${DOCKER_IMAGE}
+                        docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate
+                      "
+                """
                 }
             }
         }
