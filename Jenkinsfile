@@ -72,6 +72,13 @@ pipeline {
                 }
             }
         }
+        
+        // ✅ [3.5] Python Requirements 설치 (huggingface_hub 등)
+        stage('Install Python Requirements') {
+            steps {
+                sh 'pip install -r AI/requirements.txt'
+            }
+        }
 
         // ✅ [4] 모델 파일이 없는 경우 HuggingFace에서 다운로드 후 저장
         stage('Check & Download Mistral LoRA') {
