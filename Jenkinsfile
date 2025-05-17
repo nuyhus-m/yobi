@@ -14,6 +14,7 @@ pipeline {
         HF_TOKEN = credentials('hf_token')
         DOCKERHUB_USER = credentials('docker-hub-user')
         DOCKERHUB_PASS = credentials('docker-hub-pass')
+        EC2_AI_IP = "43.203.38.182"
     }
 
     stages {
@@ -99,7 +100,7 @@ pipeline {
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP}'
-                            cd /home/ubuntu/your-app-directory &&
+                            cd /home/ubuntu/S12P31S209 &&
                             docker pull your-dockerhub-id/ai-app:latest &&
                             docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
                         '
