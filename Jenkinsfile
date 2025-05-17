@@ -1,71 +1,127 @@
+
 pipeline {
     agent any
 
-    environment {
-        // 도커 이미지 이름
-        DOCKER_IMAGE = "mundevelop/ai-app:latest"
+        environment {
+            // 로컬(워크스페이스) .env → 원격 .env
+            ENV_FILE     = ".env"
 
-        // 배포 서버에서 사용하는 경로 (EC2 내부 경로)
-        REMOTE_PATH = "/home/ubuntu/ai-app"
+            // 원격 AI 서버 기본 경로
+            REMOTE_PATH  = "/home/ubuntu/ai-app"
 
-        // Jenkins Credentials에서 가져오는 시크릿 값들
-        HF_TOKEN = credentials('hf_token') // huggingface token
-        DOCKERHUB_USER = credentials('docker-hub-user') // dockerhub 아이디
-        DOCKERHUB_PASS = credentials('docker-hub-pass') // dockerhub 비밀번호
-        EC2_AI_IP = "43.203.38.182" // AI 서버 IP
+            // Docker Hub 이미지
+            DOCKER_IMAGE = "your-dockerhub-id/ai-app:latest"
+
+            /* 모델 경로 (컨테이너·호스트 공통) */
+            BASE_MODEL_PATH = "/srv/models/base"
+            ADAPTER_PATH    = "/srv/models/mistral_lora_adapter"
+            HF_CACHE_DIR    = "/srv/models/cache"
+
+            /* Jenkins Credentials */
+            HF_TOKEN        = credentials('hf_token')
+            DOCKERHUB_USER  = credentials('docker-hub-user')
+            DOCKERHUB_PASS  = credentials('docker-hub-pass')
+            EC2_AI_IP       = "43.203.38.182"            // 2번 서버 IP
+        }
     }
 
     stages {
-        stage('Checkout') {
+
+        /* 0. 작업 경로 확인 (디버깅용) */
+        stage('Check Workspace') {
             steps {
-                // ✅ [1] GitLab 저장소 코드 가져오기
-                checkout scm
+                sh 'echo "[Workspace] $WORKSPACE"'
+                sh 'pwd && ls -al'
             }
         }
 
-        stage('Debug Workspace') {
+        /* 1. 브랜치 검사 (ai-dev 전용) */
+        stage('Branch Check') {
             steps {
-                // ✅ [2] Jenkins가 실제로 어디서 작업하는지 로그 확인
-                sh 'echo "=== Current Workspace Directory ==="'
-                sh 'pwd'
-                sh 'echo "=== List Workspace Files ==="'
-                sh 'ls -alR'
+                script {
+                    def branch = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//,'') ?: 'unknown'
+                    echo "현재 브랜치: ${branch}"
+                    if (!branch.contains('ai-dev')) {
+                        currentBuild.result = 'SUCCESS'
+                        error('ai-dev 브랜치가 아니므로 파이프라인 중단')
+                    }
+                }
             }
         }
 
-        stage('Build Docker Image with HF_TOKEN') {
-            steps {
-                // ✅ [3] 도커 이미지 빌드 (모델 다운로드 포함)
-                // HF_TOKEN을 build-arg로 넘겨서 Dockerfile에서 모델 다운로드 시 사용
-                sh """
-                    docker build --no-cache --build-arg HF_TOKEN=${HF_TOKEN} -t ${DOCKER_IMAGE} ./AI
+        /* 2. 코드 체크아웃 */
+        stage('Checkout') { steps { checkout scm } }
 
-                """
+        /* 3. .env 파일 로드 (Jenkins 파일 타입 credential) */
+        stage('Prepare .env') {
+            steps {
+                withCredentials([file(credentialsId: 'ai-env-secret', variable: 'ENV_SRC')]) {
+                    sh 'cp $ENV_SRC .env'
+                }
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        /* 4. Docker 이미지 빌드 (모델 없이) */
+        stage('Build Docker Image') {
             steps {
-                // ✅ [4] 도커 허브 로그인 → 이미지 푸시 → 로그아웃
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        /* 5. Docker Hub Push */
+        stage('Push Docker Image') {
+            steps {
                 sh """
                     echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                    docker push ${DOCKER_IMAGE}
+                    docker push $DOCKER_IMAGE
                     docker logout
                 """
             }
         }
 
-        stage('Deploy to AI Server (2번 서버)') {
+        /* 6. .env & 배포 스크립트 전송 + 모델 확인·배포 */
+        stage('Deploy to AI Server') {
             steps {
-                // ✅ [5] SSH를 통해 EC2 서버 접속 → 도커 이미지 최신 pull → 배포
                 sshagent (credentials: ['ec2-2-pem-key-id']) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} "
-                            cd /home/ubuntu/S12P31S209 &&
-                            docker pull ${DOCKER_IMAGE} &&
-                            docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
-                        "
-                    """
+                    withCredentials([string(credentialsId: 'hf_token', variable: 'HF')]) {
+
+                        /* (6-1) .env 복사 */
+                        sh """
+                        scp -o StrictHostKeyChecking=no ${ENV_FILE} \
+                            ubuntu@${EC2_AI_IP}:${REMOTE_PATH}/.env
+                        """
+
+                        /* (6-2) 원격 배포 스크립트 실행 */
+                        sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} '
+                          set -e
+
+                          echo "▶ 모델 디렉터리 준비"
+                          sudo mkdir -p /srv/models/base /srv/models/mistral_lora_adapter /srv/models/cache
+                          sudo chown -R ubuntu:ubuntu /srv/models
+
+                          echo "▶ 모델 존재 여부 확인"
+                          if [ ! -f /srv/models/base/config.json ] || [ ! -f /srv/models/mistral_lora_adapter/adapter_model.bin ]; then
+                              echo "🔍 모델 없음 → 다운로드"
+                              docker run --rm \
+                                -e HF_TOKEN=${HF} \
+                                -e BASE_MODEL_PATH=${BASE_MODEL_PATH} \
+                                -e ADAPTER_PATH=${ADAPTER_PATH} \
+                                -e HF_HOME=${HF_CACHE_DIR} \
+                                -v /srv/models:/srv/models \
+                                ${DOCKER_IMAGE} \
+                                python app/ai_model/download_models.py
+                          else
+                              echo "✅ 모델 이미 존재"
+                          fi
+
+                          echo "▶ 최신 이미지 Pull & 재배포"
+                          cd ${REMOTE_PATH}
+                          docker pull ${DOCKER_IMAGE}
+                          docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
+                        '
+                        """
+                    }
                 }
             }
         }
