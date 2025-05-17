@@ -21,8 +21,6 @@ pipeline {
 
         /* Jenkins Credentials */
         HF_TOKEN        = credentials('hf_token')
-        //DOCKERHUB_USER  = credentials('docker-hub-user')
-        //DOCKERHUB_PASS  = credentials('docker-hub-pass')
         EC2_AI_IP       = "43.203.38.182"           // 2번 서버 IP
     }
 
@@ -91,20 +89,14 @@ pipeline {
         /* 5. Docker Hub Push */
         stage('Push Docker Image') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'docker-hub-user', variable: 'HUB_USER'),
-                    string(credentialsId: 'docker-hub-pass', variable: 'HUB_PASS')
-                ]) {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-creds',
+                    usernameVariable: 'HUB_USER',
+                    passwordVariable: 'HUB_PASS'
+                )]) {
                     sh '''
-                        echo ">> HUB_USER length: ${#HUB_USER}"
-                        echo ">> HUB_PASS length: ${#HUB_PASS}"
-                        if [ -z "$HUB_USER" ] || [ -z "$HUB_PASS" ]; then
-                            echo "❌ HUB_USER 또는 HUB_PASS 가 비어 있습니다."
-                            exit 1
-                        fi
-
                         echo "$HUB_PASS" | docker login -u "$HUB_USER" --password-stdin
-                        docker push mundevelop/ai-app:latest
+                        docker push ${DOCKER_IMAGE}
                         docker logout
                     '''
                 }
