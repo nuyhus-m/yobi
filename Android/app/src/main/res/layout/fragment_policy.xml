@@ -170,7 +170,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_stroke_purple_radius_8"
                 android:padding="@dimen/space_8dp"
-                android:layout_marginTop="@dimen/space_8dp">
+                android:layout_marginTop="@dimen/space_8dp"
+                android:layout_marginBottom="@dimen/space_40dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
