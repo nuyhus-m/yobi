@@ -1,5 +1,8 @@
 package com.S209.yobi.domain.users.entity;
 
+import com.S209.yobi.domain.clients.entity.Client;
+import com.S209.yobi.domain.measures.entity.Measure;
+import com.S209.yobi.domain.schedules.entity.Schedule;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
