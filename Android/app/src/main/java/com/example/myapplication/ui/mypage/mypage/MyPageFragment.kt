@@ -44,7 +44,7 @@ class MyPageFragment : BaseFragment<FragmentMyPageBinding>(
             findNavController().navigate(R.id.dest_logout_dialog)
         }
 
-        binding.btnSignout.setOnClickListener {
+        binding.btnAppInfo.setOnClickListener {
             findNavController().navigate(R.id.dest_withdrawal_dialog)
         }
 

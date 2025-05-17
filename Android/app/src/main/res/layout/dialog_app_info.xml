@@ -7,10 +7,10 @@
 
     <ImageView
         android:id="@+id/iv_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:contentDescription="@null"
-        android:src="@drawable/ic_trash"
+        android:src="@drawable/yobi"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_24dp"
-        android:text="@string/withdrawal_title"
+        android:text="@string/app_info_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_logo" />
 
@@ -39,37 +39,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_4dp"
-        android:text="@string/withdrawal_subtitle"
+        android:text="@string/app_info_subtitle"
         android:textColor="@color/gray_text_secondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_no"
-        style="@style/ButtonTextStyle"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_40dp"
-        android:layout_marginEnd="@dimen/space_4dp"
-        android:background="@drawable/bg_white_stroke_purple_radius_8"
-        android:text="@string/no"
-        android:textColor="@color/purple"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_yes"
+        style="@style/BodyTextStyle"
+        android:text="버전: v1.2.0"
+        app:layout_constraintTop_toBottomOf="@+id/tv_subtitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_subtitle" />
+        android:layout_marginTop="@dimen/space_40dp"/>
+
+    <TextView
+        android:id="@+id/tv_update_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/BodyTextStyle"
+        android:text="최종 업데이트: 2025.05.17"
+        app:layout_constraintTop_toBottomOf="@+id/tv_version"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/space_4dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_yes"
         style="@style/ButtonTextStyle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_4dp"
+        android:layout_marginTop="@dimen/space_40dp"
         android:background="@drawable/bg_purple_radius_8"
         android:text="@string/yes"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btn_no"
-        app:layout_constraintTop_toTopOf="@id/btn_no" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_update_date"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
