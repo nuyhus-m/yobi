@@ -29,8 +29,6 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
         initButtons()
         observeConnectState()
         observeToastMessage()
-
-        fitrusViewModel.tryConnectDevice()
     }
 
     private fun setTitle() {
@@ -67,6 +65,11 @@ class DeviceConnectFragment : BaseFragment<FragmentDeviceConnectBinding>(
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        fitrusViewModel.tryConnectDevice()
     }
 
     override fun onStop() {

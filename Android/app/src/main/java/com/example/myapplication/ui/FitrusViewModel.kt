@@ -146,37 +146,62 @@ class FitrusViewModel @Inject constructor(
             when (measureType) {
                 HealthDataType.BODY_COMPOSITION -> {
                     Log.d(TAG, "startMeasure: 체성분")
-                    manager.startFitrusCompMeasure(
-                        if (client.gender == 0) {
-                            Gender.MALE
-                        } else {
-                            Gender.FEMALE
-                        },
-                        client.height,
-                        client.weight,
-                        CommonUtils.convertDateFormat(client.birth),
-                        0f,
-                    )
+                    try {
+                        manager.startFitrusCompMeasure(
+                            if (client.gender == 0) {
+                                Gender.MALE
+                            } else {
+                                Gender.FEMALE
+                            },
+                            client.height,
+                            client.weight,
+                            CommonUtils.convertDateFormat(client.birth),
+                            0f,
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "startMeasure: ${e.message}", e)
+                        disconnectDevice()
+                    }
                 }
 
                 HealthDataType.HEART_RATE -> {
                     Log.d(TAG, "startMeasure: 심박")
-                    manager.startFitrusHeartRateMeasure()
+                    try {
+                        manager.startFitrusHeartRateMeasure()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "startMeasure: ${e.message}", e)
+                        disconnectDevice()
+                    }
                 }
 
                 HealthDataType.BLOOD_PRESSURE -> {
                     Log.d(TAG, "startMeasure: 혈압")
-                    manager.StartFitrusBloodPressure(120f, 80f)
+                    try {
+                        manager.StartFitrusBloodPressure(120f, 80f)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "startMeasure: ${e.message}", e)
+                        disconnectDevice()
+                    }
                 }
 
                 HealthDataType.STRESS -> {
                     Log.d(TAG, "startMeasure: 스트레스")
-                    manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
+                    try {
+                        manager.startFitrusStressMeasure(CommonUtils.convertDateFormat(client.birth))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "startMeasure: ${e.message}", e)
+                        disconnectDevice()
+                    }
                 }
 
                 HealthDataType.TEMPERATURE -> {
                     Log.d(TAG, "startMeasure: 체온")
-                    manager.startFitrusTempBodyMeasure()
+                    try {
+                        manager.startFitrusTempBodyMeasure()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "startMeasure: ${e.message}", e)
+                        disconnectDevice()
+                    }
                 }
             }
         } else {
