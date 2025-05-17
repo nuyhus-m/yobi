@@ -132,15 +132,14 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
                         "높음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_high)
                         "보통" -> ivStressIcon.setImageResource(R.drawable.ic_stress_normal)
                         "낮음" -> ivStressIcon.setImageResource(R.drawable.ic_stress_low)
-                        else -> ivStressIcon.visibility = View.INVISIBLE
+                        else -> ivStressIcon.setImageResource(R.drawable.ic_stress_base)
                     }
-
                     "오늘 스트레스 등급은\n${level} 상태에요"
                 } ?: run {
+                    ivStressIcon.setImageResource(R.drawable.ic_stress_base)
 
                     "측정을 먼저해주세요!"
                 }
-
 
             // 심박
             tvHeartRate.text =

@@ -73,7 +73,6 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupKeyboardVisibilityListener()
 
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
@@ -430,20 +429,4 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             binding.btnRecord.isEnabled = false
         }
     }
-
-    private fun setupKeyboardVisibilityListener() {
-        val rootView = requireActivity().window.decorView.findViewById<View>(android.R.id.content)
-        rootView.viewTreeObserver.addOnGlobalLayoutListener {
-            val rect = android.graphics.Rect()
-            rootView.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = rootView.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-
-            // 키보드가 올라왔다고 판단하는 기준: 화면의 15% 이상 가려졌을 때
-            val isKeyboardVisible = keypadHeight > screenHeight * 0.15
-
-            binding.btnComplete.visibility = if (isKeyboardVisible) View.GONE else View.VISIBLE
-        }
-    }
-
 }
