@@ -4,13 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_24dp"
-        android:layout_marginTop="@dimen/space_40dp"
-        android:src="@drawable/ic_back" />
 
     <ScrollView
         android:id="@+id/scrollViewMain"
@@ -23,12 +16,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_24dp"
+                android:layout_marginTop="@dimen/space_40dp"
+                android:src="@drawable/ic_back" />
             <!-- ── 제목(스켈레톤 포함) ── -->
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/space_70dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="40dp">
 
                 <com.facebook.shimmer.ShimmerFrameLayout
@@ -37,8 +37,8 @@
                     android:layout_height="28dp"
                     app:shimmer_auto_start="true"
                     app:shimmer_base_color="#CCCCCC"
-                    app:shimmer_highlight_color="#FFFFFF"
-                    app:shimmer_highlight_alpha="1.0">
+                    app:shimmer_highlight_alpha="1.0"
+                    app:shimmer_highlight_color="#FFFFFF">
 
                     <View
                         android:layout_width="match_parent"
@@ -92,8 +92,8 @@
                             android:layout_height="24dp"
                             app:shimmer_auto_start="true"
                             app:shimmer_base_color="#CCCCCC"
-                            app:shimmer_highlight_color="#FFFFFF"
-                            app:shimmer_highlight_alpha="1.0">
+                            app:shimmer_highlight_alpha="1.0"
+                            app:shimmer_highlight_color="#FFFFFF">
 
                             <View
                                 android:layout_width="match_parent"
@@ -145,8 +145,8 @@
                         android:layout_height="150dp"
                         app:shimmer_auto_start="true"
                         app:shimmer_base_color="#CCCCCC"
-                        app:shimmer_highlight_color="#FFFFFF"
-                        app:shimmer_highlight_alpha="1.0">
+                        app:shimmer_highlight_alpha="1.0"
+                        app:shimmer_highlight_color="#FFFFFF">
 
                         <View
                             android:layout_width="match_parent"
@@ -229,6 +229,7 @@
         style="@style/Widget.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:layout_margin="@dimen/space_24dp"
         android:enabled="false"
