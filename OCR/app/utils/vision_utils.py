@@ -115,14 +115,11 @@ def process_image(image_data):
         # OCR 결과 로깅
         logger.info("=== OCR 분석 결과 ===")
         
-        # 현재 날짜 정보
-        current_date = datetime.now()
-        current_year = current_date.year
-        current_month = current_date.month
-        
-        # 셀 정보와 스케줄을 저장할 리스트
-        cells = []
+        # 스케줄을 저장할 리스트
         schedules = []
+        
+        # 1일이 있는 열 번호
+        whichDay = None
         
         # 표 분석 결과 출력 및 처리
         if "images" in ocr_result and len(ocr_result["images"]) > 0:
@@ -136,12 +133,17 @@ def process_image(image_data):
                 for table_idx, table in enumerate(tables):
                     logger.info(f"\n=== 표 {table_idx + 1} ===")
                     
+                    # 스케줄 정보 처리
                     for cell in table.get("cells", []):
                         try:
                             # 셀의 위치 정보
                             row_idx = cell.get("rowIndex", -1)
                             col_idx = cell.get("columnIndex", -1)
                             
+                            # 첫 번째 행(요일 행)은 건너뛰기
+                            if row_idx == 0:
+                                continue
+                                
                             # 셀의 텍스트 정보
                             cell_text = ""
                             for text_line in cell.get("cellTextLines", []):
@@ -152,26 +154,18 @@ def process_image(image_data):
                             if cell_text:
                                 logger.info(f"위치 [{row_idx}, {col_idx}]: {cell_text}")
                                 
-                                # 첫 번째 행은 요일 정보이므로 건너뛰기
-                                if row_idx == 0:
-                                    continue
-                                
-                                # 셀 정보 저장
-                                cell_info = {
-                                    "row": row_idx,
-                                    "col": col_idx,
-                                    "content": cell_text,
-                                    "lines": cell_text.split()
-                                }
-                                cells.append(cell_info)
-                                
                                 # 스케줄 정보 추출
-                                lines = cell_info["lines"]
+                                lines = cell_text.split()
                                 if len(lines) > 0:
                                     try:
                                         # 첫 번째 줄이 날짜인지 확인
                                         day = int(lines[0])
                                         logger.info(f"날짜 처리: {day}")
+                                        
+                                        # 1일이 발견되면 해당 열 번호 저장
+                                        if day == 1:
+                                            whichDay = col_idx
+                                            logger.info(f"1일이 있는 열: {whichDay}")
                                         
                                         # 나머지 줄에서 스케줄 정보 추출
                                         i = 1
@@ -236,13 +230,35 @@ def process_image(image_data):
                 if text:
                     logger.info(f"감지된 텍스트: {text}")
         
+        # whichDay가 확인되지 않았다면 첫 번째 스케줄에서 찾기
+        if whichDay is None and schedules:
+            # 일정 중 가장 빠른 날짜로 정렬
+            sorted_schedules = sorted(schedules, key=lambda x: x["day"])
+            
+            # 1일 일정이 있으면 그 일정의 요일 추정
+            for schedule in sorted_schedules:
+                if schedule["day"] == 1:
+                    # 1일 일정에서 열 정보를 찾을 방법이 없으므로 기본값 설정
+                    whichDay = 1  # 기본값: 월요일
+                    logger.warning("1일의 열을 명확히 확인할 수 없어 월요일(1)로 가정")
+                    break
+        
+        # 그래도 확인되지 않았다면 기본값 설정
+        if whichDay is None:
+            whichDay = 1  # 기본값: 월요일
+            logger.warning("1일의 열을 확인할 수 없어 월요일(1)로 가정")
+        
         # 결과 응답 생성
         response = {
-            "schedules": schedules
+            "schedules": schedules,
+            "whichDay": whichDay  # 1일이 있는 열 번호
         }
-
+        logger.info("JSON: %s", response)
         
-        return response
+        # return response
+        import json
+        from fastapi.responses import Response
+        return Response(content=json.dumps(response), media_type="application/json")
         
     except Exception as e:
         logger.error(f"이미지 처리 오류: {str(e)}", exc_info=True)
