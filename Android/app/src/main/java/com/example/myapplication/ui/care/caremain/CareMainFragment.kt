@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -19,6 +20,8 @@ import com.example.myapplication.ui.care.caremain.inter.NameUpdateListener
 import com.example.myapplication.ui.care.caremain.viewmodel.CareMainViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val TAG = "CareMainFragment"
 
@@ -50,9 +53,10 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
             findNavController().popBackStack()
         }
 
+
         viewModel.clientDetail.observe(viewLifecycleOwner) { detail ->
 
-            binding.shimmerLayout.postDelayed({
+            binding.shimmerLayout.post {
                 with(binding) {
                     tvName.text = detail.name
                     tvGender.text = if (detail.gender == 0) "남자" else "여자"
@@ -69,10 +73,13 @@ class CareMainFragment : BaseFragment<FragmentCareMainBinding>(
                     }
                 }
 
-                updateFragmentNames(detail.name)   // ★ 이름 전파
+                updateFragmentNames(detail.name) // ★ 이름 전파
 
-                showSkeletonView(false)
-            }, 500)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(500)
+                    showSkeletonView(false)
+                }
+            }
         }
     }
 

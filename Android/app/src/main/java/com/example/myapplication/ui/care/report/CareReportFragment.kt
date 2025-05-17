@@ -11,6 +11,7 @@ import com.example.myapplication.databinding.FragmentCareReportBinding
 import com.example.myapplication.ui.care.report.adapter.CareReportAdapter
 import com.example.myapplication.ui.care.report.viewmodel.CareReportViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
 @AndroidEntryPoint
 class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
     FragmentCareReportBinding::bind,
@@ -43,8 +44,14 @@ class CareReportFragment : BaseFragment<FragmentCareReportBinding>(
         viewModel.fetchReports(clientId)
 
         viewModel.reports.observe(viewLifecycleOwner) { reports ->
+            // 1) 가시성 먼저 결정
+            val hasData = !reports.isNullOrEmpty()
+            binding.tvEmpty.visibility = if (hasData) View.GONE else View.VISIBLE
+            binding.recyclerView.visibility = if (hasData) View.VISIBLE else View.GONE
+
             adapter.submitList(reports)
         }
+
     }
 
     private fun convertMillisToRange(millis: Long): String {

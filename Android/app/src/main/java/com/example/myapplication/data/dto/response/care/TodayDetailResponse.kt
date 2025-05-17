@@ -38,9 +38,7 @@ data class HeartRate(
     val bpm: ValueLevel,
     val oxygen: ValueLevel
 )
-
 data class TodayStress(
-    val stressId: Int,
-    val stressValue: ValueLevel,
+    val stressValue: Short,
     val stressLevel: String
 )

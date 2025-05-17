@@ -47,8 +47,16 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
                 }
             })
         }
-        viewModel.metrics.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        viewModel.metrics.observe(viewLifecycleOwner) { list ->
+            adapter.submitList(list)
+
+            if (list.isNullOrEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            } else {
+                binding.tvEmpty.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
         }
     }
 }
