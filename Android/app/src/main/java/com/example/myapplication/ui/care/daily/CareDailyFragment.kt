@@ -3,7 +3,7 @@ package com.example.myapplication.ui.care.daily
 import android.R.color.transparent
 import android.os.Bundle
 import android.util.Log
-import android.view.View                         // ← 누락되어 있던 import
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController

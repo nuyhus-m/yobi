@@ -213,9 +213,6 @@
         android:name="com.example.myapplication.ui.care.reportdetail.ReportDetailFragment"
         android:label="fragment_report_detail"
         tools:layout="@layout/fragment_report_detail">
-        <argument
-            android:name="name"
-            app:argType="string" />
 
         <argument
             android:name="dateRange"

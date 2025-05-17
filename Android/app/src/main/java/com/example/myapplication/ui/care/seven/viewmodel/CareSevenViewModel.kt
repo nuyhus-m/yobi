@@ -29,7 +29,6 @@ class CareSevenViewModel @Inject constructor(
     private var currentClientId = -1          // ← 이후 loadMore()에서 사용
     private val pageSize = 30                 // 고정
 
-    /** 최초 호출·추가 호출 모두 여기서 처리 */
     fun fetchMetrics(
         clientId: Int,
         cursorDate: Long? = null      // null → 최신부터
@@ -69,7 +68,6 @@ class CareSevenViewModel @Inject constructor(
         }
     }
 
-    /** 차트가 왼쪽 끝에 닿을 때 호출 */
     fun loadMore() {
         val currentCnt = currentList.firstOrNull()?.dates?.size ?: 0
         if (currentCnt >= pageSize) return
