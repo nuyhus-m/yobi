@@ -44,6 +44,17 @@ pipeline {
             }
         }
 
+
+         // ✅ [2.5] Workspace Debug (경로 구조 확인용)
+        stage('Debug Workspace') {
+            steps {
+                sh 'echo "=== Current Workspace Directory ==="'
+                sh 'pwd'
+                sh 'echo "=== List Workspace Files ==="'
+                sh 'ls -alR'
+            }
+        }
+
         // ✅ [3] Jenkins Credentials에 있는 .env 파일 로드 (.env로 복사)
         stage('Load .env File') {
             steps {
