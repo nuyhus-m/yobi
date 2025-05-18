@@ -26,7 +26,6 @@ class FilterAdapter(
             btnFilter.text = item.name
             btnFilter.isSelected = item.isSelected
 
-
             val layoutParams = root.layoutParams as ViewGroup.MarginLayoutParams
 
             // 첫 번째만 marginStart

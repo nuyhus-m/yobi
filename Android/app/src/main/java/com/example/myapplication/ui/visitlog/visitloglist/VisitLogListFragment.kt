@@ -47,8 +47,13 @@ class VisitLogListFragment : BaseFragment<FragmentVisitLogListBinding>(
             filterAdapter.submitList(it)
         }
 
-        viewModel.filteredLogs.observe(viewLifecycleOwner) {
-            logAdapter.submitList(it)
+        viewModel.filteredLogs.observe(viewLifecycleOwner) { logs ->
+
+            logAdapter.submitList(logs)
+
+            // 일지 목록 부분에 아무것도 없을시, 아무 일지가 없습니다! 라는 text 써주기.
+            binding.tvNoDiary.visibility = if (logs.isNullOrEmpty()) View.VISIBLE else View.GONE
+
         }
 
     }

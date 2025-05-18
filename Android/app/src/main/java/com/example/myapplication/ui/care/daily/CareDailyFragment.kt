@@ -4,6 +4,7 @@ import android.R.color.transparent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -29,12 +30,10 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
     private val viewModel: CareDailyViewModel by viewModels()
     private val args: CareDailyFragmentArgs by navArgs()
 
-    /** 숫자·등급·아이콘 전용 스켈레톤 쌍 */
     private lateinit var skeletonPairs: List<Pair<ShimmerFrameLayout, View>>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         // 15개 ID 쌍 초기화
         skeletonPairs = listOf(
@@ -89,7 +88,30 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             tvFatRatio.text = bc?.bfp?.value?.toString() ?: "---"
 
             if (bc?.bfp?.value != null) {
-                tvFatRatioLevel.text = bc?.bfp?.level
+                val bcBfp = bc?.bfp?.level
+                tvFatRatioLevel.text = bcBfp
+                when (bcBfp) {
+                    "높음" -> {
+                        tvFatRatioLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvFatRatioLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvFatRatioLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvFatRatioLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvFatRatioLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvFatRatioLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvFatRatioLevel.text = ""
                 tvFatRatioLevel.setBackgroundColor(
@@ -101,7 +123,30 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             tvBmr.text =
                 bc?.bmr?.value?.toInt()?.toString() ?: "---"
             if (bc?.bmr?.value != null) {
-                tvBmrLevel.text = bc?.bmr?.level
+                val bcBmr = bc?.bmr?.level
+                tvBmrLevel.text = bcBmr
+                when (bcBmr) {
+                    "높음" -> {
+                        tvBmrLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvBmrLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvBmrLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvBmrLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvBmrLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvBmrLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvBmrLevel.text = ""
                 tvBmrLevel.setBackgroundColor(
@@ -113,7 +158,30 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             tvBodyMoisture.text = bc?.ecf?.value?.toString() ?: "---"
 
             if (bc?.ecf?.value != null) {
-                tvMoistureLevel.text = bc?.ecf?.level
+                val bcEcf = bc?.ecf?.level
+                tvMoistureLevel.text = bcEcf
+                when (bcEcf) {
+                    "높음" -> {
+                        tvMoistureLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvMoistureLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvMoistureLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvMoistureLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvMoistureLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvMoistureLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvMoistureLevel.text = ""
                 tvMoistureLevel.setBackgroundColor(
@@ -137,7 +205,6 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
                     "오늘 스트레스 등급은\n${level} 상태에요"
                 } ?: run {
                     ivStressIcon.setImageResource(R.drawable.ic_stress_base)
-
                     "측정을 먼저해주세요!"
                 }
 
@@ -146,7 +213,31 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
                 data.heartRate?.bpm?.value?.toInt()?.toString() ?: "---"
 
             if (data.heartRate?.bpm?.value != null) {
-                tvHeartRateLevel.text = data.heartRate?.bpm?.value?.toInt()?.toString()
+                //일일 건강상태 심박 레벨이 숫자로 나와요
+                val heartRate = data.heartRate?.bpm?.level
+                tvHeartRateLevel.text = heartRate
+                when (heartRate) {
+                    "높음" -> {
+                        tvHeartRateLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvHeartRateLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvHeartRateLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvHeartRateLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvHeartRateLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvHeartRateLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvHeartRateLevel.text = ""
                 tvHeartRateLevel.setBackgroundColor(
@@ -155,10 +246,32 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
             }
 
             // 혈압 (수축기)
-            tvSystole.text =
-                data.bloodPressure?.sbp?.value?.toInt()?.toString() ?: "---"
+            tvSystole.text = data.bloodPressure?.sbp?.value?.toInt()?.toString() ?: "---"
             if (data.bloodPressure?.sbp?.value != null) {
-                tvSystoleLevel.text = data.bloodPressure?.sbp?.level
+                val systole = data.bloodPressure?.sbp?.level
+                tvSystoleLevel.text = systole
+                when (systole) {
+                    "높음" -> {
+                        tvSystoleLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvSystoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvSystoleLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvSystoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvSystoleLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvSystoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvSystoleLevel.text = ""
                 tvSystoleLevel.setBackgroundColor(
@@ -170,7 +283,30 @@ class CareDailyFragment : BaseFragment<FragmentCareDailyBinding>(
                 data.bloodPressure?.dbp?.value?.toInt()?.toString() ?: "---"
 
             if (data.bloodPressure?.dbp?.value != null) {
-                tvDiastoleLevel.text = data.bloodPressure?.dbp?.level
+                val diastole = data.bloodPressure?.dbp?.level
+                tvDiastoleLevel.text = diastole
+                when (diastole) {
+                    "높음" -> {
+                        tvDiastoleLevel.setBackgroundResource(R.drawable.bg_red_sub_radius_4)
+                        tvDiastoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+
+                    "보통" -> {
+                        tvDiastoleLevel.setBackgroundResource(R.drawable.bg_green_sub_radius_4)
+                        tvDiastoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.green)
+                        )
+                    }
+
+                    "낮음" -> {
+                        tvDiastoleLevel.setBackgroundResource(R.drawable.bg_blue_sub_radius_4)
+                        tvDiastoleLevel.setTextColor(
+                            ContextCompat.getColor(requireContext(), R.color.blue)
+                        )
+                    }
+                }
             } else {
                 tvDiastoleLevel.text = ""
                 tvDiastoleLevel.setBackgroundColor(
