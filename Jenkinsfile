@@ -72,7 +72,7 @@ pipeline {
 
                     # 컨테이너 재생성 및 재배포
                     docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
-                        up -d --build --force-recreate redis postgres backend ocr-app
+                        up -d --build --no-cache --force-recreate redis postgres backend ocr-app
                         """
             }
         }
