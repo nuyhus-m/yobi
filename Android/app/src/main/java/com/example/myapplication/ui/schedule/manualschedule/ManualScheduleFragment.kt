@@ -50,6 +50,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
 
     private var isScheduleDataLoaded = false
 
+    private var originalDate: LocalDate? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -132,7 +134,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             btnDelete.setOnClickListener {
                 val action =
                     ManualScheduleFragmentDirections.actionDestManualScheduleToDestScheduleDeleteDialog(
-                        args.scheduleId
+                        args.scheduleId,
+                        visitedDate = selectedDate?.toEpochDay() ?: 0L
                     )
                 findNavController().navigate(action)
             }
@@ -205,7 +208,7 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             onSuccess = {
                 showToast("일정이 등록되었습니다.")
                 findNavController().previousBackStackEntry?.savedStateHandle
-                    ?.set("needRefreshSchedule", true)
+                    ?.set("refreshDotDates", listOf(selectedDate))
                 findNavController().popBackStack()
             },
             onError = { code ->
@@ -224,8 +227,12 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             request,
             onSuccess = {
                 showToast("일정이 수정되었습니다.")
+                val datesToRefresh = mutableSetOf<LocalDate>()
+                originalDate?.let { datesToRefresh.add(it) }
+                selectedDate?.let { datesToRefresh.add(it) }
+
                 findNavController().previousBackStackEntry?.savedStateHandle
-                    ?.set("needRefreshSchedule", true)
+                    ?.set("refreshDotDates", datesToRefresh.toList())
                 findNavController().popBackStack()
             },
             onError = { code ->
@@ -247,6 +254,7 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
 
                 selectedClientId = schedule.clientId
                 selectedDate = schedule.visitedDate.toLocalDate()
+                originalDate = schedule.visitedDate.toLocalDate()
                 startTime = schedule.startAt.toLocalTime()
                 endTime = schedule.endAt.toLocalTime()
 
