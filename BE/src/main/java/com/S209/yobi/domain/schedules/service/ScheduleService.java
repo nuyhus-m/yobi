@@ -520,17 +520,12 @@ public class ScheduleService {
                 // 해당 이름의 클라이언트가 없다면 생략하고, 다음 저장을 진행함.
                 Client client;
                 try {
-                    client = clientRepository.findByName(item.getClientName())
+                    client = clientRepository.findByUserIdAndName(userId, clientName)
                             .orElse(null);
+
                     if (client == null) {
                         failCount++;
-                        failureReasons.add(String.format("클라이언트 찾기 실패: '%s'", item.getClientName()));
-                        continue;
-                    }
-
-                    if (!client.getUser().getId().equals(userId)) {
-                        failCount++;
-                        failureReasons.add(String.format("담당하지 않는 클라이언트: '%s'", clientName));
+                        failureReasons.add(String.format("담당 클라이언트 목록에서 일치하는 클라이언트 없음: '%s'", clientName));
                         continue;
                     }
                 } catch (Exception e) {
