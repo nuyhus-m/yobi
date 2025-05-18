@@ -9,11 +9,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.DialogScheduleRegisterBinding
+import androidx.navigation.fragment.navArgs
 
 class ScheduleRegisterDialog : DialogFragment() {
 
     private var _binding: DialogScheduleRegisterBinding? = null
     private val binding get() = _binding!!
+
+    val args: ScheduleRegisterDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +42,13 @@ class ScheduleRegisterDialog : DialogFragment() {
         }
 
         binding.btnText.setOnClickListener {
-            findNavController().navigate(R.id.dest_manual_schedule)
+            val action = ScheduleRegisterDialogDirections
+                .actionScheduleRegisterDialogToDestManualSchedule(
+                    scheduleId = -1,
+                    visitedDate = args.visitedDate
+                )
+            findNavController().navigate(action)
+
             dismiss()
         }
     }

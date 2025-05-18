@@ -2,8 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingTop="@dimen/space_40dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -22,7 +21,8 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_back"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/space_40dp"/>
 
             <TextView
                 android:id="@+id/tv_title"
@@ -170,7 +170,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_stroke_purple_radius_8"
                 android:padding="@dimen/space_8dp"
-                android:layout_marginTop="@dimen/space_8dp">
+                android:layout_marginTop="@dimen/space_8dp"
+                android:layout_marginBottom="@dimen/space_40dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

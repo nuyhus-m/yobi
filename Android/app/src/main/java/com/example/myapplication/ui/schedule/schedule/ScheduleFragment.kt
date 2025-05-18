@@ -39,12 +39,11 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     FragmentScheduleBinding::bind,
     R.layout.fragment_schedule
 ) {
-    private val scheduleViewModel: ScheduleViewModel by viewModels()
+    private val scheduleViewModel: ScheduleViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var scheduleAdapter: ScheduleAdapter
 
     private var currentMonth = YearMonth.now()
-    private var selectedDate: LocalDate? = null
 
     private val minMonth = YearMonth.of(2024, 1)
     private val maxMonth = YearMonth.now().plusMonths(1)
@@ -59,6 +58,12 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (scheduleViewModel.selectedDate.value == null) {
+            scheduleViewModel.selectDate(LocalDate.now())
+        } else {
+            scheduleViewModel.reloadCurrentDate()
+        }
 
         setupCalendar()
         setupRecyclerView()
@@ -94,18 +99,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        scheduleViewModel.selectDate(LocalDate.now())
-
-        binding.cv.findFirstVisibleMonth()?.let { month ->
-            val start = month.weekDays.first().first().date.toEpochMillis()
-            val end = month.weekDays.last().last().date.toEpochMillis()
-
-            scheduleViewModel.getPeriodSchedule(start, end)
-        }
-    }
-
 
     private fun setupObservers() {
         scheduleViewModel.dotMap.observe(viewLifecycleOwner) {
@@ -113,8 +106,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         }
 
         scheduleViewModel.selectedDate.observe(viewLifecycleOwner) { date ->
-            val oldDate = selectedDate
-            selectedDate = date
+            val oldDate = scheduleViewModel.selectedDate.value
             refreshDateAppearance(oldDate, date)
         }
 
@@ -141,7 +133,12 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         }
 
         binding.btnScheduleAdd.setOnClickListener {
-            findNavController().navigate(R.id.dest_schedule_register_dialog)
+            val action = ScheduleFragmentDirections
+                .actionScheduleFragmentToDestScheduleRegisterDialog(
+                    visitedDate = scheduleViewModel.selectedDate.value?.toEpochDay() ?: 0L
+                )
+            findNavController().navigate(action)
+
         }
     }
 
@@ -210,7 +207,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         textView.background = null
 
         when {
-            data.date == selectedDate -> {
+            data.date == scheduleViewModel.selectedDate.value -> {
                 textView.setBackgroundResource(R.drawable.bg_purple_radius_12)
                 textView.setTextColor(
                     ContextCompat.getColor(

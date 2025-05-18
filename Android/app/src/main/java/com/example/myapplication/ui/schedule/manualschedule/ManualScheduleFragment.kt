@@ -59,6 +59,11 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
 
         mainViewModel.fetchClients()
 
+        if (!isEditMode && args.visitedDate != 0L) {
+            selectedDate = LocalDate.ofEpochDay(args.visitedDate!!)
+            binding.etDate.setText(selectedDate.toString())
+        }
+
         if (isEditMode) {
             showSkeletonUI(true)
             viewLifecycleOwner.lifecycleScope.launch {
@@ -192,6 +197,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             request,
             onSuccess = {
                 showToast("일정이 등록되었습니다.")
+                findNavController().previousBackStackEntry?.savedStateHandle
+                    ?.set("needRefreshSchedule", true)
                 findNavController().popBackStack()
             },
             onError = { code ->
@@ -210,6 +217,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             request,
             onSuccess = {
                 showToast("일정이 수정되었습니다.")
+                findNavController().previousBackStackEntry?.savedStateHandle
+                    ?.set("needRefreshSchedule", true)
                 findNavController().popBackStack()
             },
             onError = { code ->
@@ -227,6 +236,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             args.scheduleId,
             onSuccess = {
                 showToast("일정이 삭제되었습니다.")
+                findNavController().previousBackStackEntry?.savedStateHandle
+                    ?.set("needRefreshSchedule", true)
                 findNavController().popBackStack()
             },
             onError = {

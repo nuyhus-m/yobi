@@ -16,14 +16,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingHorizontal="@dimen/space_24dp">
 
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_name"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:shimmer_auto_start="true"
+            app:shimmer_base_color="#CCCCCC"
+            app:shimmer_highlight_color="#FFFFFF"
+            app:shimmer_highlight_alpha="1.0"
+            app:layout_constraintTop_toTopOf="@+id/ll"
+            app:layout_constraintBottom_toBottomOf="@+id/ll"
+            app:layout_constraintStart_toStartOf="@+id/ll"
+            app:layout_constraintEnd_toEndOf="@+id/ll">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_skeleton" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
         <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_avatar">
+            app:layout_constraintEnd_toStartOf="@id/iv_avatar"
+            android:layout_marginEnd="@dimen/space_24dp">
 
             <TextView
                 android:id="@+id/tv_name"
@@ -41,6 +62,25 @@
                 style="@style/TitleTextStyle"/>
 
         </LinearLayout>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_iv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:shimmer_auto_start="true"
+            app:shimmer_base_color="#CCCCCC"
+            app:shimmer_highlight_color="#FFFFFF"
+            app:shimmer_highlight_alpha="1.0"
+            app:layout_constraintTop_toTopOf="@+id/iv_avatar"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_avatar"
+            app:layout_constraintStart_toStartOf="@+id/iv_avatar"
+            app:layout_constraintEnd_toEndOf="@+id/iv_avatar">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_skeleton" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
         <ImageView
             android:id="@+id/iv_avatar"

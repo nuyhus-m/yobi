@@ -10,6 +10,11 @@
         android:name="com.example.myapplication.ui.schedule.schedule.ScheduleFragment"
         android:label="ScheduleFragment"
         tools:layout="@layout/fragment_schedule">
+
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_schedule_register_dialog"
+            app:destination="@id/dest_schedule_register_dialog" />
+
         <action
             android:id="@+id/action_scheduleFragment_to_dest_manual_schedule"
             app:destination="@id/dest_manual_schedule" />
@@ -39,6 +44,12 @@
             android:name="scheduleId"
             android:defaultValue="-1"
             app:argType="integer" /> <!-- 등록일 경우 -1로 처리 -->
+
+        <argument
+            android:name="visitedDate"
+            app:argType="long"
+            android:defaultValue="0L" />
+
     </fragment>
 
     <fragment
@@ -299,7 +310,18 @@
         android:id="@+id/dest_schedule_register_dialog"
         android:name="com.example.myapplication.ui.schedule.ScheduleRegisterDialog"
         android:label="ScheduleRegisterDialog"
-        tools:layout="@layout/dialog_schedule_register" />
+        tools:layout="@layout/dialog_schedule_register" >
+
+        <argument
+            android:name="visitedDate"
+            app:argType="long"
+            android:defaultValue="0L" />
+
+        <action
+            android:id="@+id/action_scheduleRegisterDialog_to_dest_manual_schedule"
+            app:destination="@id/dest_manual_schedule" />
+
+    </dialog>
 
     <dialog
         android:id="@+id/dest_schedule_delete_dialog"
