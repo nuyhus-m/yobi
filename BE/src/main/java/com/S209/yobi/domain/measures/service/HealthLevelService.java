@@ -48,11 +48,12 @@ public class HealthLevelService {
 
     /**
      * Redis에서 혈압 level 정보 조회
+     * 이제 사용하지 아니함.
      */
-    public Map<String, String> getBloodPressureLevels(Integer userId, Integer clientId) {
+    public Map<String, String> getBloodPressureLevels(Integer userId, Integer clientId, LocalDate measureDate) {
         try {
             // Redis 키 생성
-            String redisKey = "bp:" + userId + ":" + clientId + ":" + LocalDate.now();
+            String redisKey = "bp:" + userId + ":" + clientId + ":" + measureDate;
 
             // Redis에서 데이터 조회
             Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
@@ -183,8 +184,8 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultBloodPressureLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("sbp", "정상");
-        defaultLevels.put("dbp", "정상");
+        defaultLevels.put("sbp", "보통");
+        defaultLevels.put("dbp", "보통");
         return defaultLevels;
     }
 
@@ -193,8 +194,8 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultHeartRateLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("bpm", "정상");
-        defaultLevels.put("oxygen", "정상");
+        defaultLevels.put("bpm", "보통");
+        defaultLevels.put("oxygen", "보통");
         return defaultLevels;
     }
 
@@ -212,7 +213,7 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultTemperatureLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("temperature", "정상");
+        defaultLevels.put("temperature", "보통");
         return defaultLevels;
     }
 
