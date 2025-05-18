@@ -131,6 +131,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 체온 level 정보 조회
+     * 이제 사용하지 아니함.
      */
     public Map<String, String> getTemperatureLevels(Integer userId, Integer clientId) {
         try {

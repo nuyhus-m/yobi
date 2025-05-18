@@ -36,4 +36,13 @@ public class HealthCalculatorService {
         if (oxygen < 98) return "보통";      // 정상 범위 내 낮은 수준
         return "높음";                      // 정상 범위 내 높은 수준
     }
+
+    /**
+     * 체온(Temperature) 레벨 계산
+     */
+    public static String calculateTemperatureLevel(float temp) {
+        if (temp < 36.0) return "낮음";    // 저체온
+        if (temp < 37.2) return "보통";   // 정상 체온
+        return "높음";                    // 고열
+    }
 }

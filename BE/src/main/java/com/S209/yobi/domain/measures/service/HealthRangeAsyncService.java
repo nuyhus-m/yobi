@@ -197,6 +197,7 @@ public class HealthRangeAsyncService {
 
     /**
      * 체온 데이터에 대한 level을 계산하고 Redis에 저장
+     * 사용하지 아니함.
      */
     @Async
     public void calculateAndSaveTemperatureLevels(User user, Client client, Temperature temperature) {

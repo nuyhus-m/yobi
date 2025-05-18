@@ -187,18 +187,7 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
-
-        // Redis에서 체온 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> temperatureLevels = healthLevelService.getTemperatureLevels(userId, clientId);
-
-        // 체온 데이터를 DTO로 변환
-        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.builder()
-                .temperatureId(temperature.getId())
-                .temperature(new MeasureWithLevel(temperature.getTemperature(),
-                        temperatureLevels.getOrDefault("temperature", "보통")))
-                .build();
+        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.of(temperature);
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
