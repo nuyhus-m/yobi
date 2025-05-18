@@ -49,12 +49,21 @@ pipeline {
         }
         
 
-        stage('Build backend jar')   {
+        stage('Build backend jar') {
             steps {
                 sh '''
-                  cd BE
-                  chmod +x gradlew 
-                  ./gradlew clean bootJar -x test   # 선택: test 제외
+                    cd BE
+                    chmod +x gradlew
+                    ./gradlew clean
+                    ./gradlew bootJar -x test
+                    
+                    # JAR 파일 생성 확인
+                    JAR_FILE=$(ls build/libs/*.jar)
+                    if [ -z "$JAR_FILE" ]; then
+                        echo "Error: JAR file was not created!"
+                        exit 1
+                    fi
+                    echo "JAR file created: $JAR_FILE"
                 '''
             }
         }
@@ -77,7 +86,11 @@ pipeline {
                     
                     # 컨테이너 재생성 및 재배포
                     docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d backend
-                    """
+                    
+                    # 컨테이너가 정상적으로 시작되었는지 확인
+                    echo "Waiting for backend to be healthy..."
+                    timeout 60s bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8081/api/actuator/health)" != "200" ]]; do sleep 5; done' || exit 1
+                """
             }
         }
  //       stage('Deploy to EC2-2') {

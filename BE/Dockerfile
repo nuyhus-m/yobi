@@ -1,13 +1,16 @@
 # 빌드 단계
 FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
-COPY . .
-RUN gradle bootJar --no-daemon
+
+# Gradle 파일 복사
+COPY build.gradle.kts settings.gradle.kts ./
+COPY src ./src
+
+# Gradle 빌드 실행
+RUN gradle clean bootJar --no-daemon
 
 # 실행 단계
 FROM openjdk:17-jdk-slim
-
-# 작업 디렉토리 설정
 WORKDIR /app
 
 # 빌드 단계에서 생성된 JAR 파일을 복사
