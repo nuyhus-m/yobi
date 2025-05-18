@@ -22,16 +22,16 @@ public class HealthLevelService {
     /**
      * Redis에서 체성분 level 정보 조회
      */
-    public Map<String, String> getBodyCompositionLevels(Integer userId, Integer clientId) {
+    public Map<String, String> getBodyCompositionLevels(Integer userId, Integer clientId, LocalDate measureDate) {
         try {
             // Redis 키 생성
-            String redisKey = "range" + userId + ":" + clientId + ":" + LocalDate.now();
+            String redisKey = "range" + userId + ":" + clientId + ":" + measureDate;
 
             // Redis에서 데이터 조회
             Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
 
             if (entries == null || entries.isEmpty()) {
-                log.info("Redis에서 체성분 level 정보를 찾을 수 없음 [userId: {}, clientId: {}]", userId, clientId);
+                log.info("Redis에서 체성분 level 정보를 찾을 수 없음 [userId: {}, clientId: {}, date: {}]", userId, clientId, measureDate);
                 return createDefaultBodyCompositionLevels();
             }
 

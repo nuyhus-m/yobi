@@ -15,6 +15,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,9 +62,12 @@ public class HealthDataService {
 
         Measure measure = measureOptional.get();
         Integer clientId = measure.getClient().getId();
+        LocalDate measureDate = Instant.ofEpochMilli(measure.getDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
 
         // Redis에서 건강 범위 정보 조회
-        Map<String, String> healthLevels = healthLevelService.getBodyCompositionLevels(userId, clientId);
+        Map<String, String> healthLevels = healthLevelService.getBodyCompositionLevels(userId, clientId, measureDate);
 
         // DTO 변환 및 ApiResponseDTO로 래핑하여 반환
         BodyCompositionResponseDTO responseDTO = BodyCompositionResponseDTO.of(bodyComposition, healthLevels);
