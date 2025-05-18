@@ -3,7 +3,7 @@ FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
 
 # Gradle 파일 복사
-COPY build.gradle.kts settings.gradle.kts ./
+COPY build.gradle settings.gradle ./
 COPY src ./src
 
 # Gradle 빌드 실행
