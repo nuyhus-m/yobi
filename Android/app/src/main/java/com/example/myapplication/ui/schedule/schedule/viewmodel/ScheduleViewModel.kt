@@ -54,20 +54,36 @@ class ScheduleViewModel @Inject constructor(
         val startDate = start.toLocalDate()
         val endDate = end.toLocalDate()
 
-//        if (loadedRanges.any { it.contains(startDate, endDate) }) return
-
         viewModelScope.launch {
             kotlin.runCatching {
                 scheduleRepository.getPeriodSchedule(start, end)
             }.onSuccess { response ->
                 if (response.isSuccessful) {
                     val body = response.body() ?: emptyList()
+
+                    // 1. 서버 응답을 날짜별로 clientId 리스트로 변환
                     val mapped = body.groupBy { it.visitedDate.toLocalDate() }
                         .mapValues { entry -> entry.value.map { it.clientId } }
 
+                    // 2. 기존 dotMap을 복사
                     val currentMap = _dotMap.value.orEmpty().toMutableMap()
+
+                    // 3. 이번 범위의 날짜들을 모두 제거 (삭제된 도트 반영을 위함)
+                    val updatedDates = (startDate..endDate).toList()
+                    updatedDates.forEach { currentMap.remove(it) }
+
+                    // 4. 새 데이터로 덮어쓰기
                     currentMap.putAll(mapped)
+
+                    // 5. 최종 dotMap 반영
                     _dotMap.value = currentMap
+//                    val body = response.body() ?: emptyList()
+//                    val mapped = body.groupBy { it.visitedDate.toLocalDate() }
+//                        .mapValues { entry -> entry.value.map { it.clientId } }
+//
+//                    val currentMap = _dotMap.value.orEmpty().toMutableMap()
+//                    currentMap.putAll(mapped)
+//                    _dotMap.value = currentMap
 
                     loadedRanges.add(startDate to endDate)
                 }
@@ -120,3 +136,11 @@ class ScheduleViewModel @Inject constructor(
     }
 
 }
+
+operator fun LocalDate.rangeTo(other: LocalDate): Iterable<LocalDate> =
+    object : Iterable<LocalDate> {
+        override fun iterator(): Iterator<LocalDate> =
+            generateSequence(this@rangeTo) { date ->
+                if (date < other) date.plusDays(1) else null
+            }.takeWhile { it <= other }.iterator()
+    }

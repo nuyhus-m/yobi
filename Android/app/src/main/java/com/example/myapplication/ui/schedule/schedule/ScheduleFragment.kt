@@ -117,15 +117,14 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         }
 
         findNavController().currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<Boolean>("needRefreshSchedule")
-            ?.observe(viewLifecycleOwner) { need ->
-                if (need == true) {
-                    findNavController().currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.remove<Boolean>("needRefreshSchedule")
-
-                    scheduleViewModel.reloadCurrentDate()
+            ?.getLiveData<List<LocalDate>>("refreshDotDates")
+            ?.observe(viewLifecycleOwner) { dateList ->
+                dateList?.forEach { date ->
+                    val epoch = date.toEpochMillis()
+                    scheduleViewModel.getPeriodSchedule(epoch, epoch)
                 }
+                findNavController().currentBackStackEntry?.savedStateHandle
+                    ?.remove<List<LocalDate>>("refreshDotDates")
             }
 
     }

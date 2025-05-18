@@ -13,6 +13,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.databinding.DialogScheduleDeleteBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class ScheduleDeleteDialog : DialogFragment() {
@@ -50,8 +51,10 @@ class ScheduleDeleteDialog : DialogFragment() {
                 args.scheduleId,
                 onSuccess = {
                     Toast.makeText(requireContext(), "일정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    val deletedDate = LocalDate.ofEpochDay(args.visitedDate)
                     findNavController().previousBackStackEntry?.savedStateHandle
-                        ?.set("needRefreshSchedule", true)
+                        ?.set("refreshDotDates", listOf(deletedDate))
+
                     findNavController().navigate(R.id.action_dest_schedule_delete_dialog_to_dest_schedule)
                 },
                 onError = {

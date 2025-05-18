@@ -334,6 +334,9 @@
         <argument
             android:name="scheduleId"
             app:argType="integer" />
+        <argument
+            android:name="visitedDate"
+            app:argType="long" />
         <action
             android:id="@+id/action_dest_schedule_delete_dialog_to_dest_schedule"
             app:destination="@id/dest_schedule"
