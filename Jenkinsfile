@@ -83,6 +83,7 @@ pipeline {
                 }
             }
         }
+        
         stage('Deploy to AI Server') {
             steps {
                 sshagent(credentials: ['ec2-2-pem-key-id']) {
@@ -90,19 +91,33 @@ pipeline {
                         sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c \"
                         set -e
-
-                        echo 📦 Pulling Docker Image: ${DOCKER_IMAGE}
-                        docker image inspect ${DOCKER_IMAGE} > /dev/null || docker pull ${DOCKER_IMAGE}
+                                
+                        # 기존 컨테이너 정리
+                        echo '🧹 기존 컨테이너 정리'
+                        docker-compose -f /home/ubuntu/S12P31S209/docker-compose.ec2-2.yml down || true
+                        
+                        # 기존 이미지 삭제
+                        echo '🗑️ 기존 이미지 삭제 중...'
+                        docker image rm mundevelop/ai-app:latest || true
+                        
+                        # 새 이미지 받기
+                        echo '📦 새 이미지 풀 받는 중...'
+                        docker pull mundevelop/ai-app:latest
 
                         sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
-                         # Docker 네트워크 생성 - 이미 존재하면 무시
-                        echo '🌐 Creating Docker network if it does not exist'
-                        docker network ls | grep s12p31s209_ai-network || docker network create s12p31s209_ai-network
+                        # Docker 네트워크 생성 - 이미 존재하면 무시
+                        echo '🌐 Docker 네트워크 확인 중...'
+                        if ! docker network inspect s12p31s209_ai-network &>/dev/null; then
+                            echo '🆕 네트워크가 없으므로 생성합니다'
+                            docker network create s12p31s209_ai-network
+                        else
+                            echo '✅ 네트워크가 이미 존재합니다'
+                        fi
 
-
-                        if [ ! -f ${BASE_MODEL_PATH}/config.json ]; then
-                            echo ⬇️ Downloading Models
+                        # 모델 다운로드 부분 수정 - python 명령 전체를 Docker 컨테이너 내에서 실행
+                        if [ ! -f /mnt/data/models/base/config.json ]; then
+                            echo '⬇️ 모델 다운로드 중...'
                             docker run --rm \\\\
                                 -e HF_TOKEN=${HF_TOKEN} \\\\
                                 -e HF_HOME=/root/.cache/huggingface \\\\
@@ -110,26 +125,22 @@ pipeline {
                                 -e ADAPTER_PATH=/mnt/data/models/adapter \\\\
                                 -v /mnt/data/models:/mnt/data/models \\\\
                                 -v /mnt/data/huggingface:/root/.cache/huggingface \\\\
-                                ${DOCKER_IMAGE} \\\\
-                                bash -c \\\"pip install peft && python app/ai_model/download_models.py\\\"
+                                mundevelop/ai-app:latest \\\\
+                                /bin/bash -c \\\"pip install peft && python app/ai_model/download_models.py\\\"
                         fi
 
                         # 디렉토리 확인 및 이동
-                        cd \\\$(dirname ${COMPOSE_FILE})
+                        cd /home/ubuntu/S12P31S209
                         pwd
                         ls -la
                         
                         # 환경 파일 확인
-                        if [ ! -f .env ] && [ -f ${REMOTE_PATH}/.env ]; then
+                        if [ ! -f .env ] && [ -f /home/ubuntu/S12P31S209/.env ]; then
                             echo '⚠️ .env 파일을 현재 디렉토리로 복사합니다'
-                            cp ${REMOTE_PATH}/.env .
+                            cp /home/ubuntu/S12P31S209/.env .
                         fi
                         
-                        # 볼륨 문제 해결을 위해 이전 컨테이너와 볼륨 정리
-                        echo '🧹 이전 컨테이너 정리'
-                        docker-compose -f docker-compose.ec2-2.yml down || true
-                        
-                        echo '🚀 Deploying via docker-compose'
+                        echo '🚀 Docker Compose로 배포 중...'
                         docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
                         \"
                         """
