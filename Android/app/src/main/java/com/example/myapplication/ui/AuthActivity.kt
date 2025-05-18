@@ -5,6 +5,8 @@ import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,8 +21,33 @@ class AuthActivity : BaseActivity<ActivityAuthBinding>(ActivityAuthBinding::infl
 
     private val authViewModel: AuthViewModel by viewModels()
 
+    private var backPressedTime: Long = 0
+    private var toast: Toast? = null
+    private val backPressInterval = 2000L // 2초
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (System.currentTimeMillis() - backPressedTime < backPressInterval) {
+                        toast?.cancel()
+                        isEnabled = false
+                        finishAffinity()
+                    } else {
+                        backPressedTime = System.currentTimeMillis()
+                        toast = Toast.makeText(
+                            this@AuthActivity,
+                            "뒤로가기 버튼을 한 번 더 누르면 종료됩니다.",
+                            Toast.LENGTH_SHORT
+                        )
+                        toast?.show()
+                    }
+                }
+            }
+        )
 
         binding.btnLogin.isEnabled = false
         setupInputValidationWatcher()
