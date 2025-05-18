@@ -108,7 +108,12 @@ pipeline {
 
                         # Docker 네트워크 생성 - 이미 존재하면 무시
                         echo '🌐 Docker 네트워크 확인 중...'
-                        docker network ls | grep s12p31s209_ai-network || docker network create s12p31s209_ai-network
+                        if ! docker network inspect s12p31s209_ai-network &>/dev/null; then
+                            echo '🆕 네트워크가 없으므로 생성합니다'
+                            docker network create s12p31s209_ai-network
+                        else
+                            echo '✅ 네트워크가 이미 존재합니다'
+                        fi
 
                         # 모델 다운로드 부분 수정 - python 명령 전체를 Docker 컨테이너 내에서 실행
                         if [ ! -f /mnt/data/models/base/config.json ]; then
