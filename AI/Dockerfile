@@ -15,15 +15,8 @@ RUN apt-get update && \
 # 2) Python 의존성
 COPY requirements.txt /tmp/requirements.txt
 RUN set -eux; \
-    # 2-1) psycopg2 줄 제거
-    grep -vE '^psycopg2(==.*)?$' /tmp/requirements.txt > /tmp/req.clean.txt && \
-    # 2-2) psycopg2-binary만 설치
-    pip install --no-cache-dir psycopg2-binary==2.9.10 && \
-    # 2-3) 나머지 의존성
-    pip install --no-cache-dir -r /tmp/req.clean.txt && \
-    # 2-4) 설치 확인
-    pip install --no-cache-dir pipdeptree && \
-    echo "=== psycopg2 installs ===" && pipdeptree | grep psycopg2 || true
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    pip install --no-cache-dir psycopg2-binary==2.9.10
 
 # 3) 앱 코드
 COPY . /app/
