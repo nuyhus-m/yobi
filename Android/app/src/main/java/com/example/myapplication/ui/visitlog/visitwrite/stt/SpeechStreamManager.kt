@@ -88,7 +88,7 @@ class SpeechStreamManager(private val ctx: Context) {
 
             val stub = SpeechGrpc.newStub(channel)
                 .withCallCredentials(MoreCallCredentials.from(creds))
-                .withDeadlineAfter(60, TimeUnit.SECONDS) // 타임아웃 설정
+                .withDeadlineAfter(300, TimeUnit.SECONDS) // 타임아웃 설정
 
             // 최적화 5. 요청 config 추가
             val config = RecognitionConfig.newBuilder()

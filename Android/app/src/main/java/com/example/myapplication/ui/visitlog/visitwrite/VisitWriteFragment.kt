@@ -6,6 +6,7 @@ import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
@@ -66,6 +67,10 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     private val recordAudioPermission = Manifest.permission.RECORD_AUDIO
     private val recordPermissionRequestCode = 1001
 
+    // 길이 제한
+    private val MAX_LEN = 150
+
+
     private enum class UiState { INITIAL, RECORDING, RECORDED }
 
 
@@ -73,6 +78,8 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        etContent.filters = arrayOf(InputFilter.LengthFilter(MAX_LEN))
+        tvOverlayResult.filters = arrayOf(InputFilter.LengthFilter(MAX_LEN))
 
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
