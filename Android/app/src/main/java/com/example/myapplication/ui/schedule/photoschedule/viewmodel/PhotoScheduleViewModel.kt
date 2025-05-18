@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.dto.response.schedule.OCRScheduleItem
 import com.example.myapplication.data.dto.response.schedule.OCRScheduleResponse
+import com.example.myapplication.data.dto.response.schedule.SaveOCRScheduleResponse
 import com.example.myapplication.data.repository.ScheduleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -29,6 +31,10 @@ class PhotoScheduleViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _saveResult = MutableLiveData<SaveOCRScheduleResponse>()
+    val saveResult: LiveData<SaveOCRScheduleResponse> = _saveResult
+
+
 
     fun registerPhotoSchedule(imageFile: File, year: Int, month: Int) {
         val timezone = TimeZone.getDefault().id
@@ -49,14 +55,37 @@ class PhotoScheduleViewModel @Inject constructor(
                     Log.d("registerPhotoSchedule", "${response.body()}")
                     _ocrResult.value = response.body()
                 } else {
+                    _ocrError.value = "OCR 분석 실패: ${response.code()}"
                     Log.d("registerPhotoSchedule", "${response.body()}")
                 }
             }.onFailure {
                 Log.d("registerPhotoSchedule", "${it}")
+                _ocrError.value = "네트워크 오류: ${it.message}"
             }.also {
                 _isLoading.value = false
             }
 
         }
+    }
+
+    fun savePhotoSchedule(request: List<OCRScheduleItem>) {
+        viewModelScope.launch {
+            runCatching {
+                val response = scheduleRepository.savePhotoSchedule(request)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        _saveResult.value = it
+                    }
+                    Log.d("savePhotoSchedule", "${response.body()}")
+                } else {
+                    _ocrError.value = "일정 저장 실패: ${response.code()}"
+                    Log.d("savePhotoSchedule", "${response.body()}")
+                }
+            }.onFailure {
+                _ocrError.value = "일정 저장 실패: ${it}"
+                Log.d("savePhotoSchedule", "${it}")
+                }
+        }
+
     }
 }

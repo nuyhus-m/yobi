@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentPhotoScheduleBinding
 import com.example.myapplication.R
+import com.example.myapplication.data.dto.response.schedule.OCRScheduleItem
+import com.example.myapplication.ui.schedule.PhotoScheduleCheckDialog
 import com.example.myapplication.ui.schedule.YearMonthPickerDialog
 import com.example.myapplication.ui.schedule.photoschedule.viewmodel.PhotoScheduleViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -112,14 +114,23 @@ class PhotoScheduleFragment: BaseFragment<FragmentPhotoScheduleBinding>(
         }
 
         photoScheduleViewModel.ocrResult.observe(viewLifecycleOwner) { result ->
-            val success = result.successCount
-            val fail = result.failCount
+            if (result.formMatch) {
+                photoScheduleViewModel.savePhotoSchedule(result.schedules)
+            } else {
+                showScheduleCheckDialog(result.schedules)
+            }
+        }
 
-            val toastMsg = "일정 ${success}건 등록 완료 (실패 ${fail}건))"
+        photoScheduleViewModel.saveResult.observe(viewLifecycleOwner) { result ->
+            val msg = "일정 ${result.successCount}건 등록 완료 (실패 ${result.failCount}건)"
+            showToast(msg)
 
-            showToast(toastMsg)
+            val selectedDate = LocalDate.of(selectedYear!!, selectedMonth!!, 1)
+            findNavController().previousBackStackEntry?.savedStateHandle
+                ?.set("refreshDotDates", listOf(selectedDate))
             findNavController().popBackStack()
         }
+
 
         photoScheduleViewModel.ocrError.observe(viewLifecycleOwner) { errorMsg ->
             showToast("등록에 실패했습니다. 다시 시도해 주세요.")
@@ -136,4 +147,14 @@ class PhotoScheduleFragment: BaseFragment<FragmentPhotoScheduleBinding>(
         }
         return tempFile
     }
+
+    private fun showScheduleCheckDialog(schedules: List<OCRScheduleItem>) {
+        val dialog = PhotoScheduleCheckDialog { confirmed ->
+            if (confirmed) {
+                photoScheduleViewModel.savePhotoSchedule(schedules)
+            }
+        }
+        dialog.show(parentFragmentManager, "PhotoScheduleCheckDialog")
+    }
+
 }
