@@ -44,7 +44,7 @@ class WeeklyReportScheduler:
     def schedule_weekly_job(self):
         """ 1. 주간 배치 작업 스케줄 설정"""
         # schedule 라이브러리를 사용해 특정 시간에 _run_async_job 메서드 예약
-        schedule.every().sunday.at("18:15").do(self._run_async_job)
+        schedule.every().sunday.at("22:43").do(self._run_async_job)
         
         # 개발/테스트용 옵션
         # schedule.every().minute.do(self._run_async_job)  # 매분 실행
