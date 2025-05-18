@@ -87,31 +87,41 @@ class ChangePasswordFragment: BaseFragment<FragmentChangePasswordBinding>(
 
         var valid = true
 
+        // 기존 비밀번호
         if (currentPw.isEmpty()) {
+            binding.tvCurrentPwError.text = "기존 비밀번호를 입력해주세요."
+            binding.tvCurrentPwError.visibility = View.VISIBLE
             valid = false
         } else {
-            binding.tilCurrentPw.error = null
+            binding.tvCurrentPwError.visibility = View.GONE
         }
 
         if (newPw.isEmpty()) {
+            binding.tvNewPwError.text = "새 비밀번호를 입력해주세요."
+            binding.tvNewPwError.visibility = View.VISIBLE
             valid = false
         } else if (!pattern.matches(newPw)) {
-            binding.tilNewPw.error = "영문, 숫자, 특수문자 포함 8~15자로 입력해주세요."
+            binding.tvNewPwError.text = "영문, 숫자, 특수문자 포함 8~15자로 입력해주세요."
+            binding.tvNewPwError.visibility = View.VISIBLE
             valid = false
         } else {
-            binding.tilNewPw.error = null
+            binding.tvNewPwError.visibility = View.GONE
         }
 
         if (confirmPw.isEmpty()) {
+            binding.tvConfirmPwError.text = "비밀번호 확인을 입력해주세요."
+            binding.tvConfirmPwError.visibility = View.VISIBLE
             valid = false
         } else if (newPw != confirmPw) {
-            binding.tilConfirmPw1.error = "비밀번호가 일치하지 않습니다."
+            binding.tvConfirmPwError.text = "비밀번호가 일치하지 않습니다."
+            binding.tvConfirmPwError.visibility = View.VISIBLE
             valid = false
         } else {
-            binding.tilConfirmPw1.error = null
+            binding.tvConfirmPwError.visibility = View.GONE
         }
 
         binding.btnDone.isEnabled = valid
     }
+
 
 }
