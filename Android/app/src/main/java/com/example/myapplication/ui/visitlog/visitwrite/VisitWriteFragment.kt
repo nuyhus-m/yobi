@@ -25,6 +25,7 @@ import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentVisitWriteBinding
 import com.example.myapplication.ui.visitlog.visitwrite.stt.CredentialsHelper
+import com.example.myapplication.ui.visitlog.visitwrite.stt.MaxLengthToastFilter
 import com.example.myapplication.ui.visitlog.visitwrite.stt.NlpFilter
 import com.example.myapplication.ui.visitlog.visitwrite.stt.SpeechStreamManager
 import com.example.myapplication.ui.visitlog.visitwrite.viewmodel.VisitWriteViewModel
@@ -77,9 +78,12 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+        val lengthFilter = MaxLengthToastFilter(MAX_LEN) {
+            showToast("더 이상 입력할 수 없습니다")
+        }
 
-        etContent.filters = arrayOf(InputFilter.LengthFilter(MAX_LEN))
-        tvOverlayResult.filters = arrayOf(InputFilter.LengthFilter(MAX_LEN))
+        etContent.filters = arrayOf(lengthFilter)
+        tvOverlayResult.filters = arrayOf(lengthFilter)
 
         binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
@@ -279,16 +283,29 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                             val safe = nlpFilter.isSafe(result.text)
                             // 안전한 결과인 경우에만 추가
                             if (safe) {
-                                if (finalBuffer.isNotEmpty()) finalBuffer.append(" ")
-                                finalBuffer.append(result.text)
-                                lastFinalChunk = result.text
-                                currentInterimResult = ""
+                                // 최대 길이 제한 체크 추가
+                                val newText =
+                                    if (finalBuffer.isNotEmpty()) " ${result.text}" else result.text
 
-                                hasFinalResult = true
+                                // 현재 버퍼 + 새 텍스트의 총 길이가 MAX_LEN 이하인 경우만 추가
+                                if (finalBuffer.length + newText.length <= MAX_LEN) {
+                                    if (finalBuffer.isNotEmpty()) finalBuffer.append(" ")
+                                    finalBuffer.append(result.text)
+                                    lastFinalChunk = result.text
+                                    currentInterimResult = ""
 
-                                withContext(Dispatchers.Main) {
-                                    tvOverlayResult.text = finalBuffer.toString()
-                                    setStopButtonEnabled(true)
+                                    hasFinalResult = true
+
+                                    withContext(Dispatchers.Main) {
+                                        tvOverlayResult.text = finalBuffer.toString()
+                                        setStopButtonEnabled(true)
+                                    }
+                                } else {
+                                    // 최대 길이 초과 시 자동 저장 처리
+                                    withContext(Dispatchers.Main) {
+                                        showToast("최대 길이(${MAX_LEN}자)에 도달했습니다")
+                                        stopRecording() // 녹음 중지
+                                    }
                                 }
                             }
                         }
@@ -302,13 +319,46 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
                                 setStopButtonEnabled(false)
                             }
 
+                            // finalBuffer가 이미 최대 길이에 도달했으면 중간 결과 표시하지 않음
+                            if (finalBuffer.length >= MAX_LEN) {
+                                tvOverlayResult.text = finalBuffer.toString()
+                                return@withContext
+                            }
+
+                            // 추가될 중간 결과가 최대 길이를 초과하는지 확인
+                            val combinedLength =
+                                finalBuffer.length + (if (finalBuffer.isNotEmpty()) 1 else 0) + currentInterimResult.length
+
                             // 최종 결과(finalBuffer)와 현재 중간 결과(currentInterimResult)를 결합하여 표시
                             val preview = if (finalBuffer.isEmpty()) {
-                                currentInterimResult
+                                if (combinedLength <= MAX_LEN) {
+                                    currentInterimResult
+                                } else {
+                                    currentInterimResult.substring(0, MAX_LEN - finalBuffer.length)
+                                }
                             } else if (currentInterimResult.isEmpty()) {
                                 finalBuffer.toString()
                             } else {
-                                "${finalBuffer.toString()} ${currentInterimResult}"
+                                if (combinedLength <= MAX_LEN) {
+                                    "${finalBuffer.toString()} ${currentInterimResult}"
+                                } else {
+                                    // 최대 길이를 초과하는 경우 표시 가능한 만큼만 표시
+                                    val availableSpace =
+                                        MAX_LEN - finalBuffer.length - 1 // 공백 1자리 고려
+                                    val displayInterim = if (availableSpace > 0) {
+                                        currentInterimResult.substring(
+                                            0,
+                                            minOf(availableSpace, currentInterimResult.length)
+                                        )
+                                    } else {
+                                        ""
+                                    }
+                                    if (displayInterim.isNotEmpty()) {
+                                        "${finalBuffer.toString()} $displayInterim"
+                                    } else {
+                                        finalBuffer.toString()
+                                    }
+                                }
                             }
                             tvOverlayResult.text = preview
                         }
