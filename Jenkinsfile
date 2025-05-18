@@ -83,7 +83,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to AI Server') {
             steps {
                 sshagent(credentials: ['ec2-2-pem-key-id']) {
@@ -101,17 +100,33 @@ pipeline {
                             echo ⬇️ Downloading Models
                             docker run --rm \\
                                 -e HF_TOKEN=${HF_TOKEN} \\
-                                -e HF_HOME=/root/.cache/huggingface \
-                                -e BASE_MODEL_PATH=/mnt/data/models/base \
-                                -e ADAPTER_PATH=/mnt/data/models/adapter \
-                                -v /mnt/data/models:/mnt/data/models \
+                                -e HF_HOME=/root/.cache/huggingface \\
+                                -e BASE_MODEL_PATH=/mnt/data/models/base \\
+                                -e ADAPTER_PATH=/mnt/data/models/adapter \\
+                                -v /mnt/data/models:/mnt/data/models \\
                                 -v /mnt/data/huggingface:/root/.cache/huggingface \\
                                 ${DOCKER_IMAGE} \\
                                 python app/ai_model/download_models.py
                         fi
 
-                        echo 🚀 Deploying via docker-compose
-                        docker-compose -f ${COMPOSE_FILE} --env-file ${REMOTE_PATH}/.env up -d --build --force-recreate"
+                        # 디렉토리 확인 및 이동
+                        cd \$(dirname ${COMPOSE_FILE})
+                        pwd
+                        ls -la
+                        
+                        # 환경 파일 확인
+                        if [ ! -f .env ] && [ -f ${REMOTE_PATH}/.env ]; then
+                            echo '⚠️ .env 파일을 현재 디렉토리로 복사합니다'
+                            cp ${REMOTE_PATH}/.env .
+                        fi
+                        
+                        # 볼륨 문제 해결을 위해 이전 컨테이너와 볼륨 정리
+                        echo '🧹 이전 컨테이너 정리'
+                        docker-compose -f docker-compose.ec2-2.yml down || true
+                        
+                        echo '🚀 Deploying via docker-compose'
+                        docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
+                        "
                         """
                     }
                 }
