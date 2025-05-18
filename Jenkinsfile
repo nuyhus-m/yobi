@@ -97,7 +97,7 @@ pipeline {
 
                         sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
-                        if [ ! -f ${BASE_MODEL_PATH}/config.json ] || [ ! -f ${ADAPTER_PATH}/adapter_model.bin ]; then
+                        if [ ! -f ${BASE_MODEL_PATH}/config.json ]; then
                             echo ⬇️ Downloading Models
                             docker run --rm \\
                                 -e HF_TOKEN=${HF_TOKEN} \\
