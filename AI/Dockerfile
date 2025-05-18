@@ -27,7 +27,7 @@ VOLUME ["/srv/models"]
 
 # 5) 크론 & 엔트리포인트
 RUN mkdir -p /app/logs && \
-    echo "5 23 * * 0 cd /app && python -m batch.batch_runner --mode=run_now >> /app/logs/batch.log 2>&1" | crontab -
+    echo "27 23 * * 0 cd /app && python -m batch.batch_runner --mode=run_now >> /app/logs/batch.log 2>&1" | crontab -
 
 ENV PYTHONPATH=/app
 CMD ["bash","-c","service cron start && uvicorn main:app --host 0.0.0.0 --port 6000"]

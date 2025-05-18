@@ -120,4 +120,24 @@ class BatchRunner:
             # 에러 알림 전송
             # await BatchNotificationService.send_error_notification(e)
             raise
+        
+# 파일 하단에 추가
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='배치 작업 실행기')
+    parser.add_argument('--mode', choices=['schedule', 'run_now'], default='schedule',
+                      help='실행 모드 (schedule: 스케줄러 모드, run_now: 즉시 실행)')
+    args = parser.parse_args()
+    
+    # 배치 러너 초기화
+    runner = BatchRunner()
+    
+    # 비동기 이벤트 루프 실행
+    if args.mode == 'schedule':
+        # 스케줄러 모드
+        asyncio.run(runner.run_scheduler())
+    else:
+        # 즉시 실행 모드
+        asyncio.run(runner.run_batch_job())
     
