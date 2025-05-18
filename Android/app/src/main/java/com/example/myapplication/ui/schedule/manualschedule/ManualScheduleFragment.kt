@@ -129,7 +129,13 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
             etEnd.setOnClickListener { showTimePicker(isStartTime = false) }
 
             btnRegister.setOnClickListener { handleScheduleRegistration() }
-            btnDelete.setOnClickListener { handleScheduleDeletion() }
+            btnDelete.setOnClickListener {
+                val action =
+                    ManualScheduleFragmentDirections.actionDestManualScheduleToDestScheduleDeleteDialog(
+                        args.scheduleId
+                    )
+                findNavController().navigate(action)
+            }
         }
     }
 
@@ -165,7 +171,8 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
         }
 
         val visitedDate = selectedDate?.toEpochMillis()
-        val startAt = selectedDate?.let { date -> startTime?.let { time -> toEpochMillis(date, time) } }
+        val startAt =
+            selectedDate?.let { date -> startTime?.let { time -> toEpochMillis(date, time) } }
         val endAt = selectedDate?.let { date -> endTime?.let { time -> toEpochMillis(date, time) } }
 
         if (visitedDate == null || startAt == null || endAt == null) {
@@ -227,21 +234,6 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
                     "400-11" -> showToast("해당 날짜에 해당 돌봄 대상이 이미 존재합니다")
                     else -> showToast("일정 수정에 실패했습니다.")
                 }
-            }
-        )
-    }
-
-    private fun handleScheduleDeletion() {
-        manualScheduleViewModel.deleteSchedule(
-            args.scheduleId,
-            onSuccess = {
-                showToast("일정이 삭제되었습니다.")
-                findNavController().previousBackStackEntry?.savedStateHandle
-                    ?.set("needRefreshSchedule", true)
-                findNavController().popBackStack()
-            },
-            onError = {
-                showToast("일정 삭제에 실패했습니다.")
             }
         )
     }

@@ -47,8 +47,11 @@
 
         <argument
             android:name="visitedDate"
-            app:argType="long"
-            android:defaultValue="0L" />
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_dest_manual_schedule_to_dest_schedule_delete_dialog"
+            app:destination="@id/dest_schedule_delete_dialog" />
 
     </fragment>
 
@@ -310,12 +313,12 @@
         android:id="@+id/dest_schedule_register_dialog"
         android:name="com.example.myapplication.ui.schedule.ScheduleRegisterDialog"
         android:label="ScheduleRegisterDialog"
-        tools:layout="@layout/dialog_schedule_register" >
+        tools:layout="@layout/dialog_schedule_register">
 
         <argument
             android:name="visitedDate"
-            app:argType="long"
-            android:defaultValue="0L" />
+            android:defaultValue="0L"
+            app:argType="long" />
 
         <action
             android:id="@+id/action_scheduleRegisterDialog_to_dest_manual_schedule"
@@ -327,7 +330,16 @@
         android:id="@+id/dest_schedule_delete_dialog"
         android:name="com.example.myapplication.ui.schedule.ScheduleDeleteDialog"
         android:label="ScheduleDeleteDialog"
-        tools:layout="@layout/dialog_schedule_delete" />
+        tools:layout="@layout/dialog_schedule_delete">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_dest_schedule_delete_dialog_to_dest_schedule"
+            app:destination="@id/dest_schedule"
+            app:popUpTo="@id/dest_schedule"
+            app:popUpToInclusive="true" />
+    </dialog>
 
     <dialog
         android:id="@+id/dest_logout_dialog"
