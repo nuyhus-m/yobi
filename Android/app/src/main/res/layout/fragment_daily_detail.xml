@@ -353,18 +353,18 @@
                 app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
                 app:layout_constraintTop_toBottomOf="@id/tv_heart_rate" />
 
-            <ImageView
-                android:id="@+id/iv_oxygen_level"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="@dimen/space_4dp"
-                app:layout_constraintBottom_toBottomOf="@id/tv_oxygen"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintHeight_default="wrap"
-                app:layout_constraintStart_toEndOf="@id/tv_oxygen"
-                app:layout_constraintTop_toTopOf="@id/tv_oxygen"
-                app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent="0.05" />
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_oxygen_level"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="@dimen/space_4dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_oxygen"-->
+<!--                app:layout_constraintDimensionRatio="1:1"-->
+<!--                app:layout_constraintHeight_default="wrap"-->
+<!--                app:layout_constraintStart_toEndOf="@id/tv_oxygen"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_oxygen"-->
+<!--                app:layout_constraintWidth_default="percent"-->
+<!--                app:layout_constraintWidth_percent="0.05" />-->
 
             <TextView
                 android:id="@+id/tv_stress_card"
@@ -386,18 +386,18 @@
                 app:layout_constraintStart_toStartOf="@id/tv_body_ingredient"
                 app:layout_constraintTop_toBottomOf="@+id/tv_stress_card" />
 
-            <ImageView
-                android:id="@+id/iv_stress_index_level"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="@dimen/space_4dp"
-                app:layout_constraintBottom_toBottomOf="@id/tv_stress_index"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintHeight_default="wrap"
-                app:layout_constraintStart_toEndOf="@id/tv_stress_index"
-                app:layout_constraintTop_toTopOf="@id/tv_stress_index"
-                app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent="0.05" />
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_stress_index_level"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="@dimen/space_4dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/tv_stress_index"-->
+<!--                app:layout_constraintDimensionRatio="1:1"-->
+<!--                app:layout_constraintHeight_default="wrap"-->
+<!--                app:layout_constraintStart_toEndOf="@id/tv_stress_index"-->
+<!--                app:layout_constraintTop_toTopOf="@id/tv_stress_index"-->
+<!--                app:layout_constraintWidth_default="percent"-->
+<!--                app:layout_constraintWidth_percent="0.05" />-->
 
             <TextView
                 android:id="@+id/tv_stress_level"

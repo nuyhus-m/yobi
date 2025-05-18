@@ -62,8 +62,8 @@ class DailyDetailFragment : BaseFragment<FragmentDailyDetailBinding>(
             ivSystolicLevel to it.bloodPressure?.sbp?.level,
             ivDiastolicLevel to it.bloodPressure?.dbp?.level,
             ivHeartRateLevel to it.heartRate?.bpm?.level,
-            ivOxygenLevel to it.heartRate?.oxygen?.level,
-            ivStressIndexLevel to it.stress?.stressValue,
+//            ivOxygenLevel to it.heartRate?.oxygen?.level,
+//            ivStressIndexLevel to it.stress?.stressValue,
             ivStressLevelLevel to it.stress?.stressLevel
         )
         levelMap.forEach { (img, lvl) ->
