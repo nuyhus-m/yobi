@@ -129,7 +129,9 @@ class MistralLoRADownloader:
                 base_model = AutoModelForCausalLM.from_pretrained(
                     self.base_model_path,
                     quantization_config=self.bnb_config,
-                    device_map="auto"
+                    device_map="auto",
+                    offload_dir="/tmp/offload_dir"  # 오프로드할 디렉토리 지정
+
                 )
                 
                 # LoRA 어댑터가 있으면 로드 테스트

@@ -93,6 +93,25 @@ class HeartRate(Base):
     created_at = Column(BigInteger)
 
 
+class Stress(Base):
+    __tablename__ = 'stress'
+    
+    stress_id = Column(BigInteger, primary_key=True)
+    stress_value = Column(SmallInteger)
+    stress_level = Column(String(10))
+    oxygen = Column(SmallInteger)
+    bpm = Column(SmallInteger)
+    created_at = Column(BigInteger)
+
+
+class Temperature(Base):
+    __tablename__ = 'temperature'    
+    temperature_id = Column(BigInteger, primary_key=True)
+    temperature = Column(Float)
+    created_at = Column(BigInteger)
+
+
+
 class WeeklyReport(Base):
     __tablename__ = "weekly_report"
 

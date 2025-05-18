@@ -49,7 +49,8 @@ class HealthDataProcessor:
         base_model = AutoModelForCausalLM.from_pretrained(
             self.model_path,
             device_map="auto",
-            torch_dtype=torch.float16  # 또는 bfloat16, 환경에 따라 조절
+            torch_dtype=torch.float16,
+            offload_dir="/tmp/offload_dir"  # 또는 bfloat16, 환경에 따라 조절
         )
         self.model = PeftModel.from_pretrained(base_model, self.adapter_path)
         self.model.eval()  # 평가 모드
