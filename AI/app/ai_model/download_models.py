@@ -130,7 +130,7 @@ class MistralLoRADownloader:
                     self.base_model_path,
                     quantization_config=self.bnb_config,
                     device_map="auto",
-                    offload_dir="/tmp/offload_dir"  # 오프로드할 디렉토리 지정
+                    offload_folder="/tmp/offload_dir"  # offload_dir 대신 offload_folder 사용
 
                 )
                 

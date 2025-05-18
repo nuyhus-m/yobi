@@ -50,7 +50,7 @@ class HealthDataProcessor:
             self.model_path,
             device_map="auto",
             torch_dtype=torch.float16,
-            offload_dir="/tmp/offload_dir"  # 또는 bfloat16, 환경에 따라 조절
+            offload_folder="/tmp/offload_dir"  # 또는 bfloat16, 환경에 따라 조절
         )
         self.model = PeftModel.from_pretrained(base_model, self.adapter_path)
         self.model.eval()  # 평가 모드
