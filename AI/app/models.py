@@ -8,19 +8,22 @@ class Measure(Base):
 
     measure_id = Column(BigInteger, primary_key=True)
     date = Column(BigInteger, nullable=False)
-    user_id = Column(Integer, nullable=False)
-    client_id = Column(Integer, nullable=False)
-
-    composition_id = Column(BigInteger, ForeignKey("body_composition.composition_id"))
-    blood_id = Column(BigInteger, ForeignKey("blood_pressure.blood_id"))
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    composition_id = Column(BigInteger, ForeignKey("body_composition.composition_id"), nullable=False)
+    blood_id = Column(BigInteger, ForeignKey("blood_pressure.blood_id"), nullable=False)
+    heart_id = Column(BigInteger, ForeignKey("heart_rate.heart_id"), nullable=True)
+    stress_id = Column(BigInteger, ForeignKey("stress.stress_id"), nullable=True)
+    temperature_id = Column(BigInteger, ForeignKey("temperature.temperature_id"), nullable=True)
 
     # 관계
     client = relationship("Client", back_populates="measures")
     user = relationship("User", back_populates="measures") 
-    body_composition = relationship("BodyComposition")
-    blood_pressure = relationship("BloodPressure")
-    heart_rate = relationship("HeartRate") 
-
+    body_composition = relationship("BodyComposition", foreign_keys=[composition_id])
+    blood_pressure = relationship("BloodPressure", foreign_keys=[blood_id])
+    heart_rate = relationship("HeartRate", foreign_keys=[heart_id])
+    stress = relationship("Stress", foreign_keys=[stress_id])
+    temperature = relationship("Temperature", foreign_keys=[temperature_id])
 
 class Client(Base):
     __tablename__ = "clients"
