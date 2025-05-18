@@ -59,6 +59,11 @@ class ManualScheduleFragment : BaseFragment<FragmentManualScheduleBinding>(
 
         mainViewModel.fetchClients()
 
+        if (!isEditMode && args.visitedDate != 0L) {
+            selectedDate = LocalDate.ofEpochDay(args.visitedDate!!)
+            binding.etDate.setText(selectedDate.toString())
+        }
+
         if (isEditMode) {
             showSkeletonUI(true)
             viewLifecycleOwner.lifecycleScope.launch {

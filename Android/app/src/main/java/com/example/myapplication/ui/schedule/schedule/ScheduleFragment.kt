@@ -133,7 +133,12 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
         }
 
         binding.btnScheduleAdd.setOnClickListener {
-            findNavController().navigate(R.id.dest_schedule_register_dialog)
+            val action = ScheduleFragmentDirections
+                .actionScheduleFragmentToDestScheduleRegisterDialog(
+                    visitedDate = scheduleViewModel.selectedDate.value?.toEpochDay() ?: 0L
+                )
+            findNavController().navigate(action)
+
         }
     }
 
