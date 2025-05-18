@@ -133,8 +133,6 @@ public class MeasureService {
         measure.setStress(stress);
         measureRepository.save(measure);
 
-        healthRangeAsyncService.calculateAndSaveStressLevels(user, client, stress);
-
         // 결과 반환
         return MeasureResponseDTO.createWithSingleId("stressId", stress.getId());
     }

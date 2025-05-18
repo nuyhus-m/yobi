@@ -1,7 +1,6 @@
 package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.responseDTO.*;
-import com.S209.yobi.domain.measures.Mapper.StressLevelMapper;
 import com.S209.yobi.domain.measures.entity.*;
 import com.S209.yobi.domain.measures.repository.*;
 import com.S209.yobi.domain.users.entity.User;
@@ -16,10 +15,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -147,20 +142,8 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
+        StressResponseDTO responseDTO = StressResponseDTO.of(stress);
 
-        // Redis에서 스트레스 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> stressLevels = healthLevelService.getStressLevels(userId, clientId);
-
-        // 스트레스 데이터를 DTO로 변환
-        StressResponseDTO responseDTO = StressResponseDTO.builder()
-                .stressId(stress.getId())
-                .stressValue(stress.getStressValue())
-                .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
-                .build();
-
-        // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
 

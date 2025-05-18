@@ -104,6 +104,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 스트레스 level 정보 조회
+     * 사용하지 아니함
      */
     public Map<String, String> getStressLevels(Integer userId, Integer clientId) {
         try {

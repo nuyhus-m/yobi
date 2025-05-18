@@ -1,5 +1,7 @@
 package com.S209.yobi.domain.measures.service;
 
+import com.S209.yobi.domain.measures.Enum.StressLevel;
+
 public class HealthCalculatorService {
         /**
          * 수축기 혈압(SBP) 레벨 계산
@@ -44,5 +46,26 @@ public class HealthCalculatorService {
         if (temp < 36.0) return "낮음";    // 저체온
         if (temp < 37.2) return "보통";   // 정상 체온
         return "높음";                    // 고열
+    }
+
+
+    /**
+     * 스트레스 레벨 변환 (영문 → 한글)
+     */
+    public static String translateStressLevel(StressLevel stressLevel) {
+        if (stressLevel == null) {
+            return "보통";
+        }
+
+        switch (stressLevel) {
+            case LOW:
+                return "낮음";
+            case MID:
+                return "보통";
+            case HIGH:
+                return "높음";
+            default:
+                return "보통";
+        }
     }
 }
