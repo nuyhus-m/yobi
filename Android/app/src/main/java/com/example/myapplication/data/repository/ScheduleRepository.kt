@@ -2,8 +2,10 @@ package com.example.myapplication.data.repository
 
 import com.example.myapplication.data.dto.request.schedule.ScheduleRequest
 import com.example.myapplication.data.dto.response.schedule.DayScheduleResponse
+import com.example.myapplication.data.dto.response.schedule.OCRScheduleItem
 import com.example.myapplication.data.dto.response.schedule.OCRScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.PeriodScheduleResponse
+import com.example.myapplication.data.dto.response.schedule.SaveOCRScheduleResponse
 import com.example.myapplication.data.dto.response.schedule.ScheduleResponse
 import com.example.myapplication.data.remote.ScheduleService
 import jakarta.inject.Inject
@@ -50,6 +52,13 @@ class ScheduleRepository @Inject constructor(
             timezone = timezone
         )
     }
+
+    suspend fun savePhotoSchedule(
+        request: List<OCRScheduleItem>
+    ): Response<SaveOCRScheduleResponse> {
+        return scheduleService.savePhotoSchedule(request)
+    }
+
 
 
 

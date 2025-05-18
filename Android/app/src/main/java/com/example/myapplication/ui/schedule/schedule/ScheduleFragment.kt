@@ -127,6 +127,13 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
                     ?.remove<List<LocalDate>>("refreshDotDates")
             }
 
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<Pair<Long, Long>>("refreshDotPeriod")
+            ?.observe(viewLifecycleOwner) { (start, end) ->
+                scheduleViewModel.getPeriodSchedule(start, end)
+                findNavController().currentBackStackEntry?.savedStateHandle
+                    ?.remove<Pair<Long, Long>>("refreshDotPeriod")
+            }
     }
 
 
@@ -220,6 +227,13 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
             YearMonth.now().plusMonths(1),  // 종료 월
             daysOfWeek().first()            // 주 시작 요일 (일요일)
         )
+
+        val selectedDateMonth = scheduleViewModel.selectedDate.value?.let { YearMonth.from(it) }
+        if (selectedDateMonth != null) {
+            currentMonth = selectedDateMonth
+            calendarView.scrollToMonth(currentMonth)
+        }
+
 
         calendarView.scrollToMonth(currentMonth)
 
