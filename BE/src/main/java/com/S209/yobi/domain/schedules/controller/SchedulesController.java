@@ -96,7 +96,7 @@ public class SchedulesController {
     }
 
 
-    @Operation(summary = "단건 일정 수정 테스트트 테스트트", description = "일정 정보를 수정합니다.")
+    @Operation(summary = "단건 일정 수정", description = "일정 정보를 수정합니다.")
     @PatchMapping("/{scheduleId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "일정 수정 성공",
@@ -313,7 +313,7 @@ public class SchedulesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OCR 분석 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\"schedules\":[{\"day\":5,\"startAt\":\"10:00\",\"endAt\":\"11:30\",\"clientName\":\"김철수\"},{\"day\":7,\"startAt\":\"13:00\",\"endAt\":\"14:30\",\"clientName\":\"이영희\"}],\"whichDay\":1}")))
+                            examples = @ExampleObject(value = "{\"schedules\":[{\"day\":5,\"startAt\":\"10:00\",\"endAt\":\"11:30\",\"clientName\":\"김철수\"},{\"day\":7,\"startAt\":\"13:00\",\"endAt\":\"14:30\",\"clientName\":\"이영희\"}],\"formMatch\":true,\"whichDay\":1}")))
     })
     public ResponseEntity<?> analyzeScheduleByOcr(
             @RequestParam("image") MultipartFile image,
