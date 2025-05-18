@@ -68,25 +68,50 @@ pipeline {
             }
         }
 
-
         stage('Deploy to EC2-1') {
             steps {
                 sh """
-                    # 기존 컨테이너 중지 및 삭제
-                    docker stop \$(docker ps -a -q --filter name=yobi-be) || true
-                    docker rm \$(docker ps -a -q --filter name=yobi-be) || true
+                    # 기존 컨테이너 중지 및 삭제 (이름 패턴에 ocr-app 포함)
+                    docker stop \$(docker ps -a -q --filter name=yobi-be) ocr-app || true
+                    docker rm \$(docker ps -a -q --filter name=yobi-be) ocr-app || true
                     
                     # 기존 이미지 삭제
-                    docker rmi be-spring-image:latest || true
+                    docker rmi be-spring-image:latest ocr-app:latest || true
                     
-                    # 새 이미지 빌드 (명시적으로 빌드 컨텍스트 지정)
+                    # 새 이미지 빌드
                     docker build --no-cache --pull -t be-spring-image:latest -f BE/Dockerfile BE/
+                    docker build --no-cache --pull -t ocr-app:latest -f OCR/Dockerfile OCR/
                     
-                    # 컨테이너 재생성 및 재배포
-                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend
+                    # 컨테이너 재생성 및 재배포 (ocr-app 포함)
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate
                 """
             }
         }
+
+
+
+
+//        stage('Deploy to EC2-1') {
+//            steps {
+//                sh """
+//                    # 기존 컨테이너 중지 및 삭제
+//                    docker stop \$(docker ps -a -q --filter name=yobi-be) || true
+//                    docker rm \$(docker ps -a -q --filter name=yobi-be) || true
+//                    
+//                    # 기존 이미지 삭제
+//                    docker rmi be-spring-image:latest || true
+//                    
+//                    # 새 이미지 빌드 (명시적으로 빌드 컨텍스트 지정)
+//                    docker build --no-cache --pull -t be-spring-image:latest -f BE/Dockerfile BE/
+//                    
+//                    # 컨테이너 재생성 및 재배포
+//                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend
+//                """
+//            }
+//        }
+
+
+
  //       stage('Deploy to EC2-2') {
  //           steps {
  //               sh """
