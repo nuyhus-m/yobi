@@ -17,4 +17,5 @@
     <color name="green_sub">#124DAF37</color>
     <color name="blue">#FF4A90E2</color>
     <color name="blue_sub">#124A90E2</color>
+    <color name="button_gray">#E2DCE4</color>
 </resources>
