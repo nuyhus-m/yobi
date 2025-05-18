@@ -3,18 +3,18 @@ package com.example.myapplication.ui.schedule.schedule
 
 import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.core.view.children
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
@@ -48,12 +48,43 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
     private val minMonth = YearMonth.of(2024, 1)
     private val maxMonth = YearMonth.now().plusMonths(1)
 
+    private var backPressedTime = 0L
+    private var toast: Toast? = null
+
     companion object {
         private val START_MONTH = YearMonth.of(2024, 1)
         private const val MAX_DOTS_PER_DAY = 10
         private const val DOTS_PER_ROW = 3
         private const val DOT_MARGIN = 1
         private const val DOT_SIZE = 4
+        private const val BACK_PRESS_INTERVAL = 2000L // 2초
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - backPressedTime < BACK_PRESS_INTERVAL) {
+                        toast?.cancel()
+                        isEnabled = false
+                        activity?.finishAffinity()
+                    } else {
+                        backPressedTime = currentTime
+                        toast = Toast.makeText(
+                            requireContext(),
+                            "뒤로가기 버튼을 한 번 더 누르면 종료됩니다.",
+                            Toast.LENGTH_SHORT
+                        )
+                        toast?.show()
+                    }
+                }
+
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,7 +148,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
     private fun setupClickListeners() {
         binding.btnPrevious.setOnClickListener {
-            if(currentMonth > minMonth) {
+            if (currentMonth > minMonth) {
                 currentMonth = currentMonth.minusMonths(1)
                 binding.cv.smoothScrollToMonth(currentMonth)
                 updateMonthTitle(currentMonth)
@@ -336,7 +367,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(
 
         binding.scheduleRecyclerView.adapter = scheduleAdapter
     }
-
 }
 
 class DayViewContainer(view: View) : com.kizitonwose.calendar.view.ViewContainer(view) {
