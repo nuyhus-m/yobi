@@ -50,10 +50,6 @@ class ScheduleViewModel @Inject constructor(
         clientColorMap = map
     }
 
-    init {
-        selectDate(LocalDate.now())
-    }
-
     fun getPeriodSchedule(start: Long, end: Long) {
         val startDate = start.toLocalDate()
         val endDate = end.toLocalDate()
