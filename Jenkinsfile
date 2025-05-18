@@ -106,7 +106,7 @@ pipeline {
                                 -v /mnt/data/models:/mnt/data/models \\
                                 -v /mnt/data/huggingface:/root/.cache/huggingface \\
                                 ${DOCKER_IMAGE} \\
-                                python app/ai_model/download_models.py
+                                bash -c "pip install peft && python app/ai_model/download_models.py"
                         fi
 
                         # 디렉토리 확인 및 이동
