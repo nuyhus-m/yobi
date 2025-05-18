@@ -5,8 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # 1) 시스템 패키지
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential \          # gcc, g++, libc6-dev 포함
-        libpq-dev \                # PostgreSQL client headers
+        build-essential \
+        libpq-dev \
         postgresql-client \
         curl \
         cron && \
