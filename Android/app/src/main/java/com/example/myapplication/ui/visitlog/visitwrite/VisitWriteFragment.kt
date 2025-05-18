@@ -227,10 +227,20 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             val granted = grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
             binding.btnRecord.isEnabled = granted
+
+            if (granted) {
+                binding.ivMic.clearColorFilter()
+            } else {
+                binding.ivMic.setColorFilter(
+                    ContextCompat.getColor(requireContext(), R.color.button_gray),
+                    PorterDuff.Mode.SRC_IN
+                )
+            }
             showToast(
                 if (granted) "음성 녹음 권한이 허용되었습니다"
                 else "음성 녹음 권한이 거부되어 STT 기능을 사용할 수 없습니다"
             )
+
         }
     }
 
@@ -413,8 +423,18 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
     }
 
     private fun checkAudioPermission() {
-        if (!hasRecordPermission())
+        if (!hasRecordPermission()) {
             requestPermissions(arrayOf(recordAudioPermission), recordPermissionRequestCode)
+
+            binding.ivMic.setColorFilter(
+                ContextCompat.getColor(requireContext(), R.color.button_gray),
+                PorterDuff.Mode.SRC_IN
+            )
+        } else {
+            binding.ivMic.clearColorFilter()
+
+        }
+
     }
 
     private fun hasRecordPermission(): Boolean =
