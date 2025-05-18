@@ -120,7 +120,7 @@ class BatchRunner:
             # 에러 알림 전송
             # await BatchNotificationService.send_error_notification(e)
             raise
-        
+
 # 파일 하단에 추가
 if __name__ == "__main__":
     import argparse
