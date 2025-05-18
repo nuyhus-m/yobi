@@ -64,16 +64,13 @@ pipeline {
             steps {
                 sh """
                     # 기존 컨테이너 중지 및 삭제
-                    docker stop redis postgres ocr-app be-spring-container || true
-                    docker rm redis postgres ocr-app be-spring-container || true
-                    # 
-                    # 기존 네트워크와 orphan 컨테이너 정리
-                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE down --remove-orphans
-
+                    docker stop yobi-be_backend_1 yobi-be_redis_1 yobi-be_postgres_1 ocr-app || true
+                    docker rm yobi-be_backend_1 yobi-be_redis_1 yobi-be_postgres_1 ocr-app || true
+                    
                     # 컨테이너 재생성 및 재배포
                     docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
-                        up -d --build --no-cache --force-recreate redis postgres backend ocr-app
-                        """
+                        up -d --build backend
+                    """
             }
         }
  //       stage('Deploy to EC2-2') {
