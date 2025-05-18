@@ -67,9 +67,16 @@ pipeline {
                     docker stop yobi-be_backend_1 yobi-be_redis_1 yobi-be_postgres_1 ocr-app || true
                     docker rm yobi-be_backend_1 yobi-be_redis_1 yobi-be_postgres_1 ocr-app || true
                     
+                    # 기존 이미지 삭제
+                    docker rmi be-spring-image:latest || true
+                    
+                    # 새 이미지 빌드 (명시적으로 빌드 컨텍스트 지정)
+                    cd BE
+                    docker build --no-cache -t be-spring-image:latest .
+                    cd ..
+                    
                     # 컨테이너 재생성 및 재배포
-                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE \\
-                        up -d --build backend
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d backend
                     """
             }
         }
