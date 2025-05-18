@@ -5,7 +5,11 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     INTERNAL_AI_URL: str = "http://localhost:8001/api"
     
-    class Config:
-        env_file = ".env"
+    
+    model_config = {
+        "env_file": ".env",
+        "extra": "allow"  # 추가 필드 허용
+    }
+
 
 settings = Settings()
