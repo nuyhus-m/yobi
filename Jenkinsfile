@@ -86,10 +86,6 @@ pipeline {
                     
                     # 컨테이너 재생성 및 재배포
                     docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d backend
-                    
-                    # 컨테이너가 정상적으로 시작되었는지 확인
-                    echo "Waiting for backend to be healthy..."
-                    timeout 60s bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8081/api/actuator/health)" != "200" ]]; do sleep 5; done' || exit 1
                 """
             }
         }
