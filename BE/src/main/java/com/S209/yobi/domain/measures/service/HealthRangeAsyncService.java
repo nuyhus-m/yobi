@@ -147,6 +147,7 @@ public class HealthRangeAsyncService {
 
     /**
      * 심박수 데이터에 대한 level을 계산하고 Redis에 저장
+     * // 사용하지 아니함.
      */
     @Async
     public void calculateAndSaveHeartRateLevels(User user, Client client, HeartRate heartRate) {

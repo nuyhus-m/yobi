@@ -119,20 +119,8 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
+        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.of(heartRate);
 
-        // Redis에서 심박수 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> heartRateLevels = healthLevelService.getHeartRateLevels(userId, clientId);
-
-        // 심박수 데이터를 DTO로 변환
-        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.builder()
-                .heartId(heartRate.getId())
-                .bpm(new MeasureWithLevel(heartRate.getBpm(), heartRateLevels.getOrDefault("bpm", "보통")))
-                .oxygen(new MeasureWithLevel(heartRate.getOxygen(), heartRateLevels.getOrDefault("oxygen", "보통")))
-                .build();
-
-        // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
 

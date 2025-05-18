@@ -76,6 +76,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 심박수 level 정보 조회
+     * 사용하지 아니함.
      */
     public Map<String, String> getHeartRateLevels(Integer userId, Integer clientId) {
         try {
