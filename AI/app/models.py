@@ -40,6 +40,7 @@ class Client(Base):
     user = relationship("User", back_populates="clients")
     # 관계: 클라이언트 → 측정값들
     measures = relationship("Measure", back_populates="client")
+    schedules = relationship("Schedule", back_populates="client")
 
 
 class User(Base):
@@ -55,6 +56,7 @@ class User(Base):
     # 관계 설정: 한 명의 유저는 여러 클라이언트와 측정 데이터를 가질 수 있음
     clients = relationship("Client", back_populates="user")
     measures = relationship("Measure", back_populates="user")
+    schedules = relationship("Schedule", back_populates="user")
 
 
 class BodyComposition(Base):
@@ -98,6 +100,24 @@ class WeeklyReport(Base):
     created_at = Column(BigInteger)
 
 
+class Schedule(Base):
+    __tablename__ = "schedule"
+
+    schedule_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("clients.client_id"), nullable=False)
+    visited_date = Column(BigInteger, nullable=False)
+    start_at = Column(BigInteger, nullable=False)
+    end_at = Column(BigInteger, nullable=False)
+    log_content = Column(String(150))
+    log_created_at = Column(BigInteger)
+    log_updated_at = Column(BigInteger)
+
+    # 관계 설정
+    user = relationship("User", back_populates="schedules")
+    client = relationship("Client", back_populates="schedules")
+
+
 class BatchLog(Base):
     """
     배치 작업 로그 모델
@@ -114,3 +134,5 @@ class BatchLog(Base):
     duration = Column(Numeric(10, 2), nullable=False)
     failed_client_ids = Column(JSON, nullable=True)
     details = Column(JSON, nullable=True)
+
+
