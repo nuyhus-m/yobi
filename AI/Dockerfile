@@ -16,7 +16,8 @@ RUN apt-get update && \
 COPY requirements.txt /tmp/requirements.txt
 RUN set -eux; \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
-    pip install --no-cache-dir psycopg2-binary==2.9.10
+    pip install --no-cache-dir psycopg2-binary==2.9.10 && \
+    pip install --no-cache-dir transformers==4.51.3
 
 # 3) 앱 코드
 COPY . /app/
