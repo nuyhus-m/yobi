@@ -96,6 +96,11 @@ pipeline {
 
                         sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
+                         # Docker 네트워크 생성 - 이미 존재하면 무시
+                        echo '🌐 Creating Docker network if it does not exist'
+                        docker network ls | grep s12p31s209_ai-network || docker network create s12p31s209_ai-network
+
+
                         if [ ! -f ${BASE_MODEL_PATH}/config.json ]; then
                             echo ⬇️ Downloading Models
                             docker run --rm \\\\
