@@ -89,54 +89,55 @@ pipeline {
                 sshagent(credentials: ['ec2-2-pem-key-id']) {
                     withCredentials([string(credentialsId: 'hf_token', variable: 'HF_TOKEN')]) {
                         sh """
-                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} 'bash -c "
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_AI_IP} bash -c \"
                         set -e
-
+                                
                         # 기존 컨테이너 정리
-                        echo \"🧹 기존 컨테이너 정리\"
-                        docker-compose -f ${REMOTE_PATH}/docker-compose.ec2-2.yml down || true
+                        echo '🧹 기존 컨테이너 정리'
+                        docker-compose -f /home/ubuntu/S12P31S209/docker-compose.ec2-2.yml down || true
                         
                         # 기존 이미지 삭제
-                        echo \"🗑️ 기존 이미지 삭제 중...\"
-                        docker image rm ${DOCKER_IMAGE} || true
+                        echo '🗑️ 기존 이미지 삭제 중...'
+                        docker image rm mundevelop/ai-app:latest || true
                         
                         # 새 이미지 받기
-                        echo \"📦 새 이미지 풀 받는 중...\"
-                        docker pull ${DOCKER_IMAGE}
+                        echo '📦 새 이미지 풀 받는 중...'
+                        docker pull mundevelop/ai-app:latest
 
                         sudo chown -R ubuntu:ubuntu /srv/models /mnt/data/huggingface
 
                         # Docker 네트워크 생성 - 이미 존재하면 무시
-                        echo \"🌐 Docker 네트워크 확인 중...\"
+                        echo '🌐 Docker 네트워크 확인 중...'
                         docker network ls | grep s12p31s209_ai-network || docker network create s12p31s209_ai-network
 
-                        if [ ! -f ${BASE_MODEL_PATH}/config.json ]; then
-                            echo \"⬇️ 모델 다운로드 중...\"
-                            docker run --rm \\
-                                -e HF_TOKEN=${HF_TOKEN} \\
-                                -e HF_HOME=/root/.cache/huggingface \\
-                                -e BASE_MODEL_PATH=/mnt/data/models/base \\
-                                -e ADAPTER_PATH=/mnt/data/models/adapter \\
-                                -v /mnt/data/models:/mnt/data/models \\
-                                -v /mnt/data/huggingface:/root/.cache/huggingface \\
-                                ${DOCKER_IMAGE} \\
-                                bash -c \"pip install peft && python app/ai_model/download_models.py\"
+                        # 모델 다운로드 부분 수정 - python 명령 전체를 Docker 컨테이너 내에서 실행
+                        if [ ! -f /mnt/data/models/base/config.json ]; then
+                            echo '⬇️ 모델 다운로드 중...'
+                            docker run --rm \\\\
+                                -e HF_TOKEN=${HF_TOKEN} \\\\
+                                -e HF_HOME=/root/.cache/huggingface \\\\
+                                -e BASE_MODEL_PATH=/mnt/data/models/base \\\\
+                                -e ADAPTER_PATH=/mnt/data/models/adapter \\\\
+                                -v /mnt/data/models:/mnt/data/models \\\\
+                                -v /mnt/data/huggingface:/root/.cache/huggingface \\\\
+                                mundevelop/ai-app:latest \\\\
+                                /bin/bash -c \\\"pip install peft && python app/ai_model/download_models.py\\\"
                         fi
 
                         # 디렉토리 확인 및 이동
-                        cd ${REMOTE_PATH}
+                        cd /home/ubuntu/S12P31S209
                         pwd
                         ls -la
                         
                         # 환경 파일 확인
-                        if [ ! -f .env ] && [ -f ${REMOTE_PATH}/.env ]; then
-                            echo \"⚠️ .env 파일을 현재 디렉토리로 복사합니다\"
-                            cp ${REMOTE_PATH}/.env .
+                        if [ ! -f .env ] && [ -f /home/ubuntu/S12P31S209/.env ]; then
+                            echo '⚠️ .env 파일을 현재 디렉토리로 복사합니다'
+                            cp /home/ubuntu/S12P31S209/.env .
                         fi
                         
-                        echo \"🚀 Docker Compose로 배포 중...\"
+                        echo '🚀 Docker Compose로 배포 중...'
                         docker-compose -f docker-compose.ec2-2.yml --env-file .env up -d --build --force-recreate
-                        "'
+                        \"
                         """
                     }
                 }
