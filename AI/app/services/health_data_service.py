@@ -12,9 +12,11 @@
 - HealthDataProcessor: 건강 데이터 처리 및 분석을 담당하는 핵심 프로세서
 """
 
+
+import os
+import torch
 from fastapi import APIRouter, HTTPException, Query, Depends
 from sqlalchemy.orm import Session, joinedload
-from core.database import get_db
 from models import Measure, Client, User, BodyComposition, BloodPressure, HeartRate, Schedule, WeeklyReport
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
@@ -26,7 +28,8 @@ from core.config import settings
 from schemas.health_data import HealthDataResponse
 import aiohttp  # 배치모드에서 세션 재사용용
 from openai import AsyncOpenAI  # 비동기 클라이언트
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from peft import PeftModel
 
 
 
