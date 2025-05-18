@@ -50,7 +50,7 @@ class HealthDataProcessor:
             self.model_path,
             device_map="auto",
             torch_dtype=torch.float16,
-            offload_folder="/tmp/offload_dir"  # 또는 bfloat16, 환경에 따라 조절
+            offload_folder="/tmp/offload_dir"  # offload_dir 대신 offload_folder 사용
         )
         self.model = PeftModel.from_pretrained(base_model, self.adapter_path)
         self.model.eval()  # 평가 모드
@@ -162,8 +162,9 @@ class HealthDataProcessor:
         }
 
         # 🔹 Tokenize & Model Inference
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
-
+        prompt_text = prompt["input"]  # 문자열만 추출
+        inputs = self.tokenizer(prompt_text, return_tensors="pt").to(self.model.device)
+        
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
