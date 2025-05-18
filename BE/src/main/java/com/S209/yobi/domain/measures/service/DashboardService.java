@@ -40,6 +40,7 @@ public class DashboardService {
     private final ClientRepository clientRepository;
     private final HealthMapperNative healthMapperNative;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final HealthLevelService healthLevelService;
 
     /**
      * 단건 데이터 조회 (주요 데이터)
@@ -58,12 +59,13 @@ public class DashboardService {
         Measure measure = optionalMeasure.orElseGet(() ->
                         measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
 
-        LocalDate baseDate = null;
-        if(measure != null){
-            baseDate = Instant.ofEpochMilli(measure.getDate())
+        if (measure == null) {
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
+        }
+
+        LocalDate baseDate = Instant.ofEpochMilli(measure.getDate())
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
-        }
 
         // Redis 값 가져오기 : 체성분 범위
         String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
@@ -74,8 +76,9 @@ public class DashboardService {
                         e -> (String) e.getValue()
                 ));
 
-        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
+        // 혈압 레벨은 Redis에서 가져오지 않음 - BloodResponseDTO.of에서 직접 계산함
 
+        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
         return result;
     }
 
@@ -96,14 +99,15 @@ public class DashboardService {
         Measure measure = optionalMeasure.orElseGet(() ->
                 measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
 
-        LocalDate baseDate = null;
-        if(measure != null){
-            baseDate = Instant.ofEpochMilli(measure.getDate())
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+        if (measure == null) {
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        // Redis 값 가져오기 : 체성분 범위
+        LocalDate baseDate = Instant.ofEpochMilli(measure.getDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // Redis 값 가져오기 : 체성분 범위만 (혈압 제외)
         String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
         Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
         Map<String, String> redisLevels = redisData.entrySet().stream()

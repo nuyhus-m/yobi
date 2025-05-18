@@ -22,16 +22,16 @@ public class HealthLevelService {
     /**
      * Redis에서 체성분 level 정보 조회
      */
-    public Map<String, String> getBodyCompositionLevels(Integer userId, Integer clientId) {
+    public Map<String, String> getBodyCompositionLevels(Integer userId, Integer clientId, LocalDate measureDate) {
         try {
             // Redis 키 생성
-            String redisKey = "range" + userId + ":" + clientId + ":" + LocalDate.now();
+            String redisKey = "range" + userId + ":" + clientId + ":" + measureDate;
 
             // Redis에서 데이터 조회
             Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
 
             if (entries == null || entries.isEmpty()) {
-                log.info("Redis에서 체성분 level 정보를 찾을 수 없음 [userId: {}, clientId: {}]", userId, clientId);
+                log.info("Redis에서 체성분 level 정보를 찾을 수 없음 [userId: {}, clientId: {}, date: {}]", userId, clientId, measureDate);
                 return createDefaultBodyCompositionLevels();
             }
 
@@ -48,11 +48,12 @@ public class HealthLevelService {
 
     /**
      * Redis에서 혈압 level 정보 조회
+     * 이제 사용하지 아니함.
      */
-    public Map<String, String> getBloodPressureLevels(Integer userId, Integer clientId) {
+    public Map<String, String> getBloodPressureLevels(Integer userId, Integer clientId, LocalDate measureDate) {
         try {
             // Redis 키 생성
-            String redisKey = "bp:" + userId + ":" + clientId + ":" + LocalDate.now();
+            String redisKey = "bp:" + userId + ":" + clientId + ":" + measureDate;
 
             // Redis에서 데이터 조회
             Map<Object, Object> entries = redisTemplate.opsForHash().entries(redisKey);
@@ -75,6 +76,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 심박수 level 정보 조회
+     * 사용하지 아니함.
      */
     public Map<String, String> getHeartRateLevels(Integer userId, Integer clientId) {
         try {
@@ -102,6 +104,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 스트레스 level 정보 조회
+     * 사용하지 아니함
      */
     public Map<String, String> getStressLevels(Integer userId, Integer clientId) {
         try {
@@ -129,6 +132,7 @@ public class HealthLevelService {
 
     /**
      * Redis에서 체온 level 정보 조회
+     * 이제 사용하지 아니함.
      */
     public Map<String, String> getTemperatureLevels(Integer userId, Integer clientId) {
         try {
@@ -183,8 +187,8 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultBloodPressureLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("sbp", "정상");
-        defaultLevels.put("dbp", "정상");
+        defaultLevels.put("sbp", "보통");
+        defaultLevels.put("dbp", "보통");
         return defaultLevels;
     }
 
@@ -193,8 +197,8 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultHeartRateLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("bpm", "정상");
-        defaultLevels.put("oxygen", "정상");
+        defaultLevels.put("bpm", "보통");
+        defaultLevels.put("oxygen", "보통");
         return defaultLevels;
     }
 
@@ -212,7 +216,7 @@ public class HealthLevelService {
      */
     private Map<String, String> createDefaultTemperatureLevels() {
         Map<String, String> defaultLevels = new HashMap<>();
-        defaultLevels.put("temperature", "정상");
+        defaultLevels.put("temperature", "보통");
         return defaultLevels;
     }
 

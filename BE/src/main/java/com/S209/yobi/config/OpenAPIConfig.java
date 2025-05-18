@@ -29,7 +29,7 @@ public class OpenAPIConfig {
                         new Server().url("http://192.168.100.201:8080/api").description("문경 Server"),
                         new Server().url("http://192.168.0.115:8080/api").description("문경 집 Server"),
                         new Server().url("http://172.30.1.71:8080/api").description("투썸 Server"),
-                        new Server().url("http://192.168.0.52:8080/api").description("에바 Server")
+                        new Server().url("http://192.168.0.31:8080/api").description("에바 Server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new io.swagger.v3.oas.models.Components()

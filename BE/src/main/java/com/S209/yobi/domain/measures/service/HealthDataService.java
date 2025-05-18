@@ -1,7 +1,6 @@
 package com.S209.yobi.domain.measures.service;
 
 import com.S209.yobi.DTO.responseDTO.*;
-import com.S209.yobi.domain.measures.Mapper.StressLevelMapper;
 import com.S209.yobi.domain.measures.entity.*;
 import com.S209.yobi.domain.measures.repository.*;
 import com.S209.yobi.domain.users.entity.User;
@@ -16,8 +15,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,9 +62,12 @@ public class HealthDataService {
 
         Measure measure = measureOptional.get();
         Integer clientId = measure.getClient().getId();
+        LocalDate measureDate = Instant.ofEpochMilli(measure.getDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
 
         // Redis에서 건강 범위 정보 조회
-        Map<String, String> healthLevels = healthLevelService.getBodyCompositionLevels(userId, clientId);
+        Map<String, String> healthLevels = healthLevelService.getBodyCompositionLevels(userId, clientId, measureDate);
 
         // DTO 변환 및 ApiResponseDTO로 래핑하여 반환
         BodyCompositionResponseDTO responseDTO = BodyCompositionResponseDTO.of(bodyComposition, healthLevels);
@@ -87,29 +90,8 @@ public class HealthDataService {
 
         BloodPressure bloodPressure = bloodPressureOptional.get();
 
-        // 해당 혈압이 특정 Measure에 속하는지 확인하여 클라이언트 ID 찾기
-        Optional<Measure> measureOptional = measureRepository.findByBlood(bloodPressure);
-        if (measureOptional.isEmpty()) {
-            log.info("혈압에 연결된 측정 데이터를 찾을 수 없음 [bloodId: {}]", bloodId);
-            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
-        }
-
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
-
-        // Redis에서 혈압 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> bloodLevels = healthLevelService.getBloodPressureLevels(userId, clientId);
-
-        // 소수점 첫째자리로 반올림
-        float roundedSbp = Math.round(bloodPressure.getSbp() * 10) / 10.0f;
-        float roundedDbp = Math.round(bloodPressure.getDbp() * 10) / 10.0f;
-
-        // BloodResponseDTO 생성 시 Redis에서 가져온 level 사용
-        BloodResponseDTO responseDTO = BloodResponseDTO.builder()
-                .bloodId(bloodPressure.getId())
-                .sbp(new MeasureWithLevel(roundedSbp, bloodLevels.getOrDefault("sbp", "보통")))
-                .dbp(new MeasureWithLevel(roundedDbp, bloodLevels.getOrDefault("dbp", "보통")))
-                .build();
+        // BloodResponseDTO.of 메소드 호출 - 내부에서 직접 계산함
+        BloodResponseDTO responseDTO = BloodResponseDTO.of(bloodPressure);
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
@@ -138,20 +120,8 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
+        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.of(heartRate);
 
-        // Redis에서 심박수 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> heartRateLevels = healthLevelService.getHeartRateLevels(userId, clientId);
-
-        // 심박수 데이터를 DTO로 변환
-        HeartRateResponseDTO responseDTO = HeartRateResponseDTO.builder()
-                .heartId(heartRate.getId())
-                .bpm(new MeasureWithLevel(heartRate.getBpm(), heartRateLevels.getOrDefault("bpm", "정상")))
-                .oxygen(new MeasureWithLevel(heartRate.getOxygen(), heartRateLevels.getOrDefault("oxygen", "정상")))
-                .build();
-
-        // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
 
@@ -178,20 +148,8 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
+        StressResponseDTO responseDTO = StressResponseDTO.of(stress);
 
-        // Redis에서 스트레스 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> stressLevels = healthLevelService.getStressLevels(userId, clientId);
-
-        // 스트레스 데이터를 DTO로 변환
-        StressResponseDTO responseDTO = StressResponseDTO.builder()
-                .stressId(stress.getId())
-                .stressValue(stress.getStressValue())
-                .stressLevel(StressLevelMapper.toClient(stress.getStressLevel()))
-                .build();
-
-        // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
     }
 
@@ -218,18 +176,7 @@ public class HealthDataService {
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
 
-        Measure measure = measureOptional.get();
-        Integer clientId = measure.getClient().getId();
-
-        // Redis에서 체온 level 정보 조회 (HealthLevelService 사용)
-        Map<String, String> temperatureLevels = healthLevelService.getTemperatureLevels(userId, clientId);
-
-        // 체온 데이터를 DTO로 변환
-        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.builder()
-                .temperatureId(temperature.getId())
-                .temperature(new MeasureWithLevel(temperature.getTemperature(),
-                        temperatureLevels.getOrDefault("temperature", "정상")))
-                .build();
+        TemperatureResponseDTO responseDTO = TemperatureResponseDTO.of(temperature);
 
         // 성공 응답 생성
         return ApiResponseDTO.success(responseDTO);
