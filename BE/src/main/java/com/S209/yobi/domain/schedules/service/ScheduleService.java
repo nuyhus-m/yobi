@@ -71,6 +71,10 @@ public class ScheduleService {
     // 단건 일정 등록
     @Transactional
     public ApiResult createSchedule(Integer userId, ScheduleCreateRequestDTO requestDto) {
+        if (!isClientBelongsToUser(userId, requestDto.getClientId())) {
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_USERS_CLIENT);
+        }
+
         Client client = clientRepository.findById(requestDto.getClientId())
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + requestDto.getClientId()));
 
@@ -121,6 +125,11 @@ public class ScheduleService {
 
         Client client = schedule.getClient();
         if (requestDto.getClientId() != null) {
+
+            if (!isClientBelongsToUser(currentUserId, requestDto.getClientId())) {
+                return ApiResponseDTO.fail(ApiResponseCode.NOT_USERS_CLIENT);
+            }
+
             client = clientRepository.findById(requestDto.getClientId())
                     .orElseThrow(() -> new EntityNotFoundException("Client not found"));
             schedule.setClient(client);
@@ -317,160 +326,6 @@ public class ScheduleService {
         return new SimpleResultDTO<>(result);
     }
 
-    /// OCR로 일정 등록
-//    @Transactional
-//    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month, String timezone) {
-//        //사용자의 시간대 설정
-//        ZoneId userZone = ZoneId.of(timezone);
-//
-//        //이미지 유효성 검사
-//        if (image == null || image.isEmpty()) {
-//            throw new IllegalArgumentException("이미지 파일이 없음.");
-//        }
-//
-//        //년월 유효성 검사
-//        if (year < 2000 || year > 2100 || month < 1 || month > 12) {
-//            throw new IllegalArgumentException("유효하지 않은 년월입니다.");
-//        }
-//
-//        try {
-//            // 이미지 리사이징 처리
-//            MultipartFile resizedImage = imageResizeService.resizeImageIfNeeded(image);
-//            log.info("이미지 크기: 원본 {}KB -> 변환 후 {}KB",
-//                    image.getSize() / 1024,
-//                    resizedImage.getSize() / 1024);
-//
-//            // FastAPI 서버에 리사이징된 이미지 전송
-//            OcrResponseDTO ocrResult;
-//            try {
-//                ocrResult = ocrFastApiClient.processImage(resizedImage);
-//            } catch (Exception e) {
-//                log.error("OCR 서버 처리 중 오류: {}", e.getMessage());
-//                throw new IllegalArgumentException("OCR 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
-//            }
-//
-//            if (ocrResult == null || ocrResult.getSchedules() == null || ocrResult.getSchedules().isEmpty()) {
-//                throw new IllegalArgumentException("인식된 일정이 없습니다. 이미지를 확인해주세요.");
-//            }
-//
-//            Boolean formMatch = ocrResult.getFormMatch();
-//            if (formMatch != null && !formMatch) {
-//                log.warn("달력과 실제 요일이 일치하지 않습니다.");
-//            }
-//
-//            // 일정 등록
-//            int successCount = 0;
-//            int failCount = 0;
-//            List<String> failureReasons = new ArrayList<>();
-//            User user = userRepository.findById(userId)
-//                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
-//
-//            YearMonth yearMonth = YearMonth.of(year, month);
-//            int lastDayOfMonth = yearMonth.lengthOfMonth();
-//
-//            // 결과에서 일정 정보 추출 및 저장
-//            for (OcrResponseDTO.ScheduleItem item : ocrResult.getSchedules()) {
-//                try {
-//                    // 날짜 유효성 검사
-//                    // 1일 이전인 경우, 혹은 30일/31일을 벗어나는 경우
-//                    if (item.getDay() <= 0 || item.getDay() > lastDayOfMonth) {
-//                        failCount++;
-//                        failureReasons.add(String.format("날짜 오류: %d일은 %d년 %d월에 존재하지 않습니다.", item.getDay(), year, month));
-//                        continue;
-//                    }
-//
-//                    // 클라이언트 이름으로 클라이언트 찾기
-//                    // 해당 이름의 클라이언트가 없다면 생략하고, 다음 저장을 진행함.
-//                    Client client;
-//                    try {
-//                        client = clientRepository.findByName(item.getClientName())
-//                                .orElse(null);
-//                        if (client == null) {
-//                            failCount++;
-//                            failureReasons.add(String.format("클라이언트 찾기 실패: '%s'", item.getClientName()));
-//                            continue;
-//                        }
-//                    } catch (Exception e) {
-//                        failCount++;
-//                        failureReasons.add(String.format("클라이언트 조회 오류: '%s'", item.getClientName()));
-//                        continue;
-//                    }
-//
-//                    try {
-//                        // 날짜, 시간 파싱 (LocalDate/LocalTime으로 파싱 후 타임스탬프로 변환)
-//                        LocalDate localDate = LocalDate.of(year, month, item.getDay());
-//
-//                        LocalTime startLocalTime = LocalTime.parse(item.getStartAt() + ":00");
-//                        LocalTime endLocalTime = LocalTime.parse(item.getEndAt() + ":00");
-//
-//                        // 타임스탬프 변환 - 사용자 시간대 사용
-//                        ZonedDateTime startZdt = ZonedDateTime.of(localDate, startLocalTime, userZone);
-//                        ZonedDateTime endZdt = ZonedDateTime.of(localDate, endLocalTime, userZone);
-//
-//                        long visitedDateTimestamp = localDate.atStartOfDay(userZone).toInstant().toEpochMilli();
-//                        long startAtTimestamp = startZdt.toInstant().toEpochMilli();
-//                        long endAtTimestamp = endZdt.toInstant().toEpochMilli();
-//
-//                        // 중복 일정 확인
-//                        ApiResult overlapResult = checkScheduleOverlap(userId, null, visitedDateTimestamp,
-//                                startAtTimestamp, endAtTimestamp, client.getId());
-//                        if (overlapResult instanceof ApiResponseDTO) {
-//                            ApiResponseDTO<?> responseDTO = (ApiResponseDTO<?>) overlapResult;
-//                            if (!"200".equals(responseDTO.getCode())) {
-//                                // 중복 일정이 있는 경우
-//                                failCount++;
-//                                String reason;
-//                                if (responseDTO.getCode().equals(ApiResponseCode.DUPLICATE_DATE_CLIENT.getCode())) {
-//                                    reason = String.format("같은 날짜에 같은 클라이언트 일정 중복: %s일 %s님",
-//                                            item.getDay(), item.getClientName());
-//                                } else {
-//                                    reason = String.format("시간 중복 일정: %s일 %s~%s",
-//                                            item.getDay(), item.getStartAt(), item.getEndAt());
-//                                }
-//                                failureReasons.add(reason);
-//                                continue;
-//                            }
-//                        }
-//
-//                        // Schedule 객체 생성 및 저장
-//                        Schedule schedule = Schedule.builder()
-//                                .user(user)
-//                                .client(client)
-//                                .visitedDate(visitedDateTimestamp)
-//                                .startAt(startAtTimestamp)
-//                                .endAt(endAtTimestamp)
-//                                .build();
-//
-//                        scheduleRepository.save(schedule);
-//                        successCount++;
-//                        log.info("스케줄 저장 완료 - 날짜: {}, 시작: {}, 종료: {}, 클라이언트: {}",
-//                                localDate, startLocalTime, endLocalTime, client.getName());
-//                    } catch (DateTimeParseException e) {
-//                        failCount++;
-//                        failureReasons.add(String.format("시간 형식 오류: %s일 %s~%s", item.getDay(), item.getStartAt(), item.getEndAt()));
-//                        continue;
-//                    }
-//                } catch (Exception e) {
-//                    failCount++;
-//                    failureReasons.add(String.format("기타 오류: %s", e.getMessage()));
-//                    log.error("스케줄 저장 중 오류 발생: {}", e.getMessage());
-//                }
-//            }
-//
-//            Map<String, Object> resultMap = new HashMap<>();
-//            resultMap.put("successCount", successCount);
-//            resultMap.put("failCount", failCount);
-//
-//            if (failCount > 0) {
-//                resultMap.put("failureReasons", failureReasons);
-//            }
-//
-//            return OcrDTO.OcrResultDTO.of(successCount, failCount, failCount > 0 ? failureReasons : null, formMatch);
-//        } catch (IOException e) {
-//            throw new RuntimeException("이미지 처리 중 오류가 발생했습니다.", e);
-//        }
-//    }
-
     // 특정 기간의 일정 리스트
     @Transactional(readOnly = true)
     public ApiResult getSchedulesByPeriod(Integer userId, long startDate, long endDate) {
@@ -488,10 +343,6 @@ public class ScheduleService {
 
         return ScheduleResponseDTO.fromList(schedules);
     }
-
-
-
-
 
 
     // 1. OCR 분석만 수행하는 메서드 (DB 저장 X)
@@ -676,6 +527,12 @@ public class ScheduleService {
                         failureReasons.add(String.format("클라이언트 찾기 실패: '%s'", item.getClientName()));
                         continue;
                     }
+
+                    if (!client.getUser().getId().equals(userId)) {
+                        failCount++;
+                        failureReasons.add(String.format("담당하지 않는 클라이언트: '%s'", clientName));
+                        continue;
+                    }
                 } catch (Exception e) {
                     failCount++;
                     failureReasons.add(String.format("클라이언트 조회 오류: '%s'", item.getClientName()));
@@ -727,19 +584,11 @@ public class ScheduleService {
         return OcrDTO.OcrResultDTO.of(successCount, failCount, failCount > 0 ? failureReasons : null, formMatch);
     }
 
-//    // 기존 메서드는 새 메서드들을 사용하는 방식으로 유지 (하위 호환성)
-//    @Transactional
-//    public ApiResult processOcrSchedules(MultipartFile image, Integer userId, Integer year, Integer month, String timezone) {
-//        // OCR 분석 수행
-//        ApiResult analyzeResult = analyzeSchedulesWithOcr(image, year, month, timezone);
-//
-//        // OCR 결과가 OcrResponseDTO 타입인지 확인
-//        if (!(analyzeResult instanceof OcrResponseDTO)) {
-//            throw new RuntimeException("OCR 분석 결과가 올바른 형식이 아닙니다.");
-//        }
-//
-//        // DB 저장 수행
-//        OcrResponseDTO ocrResult = (OcrResponseDTO) analyzeResult;
-//        return saveOcrSchedules(userId, ocrResult, year, month, timezone);
-//    }
+
+    private boolean isClientBelongsToUser(Integer userId, Integer clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + clientId));
+
+        return client.getUser().getId().equals(userId);
+    }
 }

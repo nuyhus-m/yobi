@@ -34,7 +34,8 @@ public enum ApiResponseCode {
     WRONG_PASSWORD_LENGTH("400-9", "비밀번호는 8자 이상 15자 이하만 입력 가능합니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_SCHEDULE_TIME("400-10", "해당 시간에 이미 일정이 있습니다.", HttpStatus.BAD_REQUEST),
     DUPLICATE_DATE_CLIENT("400-11", "해당 날짜, 해당 클라이언트 조합의 일정이 이미 있습니다.", HttpStatus.BAD_REQUEST),
-    UNAUTHORIZED("403-1", "권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+    UNAUTHORIZED("403-1", "권한이 없습니다.", HttpStatus.UNAUTHORIZED),
+    NOT_USERS_CLIENT("403-2", "사용자의 담당 클라이언트가 아닙니다.", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String message;
