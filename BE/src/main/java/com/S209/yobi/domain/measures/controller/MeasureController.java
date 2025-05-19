@@ -32,7 +32,7 @@ public class MeasureController {
     private final MeasureService measureService;
     private final AuthUtils authUtils;
 
-    @Operation(summary = "피트러스 필수 데이터 저장 (체성분/혈압)", description = "피트러스 필수 데이터를 저장합니다(체성분/혈압)")
+    @Operation(summary = "피트러스 필수 데이터 저장 (체성분/혈압)", description = "피트러스 필수 데이터를 저장합니다!(체성분/혈압)")
     @PostMapping(value = "/base/{clientId}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "필수 데이터 저장 성공",
