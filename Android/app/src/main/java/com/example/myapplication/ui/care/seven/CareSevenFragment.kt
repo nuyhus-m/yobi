@@ -48,7 +48,7 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
             })
         }
         viewModel.metrics.observe(viewLifecycleOwner) { list ->
-            adapter.submitList(list)
+            adapter.updateList(list)
 
             if (list.isNullOrEmpty()) {
                 binding.tvEmpty.visibility = View.VISIBLE
@@ -58,5 +58,10 @@ class CareSevenFragment : BaseFragment<FragmentCareSevenBinding>(
                 binding.recyclerView.visibility = View.VISIBLE
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adapter.release()
     }
 }
