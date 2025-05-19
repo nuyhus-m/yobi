@@ -35,6 +35,9 @@ class DailyMetricAdapter(
     class MetricViewHolder(val binding: ItemDailyMetricBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        init {
+            setupTouchListener()   // 한 번만 붙이고, 절대 지우지 않는다
+        }
         // 각 ViewHolder마다 독립적인 코루틴 스코프 생성
         val scope = CoroutineScope(Dispatchers.Main)
 
@@ -54,6 +57,7 @@ class DailyMetricAdapter(
                 }
             }
         }
+
 
         // 차트 설정 함수
         private fun setupChart(values: List<Float>, dates: List<String>, title: String, onRequestMoreData: (() -> Unit)?) {
@@ -201,21 +205,27 @@ class DailyMetricAdapter(
         }
 
         private fun setupTouchListener() {
+            var lastX = 0f
+            var lastY = 0f
+
             binding.lineChart.setOnTouchListener { v, event ->
                 val parent = v.parent
-                when (event.action) {
+                when (event.actionMasked) {
                     MotionEvent.ACTION_DOWN -> {
+                        lastX = event.x
+                        lastY = event.y
                         parent?.requestDisallowInterceptTouchEvent(true)
                     }
                     MotionEvent.ACTION_MOVE -> {
-                        if (event.historySize > 0) {
-                            val deltaX = event.x - event.getHistoricalX(0)
-                            val chart = binding.lineChart
-                            val atLeftEdge = chart.lowestVisibleX <= 0f && deltaX > 0
-                            val atRightEdge = chart.highestVisibleX >= (chart.data?.entryCount?.minus(1) ?: 0) && deltaX < 0
-
-                            parent?.requestDisallowInterceptTouchEvent(!(atLeftEdge || atRightEdge))
+                        val dx = event.x - lastX
+                        val dy = event.y - lastY
+                        if (kotlin.math.abs(dx) > kotlin.math.abs(dy)) {
+                            parent?.requestDisallowInterceptTouchEvent(true)
+                        } else {
+                            parent?.requestDisallowInterceptTouchEvent(false)
                         }
+                        lastX = event.x
+                        lastY = event.y
                     }
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         parent?.requestDisallowInterceptTouchEvent(false)
@@ -227,17 +237,13 @@ class DailyMetricAdapter(
 
         // ViewHolder가 재활용될 때 호출
         fun recycle() {
-            // 차트 데이터 정리 - NPE 방지를 위한 안전한 정리
-            binding.lineChart.setOnTouchListener(null)
+            // ⚠️ 더 이상 touch listener 를 지우지 않는다.
             binding.lineChart.onChartGestureListener = null
-
-            // 차트 데이터만 제거 (clear() 대신 데이터만 null로 설정)
             if (binding.lineChart.data != null) {
                 binding.lineChart.data = null
                 binding.lineChart.invalidate()
             }
         }
-
         companion object {
             // 중복 날짜 데이터 제거 함수
             private fun removeDuplicateEntries(item: DailyMetric): Pair<List<Float>, List<String>> {
