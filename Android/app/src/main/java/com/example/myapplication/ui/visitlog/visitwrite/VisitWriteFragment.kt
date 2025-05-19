@@ -24,6 +24,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.base.BaseFragment
 import com.example.myapplication.databinding.FragmentVisitWriteBinding
+import com.example.myapplication.ui.visitlog.diarydetail.DiaryDetailFragment
 import com.example.myapplication.ui.visitlog.visitwrite.stt.CredentialsHelper
 import com.example.myapplication.ui.visitlog.visitwrite.stt.MaxLengthToastFilter
 import com.example.myapplication.ui.visitlog.visitwrite.stt.NlpFilter
@@ -471,7 +472,7 @@ class VisitWriteFragment : BaseFragment<FragmentVisitWriteBinding>(
             onSuccess = {
                 findNavController().previousBackStackEntry
                     ?.savedStateHandle
-                    ?.set("needRefreshSchedule", true)
+                    ?.set(DiaryDetailFragment.EDIT_DONE_RESULT_KEY, true)
 
                 showToast("일지가 저장되었습니다.")
                 Navigation.findNavController(requireView()).popBackStack()

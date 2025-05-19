@@ -32,6 +32,8 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
 
     companion object {
         private const val DELETE_RESULT_KEY = "delete_confirmed"
+        const val EDIT_DONE_RESULT_KEY = "edit_done"
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,6 +41,9 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
 
         setupClickListeners()
         observeViewModel()
+
+
+        observeEditResult()
 
         // 데이터 로드 전에 shimmer 시작
         showShimmerEffect(true)
@@ -48,6 +53,24 @@ class DiaryDetailFragment : BaseFragment<FragmentDiaryDetailBinding>(
             delay(500)
             viewModel.loadDailyLog(args.scheduleId)
         }
+    }
+
+    private fun observeEditResult() {
+        val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
+        savedStateHandle?.getLiveData<Boolean>(EDIT_DONE_RESULT_KEY)
+            ?.observe(viewLifecycleOwner) { edited ->
+                if (edited == true) {
+                    // 일회성 결과이므로 바로 제거
+                    savedStateHandle.remove<Boolean>(EDIT_DONE_RESULT_KEY)
+
+                    // shimmer 다시 켜고 최신 데이터 요청
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        showShimmerEffect(true)        // skeleton ON
+                        delay(500)          // 0.5 s 지연
+                        viewModel.loadDailyLog(args.scheduleId)
+                    }
+                }
+            }
     }
 
     private fun setupClickListeners() {
