@@ -112,7 +112,11 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
             }
         }
     }
-
+    /**
+     * content 내에 literal "\n" 을 실제 개행으로 치환하고,
+     * "• sectionTitle" 섹션의 본문을 뽑아서
+     * 1차 불릿(-)마다 하나의 블록으로 묶은 List<String>을 반환합니다.
+     */
     /**
      * content 내에 literal "\n" 을 실제 개행으로 치환하고,
      * "• sectionTitle" 섹션의 본문을 뽑아서
@@ -135,7 +139,6 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
         // 섹션 내용 추출
         val sectionPattern = "•\\s*${Regex.escape(sectionTitle)}\\s*(.*?)(?=\\s*•|$)"
         val sectionMatch = Regex(sectionPattern, RegexOption.DOT_MATCHES_ALL).find(normalized)
-
         if (sectionMatch == null) {
             Log.d(TAG, "Section not found: $sectionTitle")
             return emptyList()
@@ -150,17 +153,21 @@ class ReportDetailFragment : BaseFragment<FragmentReportDetailBinding>(
 
         for (i in bulletLines.indices) {
             val currentBullet = bulletLines[i].trim()
-            val nextBulletIndex = if (i < bulletLines.size - 1) {
-                sectionText.indexOf(bulletLines[i + 1], sectionText.indexOf(currentBullet) + currentBullet.length)
-            } else {
-                sectionText.length
-            }
-
-            // 현재 불릿부터 다음 불릿 직전까지 추출
             val startIndex = sectionText.indexOf(currentBullet)
-            val endIndex = if (nextBulletIndex > startIndex) nextBulletIndex else sectionText.length
 
-            if (startIndex >= 0 && endIndex > startIndex) {
+            if (startIndex >= 0) {
+                val endIndex = if (i < bulletLines.size - 1) {
+                    // 다음 불릿의 시작 위치를 찾음
+                    val nextBullet = bulletLines[i + 1].trim()
+                    val nextIndex =
+                        sectionText.indexOf(nextBullet, startIndex + currentBullet.length)
+                    if (nextIndex > startIndex) nextIndex else sectionText.length
+                } else {
+                    // 마지막 불릿인 경우, 명시적으로 따옴표를 제외하기 위해 문자열 끝을 찾음
+                    val quoteIndex = sectionText.indexOf("\"", startIndex)
+                    if (quoteIndex > 0) quoteIndex else sectionText.length
+                }
+
                 val bulletWithDesc = sectionText.substring(startIndex, endIndex).trim()
                 result.add(bulletWithDesc)
             }
