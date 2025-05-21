@@ -105,6 +105,11 @@
 | **협업 도구** | ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=flat&logo=gitlab&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white) ![Jira](https://img.shields.io/badge/Jira-0052CC?style=flat&logo=jira&logoColor=white) |
 
 ---
+## 🔨 시스템 아키텍처
+
+<img src="./architecture.png" alt="Architecture"/>
+
+---
 
 ## 📱 Android 패키지 구조
 
