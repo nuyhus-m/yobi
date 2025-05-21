@@ -27,6 +27,7 @@ services:
 
   backend:
     image: be-spring-image
+    container_name: yobi-be_backend_1 
     build:
       context: ./BE
       dockerfile: Dockerfile
