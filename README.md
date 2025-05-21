@@ -113,59 +113,33 @@
             ├─ui
             │  ├─care
             │  │  ├─carelist
-            │  │  │  └─adapter
             │  │  ├─caremain
-            │  │  │  ├─adapter
-            │  │  │  ├─inter
-            │  │  │  └─viewmodel
             │  │  ├─daily
-            │  │  │  └─viewmodel
             │  │  ├─dailydetail
-            │  │  │  └─viewmodel
             │  │  ├─report
-            │  │  │  ├─adapter
-            │  │  │  └─viewmodel
             │  │  ├─reportdetail
-            │  │  │  └─viewmodel
             │  │  └─seven
-            │  │      ├─Adapter
-            │  │      ├─data
-            │  │      └─viewmodel
             │  ├─measure
             │  │  ├─bluetoothguide
             │  │  ├─deviceconnect
             │  │  ├─measureguide
             │  │  ├─measureitem
             │  │  ├─measureloading
-            │  │  │  └─viewmodel
             │  │  ├─measureresult
-            │  │  │  └─viewmodel
             │  │  ├─measuretarget
-            │  │  │  └─viewmodel
             │  │  └─measuretransition
             │  ├─mypage
             │  │  ├─changePassword
-            │  │  │  └─viewmodel
             │  │  ├─mypage
             │  │  └─policy
             │  ├─schedule
             │  │  ├─manualschedule
-            │  │  │  └─viewmodel
             │  │  ├─photoschedule
-            │  │  │  └─viewmodel
             │  │  └─schedule
-            │  │      ├─adapter
-            │  │      └─viewmodel
             │  └─visitlog
             │      ├─diarydetail
-            │      │  └─viewmodel
             │      ├─visitloglist
-            │      │  ├─adapter
-            │      │  └─viewmodel
-            │      │      └─data
             │      └─visitwrite
-            │          ├─stt
-            │          └─viewmodel
             └─util
 ```
 
