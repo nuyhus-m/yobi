@@ -95,16 +95,7 @@
             │  ├─dto
             │  │  ├─model
             │  │  ├─request
-            │  │  │  ├─measure
-            │  │  │  ├─mypage
-            │  │  │  ├─schedule
-            │  │  │  └─visitlog
             │  │  └─response
-            │  │      ├─care
-            │  │      ├─measure
-            │  │      ├─mypage
-            │  │      ├─schedule
-            │  │      └─visitlog
             │  ├─local
             │  ├─remote
             │  └─repository
