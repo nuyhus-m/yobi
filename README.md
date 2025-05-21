@@ -134,7 +134,7 @@
             └─util
 ```
 
-## BackEnd 패키지 구조
+## 🖥️ BackEnd 패키지 구조
 
 ```
 yobi
@@ -175,7 +175,35 @@ yobi
 └─Mapper
 ```
 
-## OCR 패키지 구조
+
+## 🤖 AI 패키지 구조
+
+```
+AI/
+├── app/
+│   ├── main.py
+│   ├── ai_model/
+│   │   └── download_models.py
+│   ├── models.py
+│   ├── schemas/
+│   │   └── health_data.py
+│   ├── batch/
+│   │   ├── batch_generator.py
+│   │   ├── batch_retry.py
+│   │   ├── batch_scheduler.py
+│   │   ├── batch_runner.py
+│   │   └── manual_report.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── database.py
+│   └── service/
+│       └── health_data_service.py
+├── requirements.txt
+├── .env
+└── README.md
+```
+
+## 🧾 OCR 패키지 구조
 ```
 OCR/
 ├── app/
@@ -205,32 +233,6 @@ OCR/
 └── README.md
 ```
 
-## AI 패키지 구조
-
-```
-AI/
-├── app/
-│   ├── main.py
-│   ├── ai_model/
-│   │   └── download_models.py
-│   ├── models.py
-│   ├── schemas/
-│   │   └── health_data.py
-│   ├── batch/
-│   │   ├── batch_generator.py
-│   │   ├── batch_retry.py
-│   │   ├── batch_scheduler.py
-│   │   ├── batch_runner.py
-│   │   └── manual_report.py
-│   ├── core/
-│   │   ├── config.py
-│   │   └── database.py
-│   └── service/
-│       └── health_data_service.py
-├── requirements.txt
-├── .env
-└── README.md
-```
 
 
 ## 팀원 소개
