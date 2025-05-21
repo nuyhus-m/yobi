@@ -237,3 +237,7 @@ OCR/
 
 ## 팀원 소개
 
+|[이서현](https://github.com/)|[이문경](https://github.com/)|[차현우](https://github.com/)|[민수현](https://github.com/nuyhus-m)|[박진현](https://github.com/)|[이호정](https://github.com/HoJungL)|
+|------|---|---|---|---|------|
+|<img src="https://avatars.githubusercontent.com/u/163630533?v=4" width="120" />|<img src="https://avatars.githubusercontent.com/u/170425672?v=4" width="120" />|<img src="https://avatars.githubusercontent.com/u/167060769?v=4" width="120" />|<img src="https://avatars.githubusercontent.com/u/79716243?v=4.jpg" width="120" />|<img src="https://avatars.githubusercontent.com/u/175380864?v=4" width="120" />|<img src="https://avatars.githubusercontent.com/u/105427432?v=4" width="120" />|
+
