@@ -72,8 +72,8 @@ pipeline {
             steps {
                 sh """
                     # 기존 컨테이너 중지 및 삭제 (이름 패턴에 ocr-app 포함)
-                    docker stop \$(docker ps -a -q --filter name=yobi-be) ocr-app || true
-                    docker rm \$(docker ps -a -q --filter name=yobi-be) ocr-app || true
+                    docker stop \$(docker ps -a -q --filter name=yobi-be) ocr-app nginx || true
+                    docker rm \$(docker ps -a -q --filter name=yobi-be) ocr-app nginx || true
                     
                     # 기존 이미지 삭제
                     docker rmi be-spring-image:latest ocr-app:latest || true
@@ -83,7 +83,7 @@ pipeline {
                     docker build --no-cache --pull -t ocr-app:latest -f OCR/Dockerfile OCR/
                     
                     # 컨테이너 재생성 및 재배포 (ocr-app 포함)
-                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend postgres redis ocr-app
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend postgres redis ocr-app nginx
                 """
             }
         }
@@ -105,7 +105,7 @@ pipeline {
 //                    docker build --no-cache --pull -t be-spring-image:latest -f BE/Dockerfile BE/
 //                    
 //                    # 컨테이너 재생성 및 재배포
-//                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend
+//                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend 
 //                """
 //            }
 //        }
