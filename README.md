@@ -32,7 +32,7 @@
 - **일정 관리의 어려움** → OCR을 활용한 종이 일정표 자동 디지털화 기능 제공  
 - **객관적 건강 파악의 어려움** → 디바이스 연동을 통한 **건강 상태 측정 기능** 제공  
 
----## 🧩 주요 기능
+## 🧩 주요 기능
 
 ### 🗓️ 일정표 OCR 기능
 - 수기 일정표를 사진 촬영하면 자동 인식 및 등록
@@ -55,9 +55,10 @@
 - 일별 기록을 AI가 주간 단위로 요약
 - 보호사와 관리자가 전체 흐름 쉽게 파악
 
-### **건강 상태 측정 기능**  
-- Fitrus 등 연동 가능한 디바이스를 통해 어르신의 체성분, 심박수, 혈압 등의 데이터를 실시간으로 측정  
-- 측정된 수치는 자동 저장되어 건강 대시보드 및 리포트에 반영  
+### 🩺 건강 상태 측정 기능  
+- Fitrus 디바이스를 통해 어르신의 체성분, 심박수, 혈압 등의 데이터를 실시간으로 측정  
+- 측정된 수치는 자동 저장되어 건강 대시보드 및 리포트에 반영
+
 ---
 
 ## 🗓️ 프로젝트 일정
@@ -84,4 +85,188 @@
 | **협업 도구** | ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=flat&logo=gitlab&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white) ![Jira](https://img.shields.io/badge/Jira-0052CC?style=flat&logo=jira&logoColor=white) |
 
 ---
+
+## 📱 Android 패키지 구조
+
+```
+   └─myapplication
+            ├─base
+            ├─data
+            │  ├─dto
+            │  │  ├─model
+            │  │  ├─request
+            │  │  │  ├─measure
+            │  │  │  ├─mypage
+            │  │  │  ├─schedule
+            │  │  │  └─visitlog
+            │  │  └─response
+            │  │      ├─care
+            │  │      ├─measure
+            │  │      ├─mypage
+            │  │      ├─schedule
+            │  │      └─visitlog
+            │  ├─local
+            │  ├─remote
+            │  └─repository
+            ├─di
+            ├─network
+            ├─ui
+            │  ├─care
+            │  │  ├─carelist
+            │  │  │  └─adapter
+            │  │  ├─caremain
+            │  │  │  ├─adapter
+            │  │  │  ├─inter
+            │  │  │  └─viewmodel
+            │  │  ├─daily
+            │  │  │  └─viewmodel
+            │  │  ├─dailydetail
+            │  │  │  └─viewmodel
+            │  │  ├─report
+            │  │  │  ├─adapter
+            │  │  │  └─viewmodel
+            │  │  ├─reportdetail
+            │  │  │  └─viewmodel
+            │  │  └─seven
+            │  │      ├─Adapter
+            │  │      ├─data
+            │  │      └─viewmodel
+            │  ├─measure
+            │  │  ├─bluetoothguide
+            │  │  ├─deviceconnect
+            │  │  ├─measureguide
+            │  │  ├─measureitem
+            │  │  ├─measureloading
+            │  │  │  └─viewmodel
+            │  │  ├─measureresult
+            │  │  │  └─viewmodel
+            │  │  ├─measuretarget
+            │  │  │  └─viewmodel
+            │  │  └─measuretransition
+            │  ├─mypage
+            │  │  ├─changePassword
+            │  │  │  └─viewmodel
+            │  │  ├─mypage
+            │  │  └─policy
+            │  ├─schedule
+            │  │  ├─manualschedule
+            │  │  │  └─viewmodel
+            │  │  ├─photoschedule
+            │  │  │  └─viewmodel
+            │  │  └─schedule
+            │  │      ├─adapter
+            │  │      └─viewmodel
+            │  └─visitlog
+            │      ├─diarydetail
+            │      │  └─viewmodel
+            │      ├─visitloglist
+            │      │  ├─adapter
+            │      │  └─viewmodel
+            │      │      └─data
+            │      └─visitwrite
+            │          ├─stt
+            │          └─viewmodel
+            └─util
+```
+
+## BackEnd 패키지 구조
+
+```
+yobi
+├─config
+├─domain
+│  ├─clients
+│  │  ├─controller
+│  │  ├─entity
+│  │  ├─repository
+│  │  └─service
+│  ├─measures
+│  │  ├─controller
+│  │  ├─entity
+│  │  ├─Enum
+│  │  ├─helper
+│  │  ├─Mapper
+│  │  ├─repository
+│  │  └─service
+│  ├─report
+│  │  ├─controller
+│  │  ├─entity
+│  │  ├─repository
+│  │  └─service
+│  ├─schedules
+│  │  ├─controller
+│  │  ├─entity
+│  │  ├─repository
+│  │  └─service
+│  └─users
+│      ├─controller
+│      ├─entity
+│      ├─repository
+│      └─service
+├─DTO
+│  ├─requestDTO
+│  └─responseDTO
+├─exceptionFinal
+└─Mapper
+```
+
+## OCR 패키지 구조
+```
+OCR/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── core/
+│   │   ├── database.py
+│   │   └── redis_client.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── schemas.py
+│   ├── router/
+│   │   ├── __init__.py
+│   │   └── ocr_router.py
+│   ├── service/
+│   │   ├── __init__.py
+│   │   └── ocr_service.py
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── goolgle_ocr.py
+│   │   └── vision_utils.py
+├── .gitignore
+├── requirements.txt
+├── Dockerfile
+├── main.py
+├── ocr_response_debug.json
+└── README.md
+```
+
+## AI 패키지 구조
+
+```
+AI/
+├── app/
+│   ├── main.py
+│   ├── ai_model/
+│   │   └── download_models.py
+│   ├── models.py
+│   ├── schemas/
+│   │   └── health_data.py
+│   ├── batch/
+│   │   ├── batch_generator.py
+│   │   ├── batch_retry.py
+│   │   ├── batch_scheduler.py
+│   │   ├── batch_runner.py
+│   │   └── manual_report.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── database.py
+│   └── service/
+│       └── health_data_service.py
+├── requirements.txt
+├── .env
+└── README.md
+```
+
+
+## 팀원 소개
 
