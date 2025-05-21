@@ -155,7 +155,7 @@
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
 
-## DevOps
+**DevOps**
 <!-- DevOps -->
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-0899CD?style=for-the-badge&logo=docker&logoColor=white)
