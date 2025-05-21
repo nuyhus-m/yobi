@@ -12,12 +12,6 @@
 
 <br/>
 
-<div align="center">
-  <a href="#">📄 Notion</a> |
-  <a href="#">🛠 기능 명세서</a> |
-  <a href="#">📘 API 문서</a>
-</div>
-
 ---
 
 ## ✍️ 프로젝트 개요
