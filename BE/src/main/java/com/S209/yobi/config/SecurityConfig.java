@@ -43,18 +43,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                            "/users",
-                            "/users/login",
-                            "/users/refresh",
-                            "/swagger-ui/**",
-                            "/swagger-ui.html",        // 추가
-                            "/api-docs",               // 수정: /** 제거
-                            "/api-docs/**",            // 유지
-                            "/v3/api-docs",            // 추가
-                            "/v3/api-docs/**",         // 유지
-                            "/swagger-resources/**",
-                            "/webjars/**",
-                            "/error"
+                                "/users",
+                                "/users/login", 
+                                "/users/refresh",
+                                "/swagger-ui/**",              // 표준
+                                "/v3/api-docs/**",             // 표준만 유지
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/error"
                         ).permitAll()
                          .anyRequest().authenticated()
                 )
