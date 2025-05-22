@@ -21,6 +21,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -76,8 +79,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+        // ✅ 수정: credentials가 true일 때는 구체적인 도메인 지정
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(
+        // ✅ List.of() 사용 (Java 9+ 방식)
+        config.setAllowedOrigins(List.of(
             "https://k12s209.p.ssafy.io",
             "http://localhost:3000",
             "http://localhost:5173"  // Vite 개발 서버용
