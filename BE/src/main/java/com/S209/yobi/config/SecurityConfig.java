@@ -82,8 +82,10 @@ public class SecurityConfig {
         // ✅ 수정: credentials가 true일 때는 구체적인 도메인 지정
         config.setAllowCredentials(true);
         // ✅ List.of() 사용 (Java 9+ 방식)
-         config.setAllowedOrigins(List.of(
-        "https://k12s209.p.ssafy.io"  // 실제 프론트엔드 도메인
+        config.setAllowedOrigins(List.of(
+            "https://k12s209.p.ssafy.io",
+            "http://localhost:3000",
+            "http://localhost:5173"  // Vite 개발 서버용
         ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
