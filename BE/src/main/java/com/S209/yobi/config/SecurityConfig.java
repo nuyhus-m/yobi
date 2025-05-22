@@ -47,8 +47,11 @@ public class SecurityConfig {
                             "/users/login",
                             "/users/refresh",
                             "/swagger-ui/**",
-                            "/api-docs/**",
-                            "/v3/api-docs/**",
+                            "/swagger-ui.html",        // 추가
+                            "/api-docs",               // 수정: /** 제거
+                            "/api-docs/**",            // 유지
+                            "/v3/api-docs",            // 추가
+                            "/v3/api-docs/**",         // 유지
                             "/swagger-resources/**",
                             "/webjars/**",
                             "/error"
