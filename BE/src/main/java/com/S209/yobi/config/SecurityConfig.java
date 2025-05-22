@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 "/users/refresh",
                                 "/swagger-ui/**",              // 표준
                                 "/v3/api-docs/**",             // 표준만 유지
+                                "/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/error"
