@@ -77,7 +77,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*"); // 필요 시 FE 도메인으로 제한 가능
+        config.setAllowedOrigins(Arrays.asList(
+            "https://k12s209.p.ssafy.io",
+            "http://localhost:3000",
+            "http://localhost:5173"  // Vite 개발 서버용
+        ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addExposedHeader("*");
