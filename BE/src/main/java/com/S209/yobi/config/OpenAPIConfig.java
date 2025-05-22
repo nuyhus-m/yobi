@@ -23,13 +23,13 @@ public class OpenAPIConfig {
                         .description("Yobi 서비스의 API 명세서입니다.")
                         .version("v1.0.0"))
                 .servers(List.of(
-                        new Server().url("http://k12s209.p.ssafy.io:8081/api").description("EC2 Server"),
-                        new Server().url("http://192.168.100.162:8080/api").description("서현 Server"),
-                        new Server().url("http://192.168.35.21:8080/api").description("서현 집"),
-                        new Server().url("http://192.168.100.201:8080/api").description("문경 Server"),
-                        new Server().url("http://192.168.0.115:8080/api").description("문경 집 Server"),
-                        new Server().url("http://172.30.1.71:8080/api").description("투썸 Server"),
-                        new Server().url("http://192.168.0.31:8080/api").description("에바 Server")
+                        new Server().url("https://k12s209.p.ssafy.io:8081/api").description("EC2 Server"),
+                        new Server().url("https://192.168.100.162:8080/api").description("서현 Server"),
+                        new Server().url("https://192.168.35.21:8080/api").description("서현 집"),
+                        new Server().url("https://192.168.100.201:8080/api").description("문경 Server"),
+                        new Server().url("https://192.168.0.115:8080/api").description("문경 집 Server"),
+                        new Server().url("https://172.30.1.71:8080/api").description("투썸 Server"),
+                        new Server().url("https://192.168.0.31:8080/api").description("에바 Server")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new io.swagger.v3.oas.models.Components()
