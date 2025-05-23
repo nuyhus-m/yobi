@@ -40,7 +40,7 @@ public class DashboardController {
         if(result instanceof  ApiResponseDTO<?> errorResult){
             String code = errorResult.getCode();
             HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-            ResponseEntity.status(status).body(errorResult);
+            return ResponseEntity.status(status).body(errorResult);
         }
 
         return ResponseEntity.ok(result);
@@ -59,7 +59,7 @@ public class DashboardController {
         if(result instanceof  ApiResponseDTO<?> errorResult){
             String code = errorResult.getCode();
             HttpStatus status = ApiResponseCode.fromCode(code).getHttpStatus();
-            ResponseEntity.status(status).body(errorResult);
+            return ResponseEntity.status(status).body(errorResult);
         }
 
         return ResponseEntity.ok(result);
