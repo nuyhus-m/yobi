@@ -5,8 +5,10 @@ import com.S209.yobi.DTO.responseDTO.MainHealthResponseDTO;
 import com.S209.yobi.DTO.responseDTO.TotalHealthResponseDTO;
 import com.S209.yobi.domain.clients.entity.Client;
 import com.S209.yobi.domain.clients.repository.ClientRepository;
+import com.S209.yobi.domain.clients.service.ClientValidationService;
 import com.S209.yobi.domain.measures.Mapper.HealthMapper;
 import com.S209.yobi.domain.measures.Mapper.HealthMapperNative;
+import com.S209.yobi.domain.users.service.UserValidationService;
 import com.S209.yobi.exceptionFinal.ApiResponseCode;
 import com.S209.yobi.exceptionFinal.ApiResponseDTO;
 import com.S209.yobi.exceptionFinal.ApiResult;
@@ -14,10 +16,13 @@ import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.measures.repository.MeasureRepository;
 import com.S209.yobi.domain.users.entity.User;
 import com.S209.yobi.domain.users.repository.UserRepository;
+import com.sun.tools.javac.Main;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +32,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SimpleTimeZone;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,52 +40,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class DashboardService {
-
-    private final MeasureRepository measureRepository;
-    private final UserRepository userRepository;
     private final ClientRepository clientRepository;
+
+    private final UserValidationService userValidationService;
+    private final ClientValidationService clientValidationService;
+    private final MeasureQueryService measureQueryService;
+    private final HealthLevelCacheService healthLevelCacheService;
     private final HealthMapperNative healthMapperNative;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final HealthLevelService healthLevelService;
+
 
     /**
      * 단건 데이터 조회 (주요 데이터)
      */
     public ApiResult getMainHealth (int userId, int clientId){
 
-        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = getUser(userId);
-        Client client = getClientOrReturnFail(clientId);
-        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        // 유효한 유저인지 점검
+        User user = userValidationService.validateUser(userId);
 
-        // 당일 측정 데이터 Optional 로 조회
-        // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
-        long epochMilli = getTodayEpochMilli();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        Measure measure = optionalMeasure.orElseGet(() ->
-                        measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
+        // 유효한 클라이언트인지 점검
+        Optional<Client> getClient = clientValidationService.validateClient(clientId);
+        if(getClient.isEmpty()){
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        }
+        Client client = getClient.get();
 
-        if (measure == null) {
+        // 유효한 측정값인지 점검
+        Optional<Measure> todayMeasure =measureQueryService.getTodayMeasure(user, client);
+        if(todayMeasure.isEmpty()){
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
+        Measure measure = todayMeasure.get();
 
-        LocalDate baseDate = Instant.ofEpochMilli(measure.getDate())
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+        // 레디스에서 측정값 범위 조회
+        LocalDate measureDate = convertToLocalDate(measure.getDate());
+        Map<String, String> redisLevel = healthLevelCacheService.getHealthLevels(
+                userId, clientId, measureDate);
 
-        // Redis 값 가져오기 : 체성분 범위
-        String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
-        Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
-        Map<String, String> redisLevels = redisData.entrySet().stream()
-                .collect(Collectors.toMap(
-                        e -> (String) e.getKey(),
-                        e -> (String) e.getValue()
-                ));
-
-        // 혈압 레벨은 Redis에서 가져오지 않음 - BloodResponseDTO.of에서 직접 계산함
-
-        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
+        // 측정값 결과
+        MainHealthResponseDTO result = MainHealthResponseDTO.of(measure,client.getId(),measureDate, redisLevel);
         return result;
+
     }
 
     /**
@@ -87,37 +87,30 @@ public class DashboardService {
      */
     public ApiResult getHealthDetail (int userId, int clientId) {
 
-        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = getUser(userId);
-        Client client = getClientOrReturnFail(clientId);
-        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        // 유효한 유저인지 점검
+        User user = userValidationService.validateUser(userId);
 
-        // 당일 측정 데이터 Optional 로 조회
-        // 당일 측정 데이터가 없으면 제일 최신 데이터 불러오기
-        long epochMilli = getTodayEpochMilli();
-        Optional<Measure> optionalMeasure = measureRepository.findByUserAndClientAndDate(user, client, epochMilli);
-        Measure measure = optionalMeasure.orElseGet(() ->
-                measureRepository.findByUserAndClientAndDate(user, client, epochMilli).orElse(null));
+        // 유효한 클라이언트인지 점검
+        Optional<Client> getClient = clientValidationService.validateClient(clientId);
+        if(getClient.isEmpty()){
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        }
+        Client client = getClient.get();
 
-        if (measure == null) {
+        // 유효한 측정값인지 점검
+        Optional<Measure> todayMeasure =measureQueryService.getTodayMeasure(user, client);
+        if(todayMeasure.isEmpty()){
             return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_RESOURCE);
         }
+        Measure measure = todayMeasure.get();
 
-        LocalDate baseDate = Instant.ofEpochMilli(measure.getDate())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        // Redis 값 가져오기 : 체성분 범위만 (혈압 제외)
-        String redisKey = "range" + userId + ":" + clientId + ":" + baseDate;
-        Map<Object, Object> redisData = redisTemplate.opsForHash().entries(redisKey);
-        Map<String, String> redisLevels = redisData.entrySet().stream()
-                .collect(Collectors.toMap(
-                        e -> (String) e.getKey(),
-                        e -> (String) e.getValue()
-                ));
-
+        // 레디스에서 측정값 범위 조회
+        LocalDate measureDate = convertToLocalDate(measure.getDate());
+        Map<String, String> redisLevel = healthLevelCacheService.getHealthLevels(
+                userId, clientId, measureDate );
         // Measure 객체를 가지고 HealthDetailResponseDTO 생성
-        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), baseDate, redisLevels);
+
+        HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), measureDate, redisLevel);
         return result;
     }
 
@@ -125,16 +118,23 @@ public class DashboardService {
      * 건강 추이 전체 조회
      */
     public ApiResult getTotalHealth (int userId, int clientId, int size, Long cursorDate){
-        // 존재하는 유저인지 & 존재하는 돌봄대상인지 확인
-        User user = getUser(userId);
-        Client client = getClientOrReturnFail(clientId);
-        if(client == null) return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        // 유효한 유저인지 점검
+        userValidationService.validateUser(userId);
 
-        // cursorDate가 null인 경우 처리 (null을 0으로 변환하거나 적절한 기본값 설정)
-        long effectiveCursorDate = cursorDate != null ? cursorDate : 0L;
+        // 유효한 클라이언트인지 점검
+        Optional<Client> getClient = clientValidationService.validateClient(clientId);
+        if(getClient.isEmpty()){
+            return ApiResponseDTO.fail(ApiResponseCode.NOT_FOUND_CLIENT);
+        }
+        // cursorDate 가 null 이면 0L로 기본값 설정
+        long effectiveCursorDate = Optional.ofNullable(cursorDate).orElse(0L);
 
-        List<Object[]> measures = measureRepository.findHealthTrendsNative(clientId, effectiveCursorDate, size);
+        // cursorDate 부터 size 까지의 데이터 불러오기
+        List<Object[]> measures = measureQueryService.getHealthTrends(clientId, effectiveCursorDate, size);
+
+        // healthMapperNative를 통해 DTO변환
         TotalHealthResponseDTO result = healthMapperNative.totalHealthResponseDTO(clientId, measures);
+
         return result;
 
     }
@@ -145,24 +145,13 @@ public class DashboardService {
      *  공통 메서드
      */
 
-    // ===== 유저 존재 확인 =====
-    private User getUser(int userId){
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다."));
-    }
 
-    // ===== 클라이언트 존재 확인 =====
-    //실패 시 null 반환 → 서비스 로직에서 FAIL 응답 처리
-    // =============================
-    private Client getClientOrReturnFail(int clientId){
-        Optional<Client> optionalClient = clientRepository.findById(clientId);
-        if (optionalClient.isEmpty()) {
-            log.info("해당하는 클라이언트 없음, [clientId:{}]", clientId);
-            return null;
-        }
-        return optionalClient.get();
+    // ===== Epoch 밀리초를 LocalDate로 변환 =====
+    private LocalDate convertToLocalDate(long epochMilli){
+        return Instant.ofEpochMilli(epochMilli)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
     }
-
 
     // ===== 오늘 날짜 Long 으로 반환 =====
     private long getTodayEpochMilli() {
@@ -171,9 +160,6 @@ public class DashboardService {
                 .toInstant()
                 .toEpochMilli();
     }
-
-
-
 
 
 
