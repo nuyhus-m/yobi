@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -15,8 +16,8 @@ public class HealthLevelCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String REDIS_RANGE_KEY_PREFIX = "range";
 
-    public Map<String, String> getHealthLevels(int userId, int clientId, long epochMilli){
-        String redisKey = buildRedisKey(userId, clientId, epochMilli);
+    public Map<String, String> getHealthLevels(int userId, int clientId, LocalDate date){
+        String redisKey = buildRedisKey(userId, clientId, date);
         Map<Object,Object> redisData = redisTemplate.opsForHash().entries(redisKey);
         return redisData.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -25,8 +26,8 @@ public class HealthLevelCacheService {
                 ));
     }
 
-    public String buildRedisKey(int userId, int clientId, long epochMilli){
-        return String.format("%s%d:%d:%d", REDIS_RANGE_KEY_PREFIX, userId, clientId, epochMilli);
+    public String buildRedisKey(int userId, int clientId, LocalDate date){
+        return String.format("%s%d:%d:%s", REDIS_RANGE_KEY_PREFIX, userId, clientId, date);
     }
 
 }

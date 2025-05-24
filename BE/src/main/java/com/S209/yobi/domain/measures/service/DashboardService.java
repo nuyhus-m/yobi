@@ -74,7 +74,7 @@ public class DashboardService {
         // 레디스에서 측정값 범위 조회
         LocalDate measureDate = convertToLocalDate(measure.getDate());
         Map<String, String> redisLevel = healthLevelCacheService.getHealthLevels(
-                userId, clientId, measure.getDate());
+                userId, clientId, measureDate);
 
         // 측정값 결과
         MainHealthResponseDTO result = MainHealthResponseDTO.of(measure,client.getId(),measureDate, redisLevel);
@@ -107,7 +107,7 @@ public class DashboardService {
         // 레디스에서 측정값 범위 조회
         LocalDate measureDate = convertToLocalDate(measure.getDate());
         Map<String, String> redisLevel = healthLevelCacheService.getHealthLevels(
-                userId, clientId, measure.getDate());
+                userId, clientId, measureDate );
         // Measure 객체를 가지고 HealthDetailResponseDTO 생성
 
         HealthDetailResponseDTO result = HealthDetailResponseDTO.of(measure, client.getId(), measureDate, redisLevel);
