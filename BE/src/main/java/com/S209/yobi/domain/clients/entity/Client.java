@@ -2,6 +2,7 @@ package com.S209.yobi.domain.clients.entity;
 
 import com.S209.yobi.domain.measures.entity.Measure;
 import com.S209.yobi.domain.users.entity.User;
+import com.S209.yobi.exceptionFinal.ApiResult;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,7 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "clients")
 @BatchSize(size = 100)
-public class Client {
+public class Client implements ApiResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_id", nullable = false)
