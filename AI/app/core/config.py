@@ -5,8 +5,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     INTERNAL_AI_URL: str = "http://localhost:8001/api"
 
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/db"
-
+    DATABASE_URL: str 
     # PostgreSQL 설정
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str

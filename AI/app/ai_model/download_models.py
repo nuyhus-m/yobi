@@ -18,14 +18,15 @@ logger = logging.getLogger(__name__)
 
 class MistralLoRADownloader:
     def __init__(self):
+        self.offload_dir = "/tmp/offload_dir"
         self.hf_token = os.getenv('HF_TOKEN')
-        # 환경변수 또는 기본값 설정
-        self.model_name = os.getenv('BASE_MODEL_NAME', 'mistralai/Mistral-7B-v0.1')
-        self.base_model_path = os.getenv('BASE_MODEL_PATH', '/srv/models/base')
-        self.adapter_path = os.getenv('ADAPTER_PATH', '/srv/models/mistral_lora_adapter')
-        self.cache_dir = os.getenv('HF_HOME', '/srv/models/cache')
+        self.model_name = 'mistralai/Mistral-7B-v0.1'
+        self.base_model_path = '/srv/models/base'
+        self.adapter_path = '/srv/models/mistral_lora_adapter'
+        self.cache_dir = '/srv/models/cache'
         
         # 경로 생성
+        os.makedirs(self.offload_dir, exist_ok=True)
         os.makedirs(self.base_model_path, exist_ok=True)
         os.makedirs(os.path.dirname(self.adapter_path), exist_ok=True)
         os.makedirs(self.cache_dir, exist_ok=True)
@@ -136,7 +137,12 @@ class MistralLoRADownloader:
                 
                 # LoRA 어댑터가 있으면 로드 테스트
                 if self.check_existing_adapter():
-                    model = PeftModel.from_pretrained(base_model, self.adapter_path)
+                    model = PeftModel.from_pretrained(
+                        base_model,
+                        self.adapter_path,
+                        device_map="auto",
+                        quantization_config = self.bnb_config,
+                        offload_folder=self.offload_dir)
                     model.eval()
                     logger.info("LoRA 모델 로딩 성공")
                 

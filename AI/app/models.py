@@ -115,7 +115,7 @@ class Temperature(Base):
 class WeeklyReport(Base):
     __tablename__ = "weekly_report"
 
-    report_id = Column(BigInteger, primary_key=True)
+    report_id = Column(BigInteger, primary_key=True, autoincrement=True)
     client_id = Column(Integer, ForeignKey('clients.client_id')) 
     report_content = Column(Text)
     log_summary = Column(Text)

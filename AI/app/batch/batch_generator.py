@@ -165,9 +165,22 @@ class BatchReportGenerator:
                 } 
                 for row in result
             ]
+
+            
             
             logger.info(f"활성 클라이언트 {len(clients)}명 조회 완료")
-            return clients
+
+            # return clients
+
+            # client_id가 1인 클라이언트만 찾아서 반환
+            for client in clients:
+                if client["client_id"] == 1:
+                    logger.info(f"client_id가 1인 클라이언트 조회 완료")
+                    return [client]
+            
+            # client_id가 1인 클라이언트가 없는 경우
+            logger.info("client_id가 1인 클라이언트가 없습니다")
+            return None
 
 
     def _create_result_summary(self) -> Dict:
@@ -258,6 +271,7 @@ class BatchReportGenerator:
 
     
     async def generate_single_report(self, client_data: Dict, session: aiohttp.ClientSession) -> Dict:
+
         """단일 클라이언트 리포트 생성"""
         client_id = client_data['client_id']
         user_id = client_data['user_id']
@@ -281,7 +295,7 @@ class BatchReportGenerator:
                 internal_ai_response = await processor.call_internal_ai(health_data)
                 
                 # 3. AI output 정제
-                ai_summary = processor.clean_ai_output(internal_ai_response.get("output", ""))
+                ai_summary = internal_ai_response
                 
                 # 4. 일지 데이터 조회
                 journal_data = await processor.get_journal_data(client_id, user_id)
