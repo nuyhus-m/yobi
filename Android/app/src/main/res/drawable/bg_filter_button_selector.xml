@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 선택된 상태 -->
+    <item android:drawable="@drawable/bg_purple_radius_40" android:state_selected="true" />
+
+    <!--비선택 상태-->
+    <item android:drawable="@drawable/bg_purple_sub_radius_40" android:state_selected="false" />
+
+</selector>

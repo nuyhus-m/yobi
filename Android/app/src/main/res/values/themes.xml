@@ -1,9 +1,21 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/purple</item>
+        <!--커스텀 위젯 스타일 적용-->
+        <item name="android:textViewStyle">@style/Widget.TextView</item>
+        <item name="android:buttonStyle">@style/Widget.Button</item>
+        <item name="android:editTextStyle">@style/Widget.EditText</item>
+        <item name="android:spinnerStyle">@style/Widget.Spinner</item>
     </style>
 
-    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication">
+        <!--상태바 커스텀-->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Splash" parent="Base.Theme.MyApplication">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

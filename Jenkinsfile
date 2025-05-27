@@ -1,0 +1,136 @@
+pipeline {
+    agent any
+    environment {
+        COMPOSE_FILE_1 = "docker-compose.ec2-1.yml"
+        // COMPOSE_FILE_2 = "docker-compose.ec2-2.yml"
+        ENV_FILE = ".env"
+        REMOTE_PATH = "/home/ubuntu/S12P31S209"
+    }
+
+    stages {
+        stage('Branch Check') {
+            steps {
+                script {
+                    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '') ?: 'unknown'
+                    echo "현재 브랜치: ${branchName}"
+
+                    if (!branchName || !branchName .contains('backend-dev')) {
+                        
+                        echo "❌ 이 잡은 backend-dev 브랜치에서만 동작합니다. 현재 브랜치: ${branchName}"
+                        currentBuild.result = 'SUCCESS'
+                        error('브랜치가 backend-dev가 아니므로 빌드를 중단합니다.')
+                    } else {
+                        echo "✅ backend-dev 브랜치 감지됨. 계속 진행합니다."
+                    }
+                }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Load .env File') {
+            steps {
+                withCredentials([file(credentialsId: 'env-secret', variable: 'LOADED_ENV')]) {
+                    sh 'rm -f $ENV_FILE && cp $LOADED_ENV $ENV_FILE'
+                }
+            }
+        }
+
+        stage('Load Application Config') {
+            steps {
+                withCredentials([file(credentialsId: 'application-yml', variable: 'APP_CONFIG')]) {
+                    sh 'mkdir -p BE/src/main/resources && cp $APP_CONFIG BE/src/main/resources/application.yml'
+                }
+            }
+        }
+        
+
+        stage('Build backend jar') {
+            steps {
+                sh '''
+                    cd BE
+                    chmod +x gradlew
+                    ./gradlew clean
+                    ./gradlew bootJar -x test
+                    
+                    # JAR 파일 생성 확인
+                    JAR_FILE=$(ls build/libs/*.jar)
+                    if [ -z "$JAR_FILE" ]; then
+                        echo "Error: JAR file was not created!"
+                        exit 1
+                    fi
+                    echo "JAR file created: $JAR_FILE"
+                '''
+            }
+        }
+
+        stage('Deploy to EC2-1') {
+            steps {
+                sh """
+                    # 기존 컨테이너 중지 및 삭제 (이름 패턴에 ocr-app 포함)
+                    docker stop \$(docker ps -a -q --filter name=yobi-be) ocr-app  || true
+                    docker rm \$(docker ps -a -q --filter name=yobi-be) ocr-app  || true
+                    
+                    # 기존 이미지 삭제
+                    docker rmi be-spring-image:latest ocr-app:latest || true
+                    
+                    # 새 이미지 빌드
+                    docker build --no-cache --pull -t be-spring-image:latest -f BE/Dockerfile BE/
+                    docker build --no-cache --pull -t ocr-app:latest -f OCR/Dockerfile OCR/
+                    
+                    # 컨테이너 재생성 및 재배포 (ocr-app 포함)
+                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend postgres redis ocr-app 
+
+                    # 모든 서비스가 재배포된 후 nginx만 재시작
+                    docker restart nginx || true
+                """
+            }
+        }
+
+
+
+
+//        stage('Deploy to EC2-1') {
+//            steps {
+//                sh """
+//                    # 기존 컨테이너 중지 및 삭제
+//                    docker stop \$(docker ps -a -q --filter name=yobi-be) || true
+//                    docker rm \$(docker ps -a -q --filter name=yobi-be) || true
+//                    
+//                    # 기존 이미지 삭제
+//                    docker rmi be-spring-image:latest || true
+//                    
+//                    # 새 이미지 빌드 (명시적으로 빌드 컨텍스트 지정)
+//                    docker build --no-cache --pull -t be-spring-image:latest -f BE/Dockerfile BE/
+//                    
+//                    # 컨테이너 재생성 및 재배포
+//                    docker-compose -p yobi-be -f $COMPOSE_FILE_1 --env-file $ENV_FILE up -d --force-recreate backend 
+//                """
+//            }
+//        }
+
+
+
+ //       stage('Deploy to EC2-2') {
+ //           steps {
+ //               sh """
+ //                   # 기존 컨테이너 중지 및 삭제
+ //                   docker stop ai-app || true
+ //                  docker rm ai-app || true
+ //
+ //                    # 기존 네트워크와 orphan 컨테이너 정리
+ //                    docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE down --remove-orphans
+ //
+ //                    # 컨테이너 재생성 및 재배포
+ //                    docker-compose -p yobi-ai -f $COMPOSE_FILE_2 --env-file $ENV_FILE \\
+ //                        up -d --build --no-cache --force-recreate ai
+ //                        up -d --build --no-cache --force-recreate a
+ //                """
+ //            }
+ //        }
+    }
+}
