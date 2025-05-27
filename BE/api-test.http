@@ -1,0 +1,72 @@
+### 회원가입 테스트 (multipart/form-data)
+POST http://localhost:8080/api/users
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; name="name"
+
+미야옹3
+--MyBoundary
+Content-Disposition: form-data; name="employeeNumber"
+
+951755
+--MyBoundary
+Content-Disposition: form-data; name="password"
+
+ssafyaaa####
+--MyBoundary--
+
+### 환경 변수 설정
+@accessToken = {{login.response.body.accessToken}}
+
+### 로그인 테스트
+# @name login
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "employeeNumber": 321654,
+  "password": "ssafy123"
+}
+
+### 로그인 후 토큰으로 보호된 API 테스트
+GET http://localhost:8080/api/users
+Authorization: Bearer {{accessToken}}
+
+### 리프레시 토큰으로 토큰 갱신
+POST http://localhost:8080/api/users/refresh
+Content-Type: application/json
+
+{
+
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkxMTEsImV4cCI6MTc0OTk3MTExMX0.kzEdd1IayNL-sgH9pVidLUO2W6L8FJ8Wh1ipUMvoiMM"
+}
+
+
+### 사용자 정보 조회
+GET http://localhost:8080/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkyODIsImV4cCI6MTc0Nzk4NDA4Mn0.H2yAuTv30aoeCQgvhF1d0N5SiIndjMWF_xa5kje5Mcw
+
+
+### 로그아웃
+POST http://localhost:8080/api/users/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI1IiwiZW1wbG95ZWVOdW1iZXIiOiIzMjE2NTQiLCJpYXQiOjE3NDczNzkyODIsImV4cCI6MTc0Nzk4NDA4Mn0.H2yAuTv30aoeCQgvhF1d0N5SiIndjMWF_xa5kje5Mcw
+Content-Type: application/json
+
+### 로그아웃 후 토큰으로 API 호출 시도 (401 Unauthorized 예상)
+GET http://localhost:8080/api/users
+Authorization: Bearer {{accessToken}}
+
+### 회원 탈퇴
+DELETE http://localhost:8080/api/users/withdraw
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "password": "ssafyaaa####"
+}
+
+### 회원 탈퇴 후 토큰으로 API 호출 시도 (401 Unauthorized 예상)
+GET http://localhost:8080/api/users
+Authorization: Bearer {{accessToken}}
+

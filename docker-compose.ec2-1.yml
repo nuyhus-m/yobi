@@ -1,0 +1,102 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:17.4
+    restart: always
+    ports: ["5432:5432"]
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - yobi-be_default
+
+  redis:
+    image: redis:7.2-alpine
+    restart: always
+    command: ["redis-server", "--requirepass", "${SPRING_REDIS_PASSWORD}"]
+    ports: ["6379:6379"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - yobi-be_default
+
+  backend:
+    image: be-spring-image
+    container_name: yobi-be_backend_1 
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+    ports: ["8081:8080"]
+    env_file: .env
+    environment:
+      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
+      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT}
+      TZ: ${TZ}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+    depends_on: [postgres, redis]
+    networks:
+      - yobi-be_default
+
+  ocr-app:
+    container_name: ocr-app
+    image: ocr-app
+    build: { context: ./OCR }
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7000"]
+    ports: ["7000:7000"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: 0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+      CLOVA_OCR_SECRET_KEY: ${CLOVA_OCR_SECRET_KEY}
+    depends_on: [postgres, redis]
+    networks:
+      - yobi-be_default
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports: ["8080:8080", "50000:50000"]
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - yobi-be_default
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/empty:/etc/nginx/conf.d:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on: [backend, ocr-app]
+    networks:
+      - yobi-be_default
+    restart: always
+
+volumes:
+  postgres_data:
+  jenkins_home:
+  redis_data:
+
+networks:
+  yobi-be_default:
+    external: true
