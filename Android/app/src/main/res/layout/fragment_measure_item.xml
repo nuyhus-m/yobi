@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.measure.measureitem.MeasureItemFragment">
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_40dp"
+        android:contentDescription="@string/back"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/TitleTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_70dp"
+        android:text="@string/measure_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        style="@style/BodyTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_4dp"
+        android:text="@string/measure_item_subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <TextView
+        android:id="@+id/tv_body_comp"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_40dp"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:gravity="center"
+        android:text="@string/body_composition"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle" />
+
+    <TextView
+        android:id="@+id/tv_heart_rate"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:gravity="center"
+        android:text="@string/heart_rate"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_body_comp" />
+
+    <TextView
+        android:id="@+id/tv_blood_pressure"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:gravity="center"
+        android:text="@string/blood_pressure"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_heart_rate" />
+
+    <TextView
+        android:id="@+id/tv_stress"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:gravity="center"
+        android:text="@string/stress"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_blood_pressure" />
+
+    <TextView
+        android:id="@+id/tv_body_temp"
+        style="@style/SubTitleTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/space_24dp"
+        android:layout_marginTop="@dimen/space_16dp"
+        android:background="@drawable/bg_purple_sub_radius_8"
+        android:gravity="center"
+        android:text="@string/temperature"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_stress" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

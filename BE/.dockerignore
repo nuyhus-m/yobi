@@ -1,0 +1,15 @@
+build/
+.gradle/
+out/
+
+.git/
+.gitignore
+
+.idea/
+*.iml
+*.sw?
+
+.DS_Store
+Thumbs.db
+*.log
+*.tmp

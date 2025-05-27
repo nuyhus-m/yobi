@@ -1,15 +1,125 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# ---------------------------------
+# Android & Kotlin Project Gitignore
+# ---------------------------------
+
+### Gradle ###
+.gradle/
+build/
+*/build/
+out/
+*/out/
+gen/
+*/gen/
+bin/
+*/bin/
+.signing/
+
+# Local Properties (Machine-specific settings)
 local.properties
+*/local.properties
+
+# Gradle Wrapper (Keep jar file for consistent builds)
+!/gradle/wrapper/gradle-wrapper.jar
+
+# ---------------------------------
+### Android Studio / IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+*.swp
+*~
+.DS_Store
+
+# IDE Cache/Config Files
+.idea/caches/
+.idea/libraries/
+.idea/shelf/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/compiler.xml
+.idea/modules.xml
+.idea/scopes/
+.idea/dictionaries/
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+.idea/dataSources.*
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/jarRepositories.xml
+.idea/navEditor.xml
+.idea/uiDesigner.xml
+
+# Navigation, Deployment
+.navigation/
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# External Native Build
+.externalNativeBuild/
+.cxx/
+obj/
+
+# ---------------------------------
+### Android Artifacts ###
+*.apk
+*.ap_
+*.aab
+*.dex
+output.json
+
+# Android Profiler Dumps
+*.hprof
+
+# Captures (Screen recordings etc.)
+captures/
+
+# Proguard
+proguard/
+
+# ---------------------------------
+### Kotlin/Java Compilation ###
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Java VM Crash Logs
+hs_err_pid*
+replay_pid*
+
+# ---------------------------------
+### Security Sensitive Files ###
+*.jks
+*.keystore
+
+# ---------------------------------
+### Google Services (Firebase etc.) ###
+google-services.json
+
+# ---------------------------------
+### Miscellaneous ###
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Legacy Eclipse Files
+.classpath
+.project
+.cproject
+.settings/
+
+# Plugin-specific (e.g., Crashlytics, Mongo Explorer, JIRA Plugin)
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+com_crashlytics_export_strings.xml
+.idea/mongoSettings.xml
+atlassian-ide-plugin.xml
+
+# ---------------------------------
+# End
+# ---------------------------------

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_24dp"
+            android:layout_marginTop="@dimen/space_40dp"
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/SubTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/space_70dp"
+            android:text="박진현님 주간 보고서"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_title"
+            app:layout_constraintEnd_toEndOf="@+id/tv_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_title"
+            app:layout_constraintTop_toTopOf="@+id/tv_title">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+        <!-- 날짜 범위 -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="@dimen/space_24dp"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="34dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/bg_purple_radius_5"
+                    android:backgroundTint="@color/purple" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_date_range"
+                        style="@style/ButtonTextStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2025/04/22 - 2025/04/28"
+                        android:textColor="@color/black" />
+
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/sfl_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="20dp"
+                            android:background="@drawable/bg_skeleton" />
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+                </FrameLayout>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- 주간 요약 -->
+        <TextView
+            android:id="@+id/tv_week_summary"
+            style="@style/CardTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="주간 요약"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/cv_week" />
+
+        <TextView
+            android:id="@+id/tv_summary"
+            style="@style/BodyTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="4dp"
+            android:text="- 평균 체지방: 17.81 %\n- 평균 체중: 71.31 kg\n- 평균 심박수: 65.14 bpm\n- 평균 혈압: 121 / 78 mmHg"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_week_summary" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_summary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_week_summary">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_skeleton"
+                android:minHeight="80dp" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+        <!-- 특이 변동 -->
+        <TextView
+            android:id="@+id/tv_unusual"
+            style="@style/CardTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_24dp"
+            android:text="특이 변동"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_summary" />
+
+        <TextView
+            android:id="@+id/tv_variation"
+            style="@style/BodyTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="4dp"
+            android:text="- 2025-06-02\n체지방이 평균보다 ▼0.0% 낮습니다\n\n- 2025-06-08\n체지방이 평균보다 ▲4.2% 높습니다\n\n- 2025-06-08\n체내수분이 평균보다 ▼1.9% 낮습니다\n\n- 2025-06-08\n이완기 혈압이 평균보다 ▲3.1% 높습니다\n\n- 2025-06-08\n심박수가 평균보다 ▲4.3% 높습니다"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_unusual" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_variation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_unusual">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_skeleton"
+                android:minHeight="100dp" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+
+        <!-- 총평 -->
+        <TextView
+            android:id="@+id/tv_all_evaluation"
+            style="@style/CardTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_24dp"
+            android:text="총평"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_variation" />
+
+        <TextView
+            android:id="@+id/tv_overall"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="4dp"
+            android:text="체지방과 혈압이 평균보다 높아지는 경향이 있으며, 체내 수분이 다소 낮아지는 모습이 관찰됩니다. 전반적으로 건강 상태를 유지하기 위한 식단 조절이 필요합니다."
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_all_evaluation" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_overall"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_all_evaluation">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_skeleton"
+                android:minHeight="60dp" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+
+        <!-- 추천 식단 -->
+        <TextView
+            android:id="@+id/tv_recommend_text"
+            style="@style/CardTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_24dp"
+            android:text="추천 식단"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_overall" />
+
+        <TextView
+            android:id="@+id/tv_recommendation"
+            style="@style/BodyTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="4dp"
+            android:text="• 닭가슴살 샐러드: 단백질이 풍부하고 저칼로리 식사로, 체중 관리에 도움이 됩니다.\n• 구운 연어와 브로콜리: 오메가-3 지방산과 비타민이 풍부하여 심장과 신체 전반 건강에 기여합니다.\n• 귀리 오트밀: 섬유질이 풍부하며 포만감을 줘 탄수화물 조절에 도움을 줍니다."
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_recommend_text" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_recommendation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_recommend_text">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_skeleton"
+                android:minHeight="80dp" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+
+        <TextView
+            android:id="@+id/tv_summary_week"
+            style="@style/CardTitleTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_24dp"
+            android:text="일지 요약"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_recommendation" />
+
+
+        <TextView
+            android:id="@+id/tv_week_log"
+            style="@style/BodyTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/space_24dp"
+            android:lineSpacingExtra="4dp"
+            android:text="일지 주간 기록 요약은 전주 일요일에서 시작합니다."
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_summary_week" />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_week_log"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="@dimen/space_24dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/cv_week"
+            app:layout_constraintStart_toStartOf="@id/cv_week"
+            app:layout_constraintTop_toBottomOf="@id/tv_summary_week">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:background="@drawable/bg_skeleton" />
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -2,4 +2,14 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+
+    // safeArgs
+    alias(libs.plugins.navigation.safe.args) apply false
+
+    // hilt
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.dagger.hilt.android) apply false
+
+    // kotlinx-serialization
+    alias(libs.plugins.kotlinx.serialization) apply false
 }

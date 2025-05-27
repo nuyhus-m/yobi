@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/dest_schedule">
+
+    <fragment
+        android:id="@+id/dest_schedule"
+        android:name="com.example.myapplication.ui.schedule.schedule.ScheduleFragment"
+        android:label="ScheduleFragment"
+        tools:layout="@layout/fragment_schedule">
+
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_schedule_register_dialog"
+            app:destination="@id/dest_schedule_register_dialog" />
+
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_manual_schedule"
+            app:destination="@id/dest_manual_schedule" />
+
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_visit_write"
+            app:destination="@id/dest_visit_write_fragment" />
+
+        <action
+            android:id="@+id/action_scheduleFragment_to_dest_diary_detail"
+            app:destination="@id/dest_diary_detail_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_photo_schedule"
+        android:name="com.example.myapplication.ui.schedule.photoschedule.PhotoScheduleFragment"
+        android:label="PhotoScheduleFragment"
+        tools:layout="@layout/fragment_photo_schedule" />
+
+    <fragment
+        android:id="@+id/dest_manual_schedule"
+        android:name="com.example.myapplication.ui.schedule.manualschedule.ManualScheduleFragment"
+        android:label="ManualScheduleFragment"
+        tools:layout="@layout/fragment_manual_schedule">
+
+        <argument
+            android:name="scheduleId"
+            android:defaultValue="-1"
+            app:argType="integer" /> <!-- 등록일 경우 -1로 처리 -->
+
+        <argument
+            android:name="visitedDate"
+            android:defaultValue="0L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_dest_manual_schedule_to_dest_schedule_delete_dialog"
+            app:destination="@id/dest_schedule_delete_dialog" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_list"
+        android:name="com.example.myapplication.ui.care.carelist.CareListFragment"
+        android:label="fragment_care_list"
+        tools:layout="@layout/fragment_care_list">
+
+        <action
+            android:id="@+id/action_careListFragment_to_careMainFragment"
+            app:destination="@+id/dest_care_main_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_main_fragment"
+        android:name="com.example.myapplication.ui.care.caremain.CareMainFragment"
+        android:label="fragment_care_main"
+        tools:layout="@layout/fragment_care_main">
+        <action
+            android:id="@+id/action_careMainFragment_to_reportDetailFragment"
+            app:destination="@id/dest_report_detail_fragment" />
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_measure_target"
+        android:name="com.example.myapplication.ui.measure.measuretarget.MeasureTargetFragment"
+        android:label="fragment_measure_target"
+        tools:layout="@layout/fragment_measure_target" />
+
+    <fragment
+        android:id="@+id/dest_device_connect"
+        android:name="com.example.myapplication.ui.measure.deviceconnect.DeviceConnectFragment"
+        android:label="fragment_device_connect"
+        tools:layout="@layout/fragment_device_connect">
+        <action
+            android:id="@+id/action_dest_device_connect_to_dest_measure_guide"
+            app:destination="@id/dest_measure_guide"
+            app:popUpTo="@id/dest_device_connect"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_bluetooth_guide"
+        android:name="com.example.myapplication.ui.measure.bluetoothguide.BluetoothGuideFragment"
+        android:label="fragment_bluetooth_guide"
+        tools:layout="@layout/fragment_bluetooth_guide" />
+
+    <fragment
+        android:id="@+id/dest_measure_item"
+        android:name="com.example.myapplication.ui.measure.measureitem.MeasureItemFragment"
+        android:label="fragment_measure_item"
+        tools:layout="@layout/fragment_measure_item" />
+
+    <fragment
+        android:id="@+id/dest_measure_guide"
+        android:name="com.example.myapplication.ui.measure.measureguide.MeasureGuideFragment"
+        android:label="fragment_measure_guide"
+        tools:layout="@layout/fragment_measure_guide">
+        <action
+            android:id="@+id/action_dest_measure_guide_to_dest_device_connect"
+            app:destination="@id/dest_device_connect"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_guide_to_dest_measure_loading"
+            app:destination="@id/dest_measure_loading"
+            app:popUpTo="@id/dest_measure_guide"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_measure_loading"
+        android:name="com.example.myapplication.ui.measure.measureloading.MeasureLoadingFragment"
+        android:label="fragment_measure_loading"
+        tools:layout="@layout/fragment_measure_loading">
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_result"
+            app:destination="@id/dest_measure_result"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_transition"
+            app:destination="@id/dest_measure_transition"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_device_connect"
+            app:destination="@id/dest_device_connect"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dest_measure_loading_to_dest_measure_target"
+            app:destination="@id/dest_measure_target"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_measure_result"
+        android:name="com.example.myapplication.ui.measure.measureresult.MeasureResultFragment"
+        android:label="fragment_measure_result"
+        tools:layout="@layout/fragment_measure_result">
+        <action
+            android:id="@+id/action_dest_measure_result_to_dest_measure_target"
+            app:destination="@id/dest_measure_target"
+            app:popUpTo="@id/dest_measure_target"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="isRequiredBodyComp"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_measure_transition"
+        android:name="com.example.myapplication.ui.measure.measuretransition.MeasureTransitionFragment"
+        android:label="fragment_measure_transition"
+        tools:layout="@layout/fragment_measure_transition" />
+
+    <fragment
+        android:id="@+id/dest_visit_log_list"
+        android:name="com.example.myapplication.ui.visitlog.visitloglist.VisitLogListFragment"
+        android:label="fragment_visit_log_list"
+        tools:layout="@layout/fragment_visit_log_list">
+
+        <action
+            android:id="@+id/action_visitLogListFragment_to_diaryDetailFragment"
+            app:destination="@id/dest_diary_detail_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_visit_write_fragment"
+        android:name="com.example.myapplication.ui.visitlog.visitwrite.VisitWriteFragment"
+        android:label="VisitWriteFragment"
+        tools:layout="@layout/fragment_visit_write">
+
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+
+        <argument
+            android:name="isEditMode"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_report_fragment"
+        android:name="com.example.myapplication.ui.care.report.CareReportFragment"
+        android:label="fragment_care_report"
+        tools:layout="@layout/fragment_care_report">
+        <argument
+            android:name="name"
+            android:defaultValue=""
+            app:argType="string" />
+
+        <argument
+            android:name="dateRange"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/actionCareReportFragmentToReportDetailFragment"
+            app:destination="@id/dest_report_detail_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_report_detail_fragment"
+        android:name="com.example.myapplication.ui.care.reportdetail.ReportDetailFragment"
+        android:label="fragment_report_detail"
+        tools:layout="@layout/fragment_report_detail">
+
+        <argument
+            android:name="dateRange"
+            app:argType="string" />
+
+        <argument
+            android:name="reportId"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_care_daily_fragment"
+        android:name="com.example.myapplication.ui.care.daily.CareDailyFragment"
+        android:label="fragment_care_daily"
+        tools:layout="@layout/fragment_care_daily">
+
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_daily_detail_fragment"
+        android:name="com.example.myapplication.ui.care.dailydetail.DailyDetailFragment"
+        android:label="fragment_daily_detail"
+        tools:layout="@layout/fragment_daily_detail">
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
+
+
+    <action
+        android:id="@+id/action_global_dailyDetailFragment"
+        app:destination="@id/dest_daily_detail_fragment" />
+
+    <fragment
+        android:id="@+id/dest_care_seven_fragment"
+        android:name="com.example.myapplication.ui.care.seven.CareSevenFragment"
+        android:label="fragment_care_seven"
+        tools:layout="@layout/fragment_care_seven">
+
+        <argument
+            android:name="clientId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_diary_detail_fragment"
+        android:name="com.example.myapplication.ui.visitlog.diarydetail.DiaryDetailFragment"
+        android:label="DiaryDetailFragment"
+        tools:layout="@layout/fragment_diary_detail">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_diaryDetailFragment_to_dest_delete_dairy_dialog"
+            app:destination="@id/dest_delete_dairy_dialog" />
+        <action
+            android:id="@+id/action_dest_diary_detail_fragment_to_dest_visit_write_fragment"
+            app:destination="@id/dest_visit_write_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dest_my_page"
+        android:name="com.example.myapplication.ui.mypage.mypage.MyPageFragment"
+        android:label="fragment_my_page"
+        tools:layout="@layout/fragment_my_page" />
+
+    <fragment
+        android:id="@+id/dest_change_password"
+        android:name="com.example.myapplication.ui.mypage.changePassword.ChangePasswordFragment"
+        android:label="ChangePasswordFragment"
+        tools:layout="@layout/fragment_change_password" />
+
+    <fragment
+        android:id="@+id/dest_policy"
+        android:name="com.example.myapplication.ui.mypage.policy.PolicyFragment"
+        android:label="PolicyFragment"
+        tools:layout="@layout/fragment_policy" />
+
+    <dialog
+        android:id="@+id/dest_schedule_register_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleRegisterDialog"
+        android:label="ScheduleRegisterDialog"
+        tools:layout="@layout/dialog_schedule_register">
+
+        <argument
+            android:name="visitedDate"
+            android:defaultValue="0L"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/action_scheduleRegisterDialog_to_dest_manual_schedule"
+            app:destination="@id/dest_manual_schedule" />
+
+    </dialog>
+
+    <dialog
+        android:id="@+id/dest_schedule_delete_dialog"
+        android:name="com.example.myapplication.ui.schedule.ScheduleDeleteDialog"
+        android:label="ScheduleDeleteDialog"
+        tools:layout="@layout/dialog_schedule_delete">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+        <argument
+            android:name="visitedDate"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_dest_schedule_delete_dialog_to_dest_schedule"
+            app:destination="@id/dest_schedule"
+            app:popUpTo="@id/dest_schedule"
+            app:popUpToInclusive="true" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/dest_logout_dialog"
+        android:name="com.example.myapplication.ui.mypage.LogoutDialog"
+        android:label="LogoutDialog"
+        tools:layout="@layout/dialog_logout" />
+
+    <dialog
+        android:id="@+id/dest_withdrawal_dialog"
+        android:name="com.example.myapplication.ui.mypage.AppInfoDialog"
+        android:label="WithdrawalDialog"
+        tools:layout="@layout/dialog_app_info" />
+
+    <dialog
+        android:id="@+id/dest_year_month_picker_Dialog"
+        android:name="com.example.myapplication.ui.schedule.YearMonthPickerDialog"
+        android:label="YearMonthPickerDialog"
+        tools:layout="@layout/dialog_year_month_picker" />
+
+    <dialog
+        android:id="@+id/dest_date_picker_dialog"
+        android:name="com.example.myapplication.ui.schedule.DatePickerDialog"
+        android:label="DatePickerDialog"
+        tools:layout="@layout/dialog_date_picker" />
+    <dialog
+        android:id="@+id/dest_delete_dairy_dialog"
+        android:name="com.example.myapplication.ui.visitlog.DeleteDairyDialog"
+        android:label="DeleteDairyDialog"
+        tools:layout="@layout/dialog_delete">
+        <argument
+            android:name="scheduleId"
+            app:argType="integer" />
+    </dialog>
+
+
+
+</navigation>

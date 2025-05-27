@@ -1,0 +1,29 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+  <item
+      android:drawable="@drawable/yobi1"
+      android:duration="100" />
+  <item
+      android:drawable="@drawable/yobi2"
+      android:duration="100" />
+  <item
+      android:drawable="@drawable/yobi3"
+      android:duration="100" />
+
+  <item
+      android:drawable="@drawable/yobi4"
+      android:duration="100" />
+
+  <item
+      android:drawable="@drawable/yobi3"
+      android:duration="100" />
+
+  <item
+      android:drawable="@drawable/yobi2"
+      android:duration="100" />
+
+  <item
+      android:drawable="@drawable/yobi1"
+      android:duration="100" />
+
+</animation-list>
